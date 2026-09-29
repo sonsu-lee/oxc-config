@@ -1,0 +1,318 @@
+[
+  {
+    "rule": "no-debugger",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-debugger": "error"
+      }
+    },
+    "invalidSource": "debugger;",
+    "validSource": "void 0;",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-debugger)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "debugger;"
+    }
+  },
+  {
+    "rule": "no-eval",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-eval": "error"
+      }
+    },
+    "invalidSource": "eval('1')",
+    "validSource": "JSON.parse('1')",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-eval)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "eval('1')"
+    }
+  },
+  {
+    "rule": "no-unreachable",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-unreachable": "error"
+      }
+    },
+    "invalidSource": "function f(){return 1; console.log('x')} void f",
+    "validSource": "function f(){console.log('x');return 1} void f",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-unreachable)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "function f(){return 1; console.log('x')} void f"
+    }
+  },
+  {
+    "rule": "no-const-assign",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-const-assign": "error"
+      }
+    },
+    "invalidSource": "const x=1; x=2; void x",
+    "validSource": "let x=1; x=2; void x",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-const-assign)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "const x=1; x=2; void x"
+    }
+  },
+  {
+    "rule": "no-duplicate-case",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-duplicate-case": "error"
+      }
+    },
+    "invalidSource": "switch(1){case 1: break;case 1: break}",
+    "validSource": "switch(1){case 1: break;case 2: break}",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-duplicate-case)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "switch(1){case 1: break;case 1: break}"
+    }
+  },
+  {
+    "rule": "no-async-promise-executor",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "no-async-promise-executor": "error"
+      }
+    },
+    "invalidSource": "new Promise(async resolve=>resolve(1))",
+    "validSource": "new Promise(resolve=>resolve(1))",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-async-promise-executor)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "new Promise(async resolve=>resolve(1))"
+    }
+  },
+  {
+    "rule": "import/no-duplicates",
+    "options": null,
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "import/no-duplicates": "error"
+      }
+    },
+    "invalidSource": "import {a} from './dep'; import {b} from './dep';void a;void b",
+    "validSource": "import {a,b} from './dep';void a;void b",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "import(no-duplicates)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 0,
+      "changed": true,
+      "after": "import {a,b} from './dep'; void a;void b"
+    }
+  },
+  {
+    "rule": "sort-imports",
+    "options": {
+      "ignoreDeclarationSort": true
+    },
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      }
+    },
+    "invalidSource": "import {b,a} from './dep';void a;void b",
+    "validSource": "import {a,b} from './dep';void a;void b",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(sort-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 0,
+      "changed": true,
+      "after": "import {a,b} from './dep';void a;void b"
+    }
+  },
+  {
+    "rule": "eqeqeq",
+    "options": "smart",
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "eqeqeq": [
+          "error",
+          "smart"
+        ]
+      }
+    },
+    "invalidSource": "export function f(x:unknown){return x == 1}",
+    "validSource": "export function f(x:unknown){return x == null}",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(eqeqeq)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    },
+    "fix": {
+      "exit": 1,
+      "changed": false,
+      "after": "export function f(x:unknown){return x == 1}"
+    }
+  }
+]

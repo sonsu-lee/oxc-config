@@ -93,3 +93,17 @@ export default defineConfig({
 ```
 
 `shared` enables single quotes, one JSX attribute per line and package-script sorting. `sortImports: false` preserves import declaration order. Append generated paths specific to your project to `ignorePatterns`.
+
+## Development
+
+```sh
+pnpm install --frozen-lockfile
+pnpm run build            # Clean dist, compile TS and emit declarations
+pnpm test                 # Build and run public contract tests
+pnpm run lint
+pnpm run format:check
+pnpm run verify:consumer  # Pack, install and exercise a temporary consumer
+pnpm run verify           # All of the above checks
+```
+
+`pnpm run format` formats maintained files. Research evidence and regression fixtures are excluded. The consumer check needs registry access, uses a temporary pnpm store, and removes its own temporary directory; pass `pnpm run verify:consumer -- --keep` to inspect it.

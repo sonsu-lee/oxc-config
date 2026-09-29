@@ -26,7 +26,10 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
-    "prepack": "node scripts/build.mjs"
+    "prepack": "node scripts/build.mjs",
+    "test": "pnpm run build && node --test test/*.test.mjs",
+    "verify": "pnpm test && pnpm run lint && pnpm run format:check && pnpm run verify:consumer",
+    "verify:consumer": "node scripts/verify-consumer.mjs"
   },
   "devDependencies": {
     "oxfmt": "0.70.0",

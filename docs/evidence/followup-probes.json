@@ -1,0 +1,858 @@
+{
+  "toolVersions": {
+    "node": "24.18.1",
+    "oxlint": "1.85.0",
+    "oxfmt": "0.70.0",
+    "vitest": "5.0.2",
+    "typescript": "7.0.2",
+    "oxlint-tsgolint": "7.0.2003"
+  },
+  "commands": {
+    "isolatedRule": "oxlint -c <case>/.oxlintrc.json -f json <case>/{invalid,valid}.test.ts",
+    "fix": "oxlint -c <case>/.oxlintrc.json --fix|--fix-suggestions <case>/<copy>.test.ts",
+    "scoped": "oxlint -c oxlint-scoped.json --deny-warnings -f json example.test.ts src.ts | focused.test.ts src.ts",
+    "runner": "vitest run example.test.ts --reporter=dot | vitest run focused.test.ts --reporter=dot"
+  },
+  "isolatedRules": [
+    {
+      "rule": "vitest/no-focused-tests",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it.only('works',()=>expect(1).toBe(1));",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-focused-tests)",
+            "severity": "error",
+            "message": "Unexpected focused test."
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 0,
+        "changed": true,
+        "after": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));"
+      }
+    },
+    {
+      "rule": "vitest/no-disabled-tests",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it.skip('works',()=>expect(1).toBe(1));",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-disabled-tests)",
+            "severity": "error",
+            "message": "Disabled test"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/consistent-test-it",
+      "options": {
+        "fn": "it",
+        "withinDescribe": "it"
+      },
+      "invalidSource": "import {test,expect} from 'vitest'; test('works',()=>expect(1).toBe(1));",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(consistent-test-it)",
+            "severity": "error",
+            "message": "Enforce `test` and `it` usage conventions"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 0,
+        "changed": true,
+        "after": "import {test,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));"
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/no-identical-title",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1)); it('works',()=>expect(2).toBe(2));",
+      "validSource": "import {it,expect} from 'vitest'; it('one',()=>expect(1).toBe(1)); it('two',()=>expect(2).toBe(2));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-identical-title)",
+            "severity": "error",
+            "message": "Test title is used multiple times in the same describe block."
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/no-import-node-test",
+      "options": null,
+      "invalidSource": "import {test} from 'node:test'; test('works',()=>{});",
+      "validSource": "import {test,expect} from 'vitest'; test('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-import-node-test)",
+            "severity": "error",
+            "message": "Do not import from `node:test`"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 0,
+        "changed": true,
+        "after": "import {test} from \"vitest\"; test('works',()=>{});"
+      }
+    },
+    {
+      "rule": "vitest/prefer-hooks-in-order",
+      "options": null,
+      "invalidSource": "import {describe,beforeEach,beforeAll,it,expect} from 'vitest'; describe('x',()=>{beforeEach(()=>{});beforeAll(()=>{});it('x',()=>expect(1).toBe(1))});",
+      "validSource": "import {describe,beforeEach,beforeAll,it,expect} from 'vitest'; describe('x',()=>{beforeAll(()=>{});beforeEach(()=>{});it('x',()=>expect(1).toBe(1))});",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(prefer-hooks-in-order)",
+            "severity": "error",
+            "message": "Test hooks are not in a consistent order."
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/prefer-lowercase-title",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('Works',()=>expect(1).toBe(1));",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(prefer-lowercase-title)",
+            "severity": "error",
+            "message": "Enforce lowercase test names"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 0,
+        "changed": true,
+        "after": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));"
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/expect-expect",
+      "options": null,
+      "invalidSource": "import {it} from 'vitest'; it('works',()=>{const x=1;void x});",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(expect-expect)",
+            "severity": "error",
+            "message": "Test has no assertions"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/no-standalone-expect",
+      "options": null,
+      "invalidSource": "import {expect} from 'vitest'; expect(1).toBe(1);",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-standalone-expect)",
+            "severity": "error",
+            "message": "`expect` must be inside of a test block."
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/valid-expect",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('works',()=>{expect(1)});",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(valid-expect)",
+            "severity": "error",
+            "message": "Expect must have a corresponding matcher call."
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/no-conditional-expect",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('works',()=>{if (true) expect(1).toBe(1)});",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(no-conditional-expect)",
+            "severity": "error",
+            "message": "Unexpected conditional expect"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/valid-title",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('',()=>expect(1).toBe(1));",
+      "validSource": "import {it,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(valid-title)",
+            "severity": "error",
+            "message": "Should not have an empty title"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/valid-describe-callback",
+      "options": null,
+      "invalidSource": "import {describe,it,expect} from 'vitest'; describe('suite',async()=>{it('works',()=>expect(1).toBe(1))});",
+      "validSource": "import {describe,it,expect} from 'vitest'; describe('suite',()=>{it('works',()=>expect(1).toBe(1))});",
+      "invalid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 0,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 0,
+        "changed": false,
+        "after": null
+      }
+    },
+    {
+      "rule": "vitest/require-awaited-expect-poll",
+      "options": null,
+      "invalidSource": "import {it,expect} from 'vitest'; it('works',async()=>{expect.poll(()=>1).toBe(1)});",
+      "validSource": "import {it,expect} from 'vitest'; it('works',async()=>{await expect.poll(()=>1).toBe(1)});",
+      "invalid": {
+        "exit": 1,
+        "diagnostics": [
+          {
+            "code": "vitest(require-awaited-expect-poll)",
+            "severity": "error",
+            "message": "`expect.poll` must be awaited or returned"
+          },
+          {
+            "code": "vitest(require-awaited-expect-poll)",
+            "severity": "error",
+            "message": "`expect.poll` must be awaited or returned"
+          }
+        ]
+      },
+      "valid": {
+        "exit": 0,
+        "diagnostics": []
+      },
+      "--fix": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      },
+      "--fix-suggestions": {
+        "exit": 1,
+        "changed": false,
+        "after": null
+      }
+    }
+  ],
+  "normalPatternCases": [
+    {
+      "rule": "vitest/valid-describe-callback",
+      "case": "invalid-done",
+      "expected": "error",
+      "exit": 1,
+      "codes": [
+        "vitest(valid-describe-callback)"
+      ],
+      "messages": [
+        "Unexpected argument(s) in describe callback"
+      ],
+      "source": "import {describe,it,expect} from 'vitest';describe('suite',(done)=>{it('x',()=>expect(1).toBe(1));done()});"
+    },
+    {
+      "rule": "vitest/valid-describe-callback",
+      "case": "valid-async",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {describe,it,expect} from 'vitest';describe('suite',async()=>{it('x',()=>expect(1).toBe(1))});"
+    },
+    {
+      "rule": "vitest/consistent-test-it",
+      "case": "valid-table",
+      "expected": "pass",
+      "exit": 1,
+      "codes": [
+        "vitest(consistent-test-it)"
+      ],
+      "messages": [
+        "Enforce `test` and `it` usage conventions"
+      ],
+      "source": "import {test,expect} from 'vitest';test.each([[1,1],[2,2]])('adds %i', (a,b)=>expect(a).toBe(b));"
+    },
+    {
+      "rule": "vitest/no-disabled-tests",
+      "case": "valid-platform-skip",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,expect} from 'vitest';it.skipIf(process.platform==='win32')('posix only',()=>expect(1).toBe(1));"
+    },
+    {
+      "rule": "vitest/expect-expect",
+      "case": "valid-helper",
+      "expected": "pass",
+      "exit": 1,
+      "codes": [
+        "vitest(expect-expect)"
+      ],
+      "messages": [
+        "Test has no assertions"
+      ],
+      "source": "import {it,expect} from 'vitest';function assertValue(x:number){expect(x).toBe(1)}it('works',()=>assertValue(1));"
+    },
+    {
+      "rule": "vitest/expect-expect",
+      "case": "valid-type-assertion",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,expectTypeOf} from 'vitest';it('type',()=>expectTypeOf(1).toEqualTypeOf<number>());"
+    },
+    {
+      "rule": "vitest/expect-expect",
+      "case": "valid-assert",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,assert} from 'vitest';it('value',()=>assert.equal(1,1));"
+    },
+    {
+      "rule": "vitest/no-conditional-expect",
+      "case": "valid-conditional-branch",
+      "expected": "pass",
+      "exit": 1,
+      "codes": [
+        "vitest(no-conditional-expect)",
+        "vitest(no-conditional-expect)"
+      ],
+      "messages": [
+        "Unexpected conditional expect",
+        "Unexpected conditional expect"
+      ],
+      "source": "import {it,expect} from 'vitest';it('platform',()=>{if(process.platform==='win32')expect('win').toBe('win');else expect('unix').toBe('unix')});"
+    },
+    {
+      "rule": "vitest/prefer-lowercase-title",
+      "case": "valid-acronym",
+      "expected": "pass",
+      "exit": 1,
+      "codes": [
+        "vitest(prefer-lowercase-title)"
+      ],
+      "messages": [
+        "Enforce lowercase test names"
+      ],
+      "source": "import {it,expect} from 'vitest';it('URL parser handles IDN',()=>expect(1).toBe(1));"
+    },
+    {
+      "rule": "vitest/no-identical-title",
+      "case": "valid-table",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,expect} from 'vitest';it.each([[1],[2]])('works %i',(n)=>expect(n).toBeGreaterThan(0));"
+    },
+    {
+      "rule": "vitest/no-focused-tests",
+      "case": "invalid-table-only",
+      "expected": "error",
+      "exit": 1,
+      "codes": [
+        "vitest(no-focused-tests)"
+      ],
+      "messages": [
+        "Unexpected focused test."
+      ],
+      "source": "import {it,expect} from 'vitest';it.only.each([[1],[2]])('works %i',(n)=>expect(n).toBeGreaterThan(0));"
+    },
+    {
+      "rule": "vitest/valid-expect",
+      "case": "valid-soft",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,expect} from 'vitest';it('soft',()=>expect.soft(1).toBe(1));"
+    },
+    {
+      "rule": "vitest/require-awaited-expect-poll",
+      "case": "valid-poll",
+      "expected": "pass",
+      "exit": 0,
+      "codes": [],
+      "messages": [],
+      "source": "import {it,expect} from 'vitest';it('poll',async()=>{await expect.poll(()=>1).toBe(1)});"
+    }
+  ],
+  "runtime": {
+    "normal": {
+      "exit": 0,
+      "filesPassed": 1,
+      "testsPassed": 4
+    },
+    "focused": {
+      "exit": 0,
+      "filesPassed": 1,
+      "testsPassed": 1,
+      "testsSkipped": 1
+    },
+    "consistentTestItAutofix": {
+      "exit": 1,
+      "error": "ReferenceError: it is not defined",
+      "source": "import {test,expect} from 'vitest'; it('works',()=>expect(1).toBe(1));\n"
+    }
+  },
+  "scopedCombination": {
+    "normalAndSource": {
+      "exit": 0,
+      "diagnosticCodes": []
+    },
+    "focusedAndSource": {
+      "exit": 1,
+      "diagnosticCodes": [
+        "vitest(no-focused-tests)"
+      ]
+    },
+    "config": {
+      "categories": {
+        "correctness": "off"
+      },
+      "overrides": [
+        {
+          "files": [
+            "**/*.{test,spec}.{ts,tsx,js,jsx}"
+          ],
+          "plugins": [
+            "vitest"
+          ],
+          "rules": {
+            "vitest/no-focused-tests": "error",
+            "vitest/no-identical-title": "error",
+            "vitest/valid-expect": "error",
+            "vitest/no-standalone-expect": "error",
+            "vitest/valid-title": "error",
+            "vitest/valid-describe-callback": "error",
+            "vitest/require-awaited-expect-poll": "error"
+          }
+        }
+      ]
+    },
+    "sources": {
+      "example.test.ts": "import { describe, expect, it } from 'vitest'\n\ndescribe('normal patterns', async () => {\n  it.each([[1], [2]])('table row %i', (value) => {\n    expect(value).toBeGreaterThan(0)\n  })\n  it.skipIf(process.platform === 'win32')('platform condition', () => {\n    expect(process.platform).not.toBe('win32')\n  })\n  it('poll', async () => {\n    await expect.poll(() => 1).toBe(1)\n  })\n})\n",
+      "focused.test.ts": "import { expect, it } from 'vitest'\nit.only('focused', () => expect(1).toBe(1))\nit('other', () => expect(1).toBe(1))\n",
+      "src.ts": "const item = { only: () => 1 }\nitem.only()\n"
+    }
+  },
+  "sortImportsPartitions": [
+    {
+      "case": "unpartitioned",
+      "config": {
+        "sortImports": {
+          "partitionByNewline": true,
+          "partitionByComment": true,
+          "newlinesBetween": false,
+          "sortSideEffects": false
+        }
+      },
+      "before": "[\"z-polyfill\",\"z\",\"a-polyfill\",\"a\"]",
+      "after": "[\"z-polyfill\",\"a\",\"a-polyfill\",\"z\"]",
+      "formatExit": 0,
+      "formatted": "import \"./z-polyfill.mjs\";\nimport a from \"./a.mjs\";\nimport \"./a-polyfill.mjs\";\nimport z from \"./z.mjs\";\nconsole.log(JSON.stringify(globalThis.events));\nvoid z;\nvoid a;\n"
+    },
+    {
+      "case": "blank-lines",
+      "config": {
+        "sortImports": {
+          "partitionByNewline": true,
+          "partitionByComment": true,
+          "newlinesBetween": false,
+          "sortSideEffects": false
+        }
+      },
+      "before": "[\"z-polyfill\",\"z\",\"a-polyfill\",\"a\"]",
+      "after": "[\"z-polyfill\",\"z\",\"a-polyfill\",\"a\"]",
+      "formatExit": 0,
+      "formatted": "import \"./z-polyfill.mjs\";\nimport z from \"./z.mjs\";\n\nimport \"./a-polyfill.mjs\";\nimport a from \"./a.mjs\";\nconsole.log(JSON.stringify(globalThis.events));\nvoid z;\nvoid a;\n"
+    },
+    {
+      "case": "commented",
+      "config": {
+        "sortImports": {
+          "partitionByNewline": true,
+          "partitionByComment": true,
+          "newlinesBetween": false,
+          "sortSideEffects": false
+        }
+      },
+      "before": "[\"z-polyfill\",\"z\",\"a-polyfill\",\"a\"]",
+      "after": "[\"z-polyfill\",\"z\",\"a-polyfill\",\"a\"]",
+      "formatExit": 0,
+      "formatted": "// first group\nimport \"./z-polyfill.mjs\";\nimport z from \"./z.mjs\";\n// second group\nimport \"./a-polyfill.mjs\";\nimport a from \"./a.mjs\";\nconsole.log(JSON.stringify(globalThis.events));\nvoid z;\nvoid a;\n"
+    }
+  ],
+  "typeAwareTs7": {
+    "config": {
+      "plugins": [
+        "typescript"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error"
+      }
+    },
+    "tsconfig": {
+      "compilerOptions": {
+        "strict": true,
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "noEmit": true,
+        "skipLibCheck": true
+      }
+    },
+    "sources": {
+      "unsafe.ts": "declare const dynamicValue: any\nconst n: number = dynamicValue\nexport function bad() { return dynamicValue.foo() }\nvoid n\n",
+      "safe.ts": "const parsed: unknown = JSON.parse('{\"x\":1}')\nexport function safe(value: unknown): number {\n  if (typeof value === 'number') return value\n  return 0\n}\nvoid parsed\n"
+    },
+    "commands": [
+      "oxlint -c .oxlintrc.json --type-aware --deny-warnings -f json unsafe.ts safe.ts",
+      "oxlint -c .oxlintrc.json --type-aware --deny-warnings -f json safe.ts",
+      "tsc --noEmit -p tsconfig.json"
+    ],
+    "observed": {
+      "combinedExit": 1,
+      "combinedCodes": [
+        "typescript(no-unsafe-assignment)",
+        "typescript(no-unsafe-return)",
+        "typescript(no-unsafe-call)",
+        "typescript(no-unsafe-member-access)"
+      ],
+      "safeOnlyExit": 0,
+      "safeOnlyCodes": [],
+      "tscExit": 0
+    }
+  },
+  "importCycle": {
+    "config": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "import/no-cycle": "error"
+      }
+    },
+    "sources": {
+      "a.ts": "import { B } from './b.ts'\nexport const A = () => B\n",
+      "b.ts": "import { A } from './a.ts'\nexport const B = () => A\n",
+      "c.ts": "export const C = 1\n"
+    },
+    "observed": {
+      "cwdAtProjectCommand": "oxlint -c .oxlintrc.json -f json .",
+      "cwdAtProjectExit": 1,
+      "cwdAtProjectCodes": [
+        "import(no-cycle)",
+        "import(no-cycle)"
+      ],
+      "outsideProjectAbsoluteTargetCommand": "oxlint -c /tmp/.../cycle/.oxlintrc.json -f json /tmp/.../cycle",
+      "outsideProjectAbsoluteTargetExit": 0,
+      "outsideProjectAbsoluteTargetCodes": []
+    },
+    "limit": "Absolute-target run from unrelated cwd missed the cycle in this probe; project-root invocation is required for this reproduction, not a general proof of resolver behavior."
+  },
+  "testFormatter": {
+    "config": {
+      "singleQuote": true,
+      "singleAttributePerLine": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      },
+      "sortImports": false
+    },
+    "sourceBefore": "import {it,expect} from \"vitest\";\nit(\"works\",()=>expect(1).toBe(1));\n",
+    "sourceAfter": "import { it, expect } from 'vitest';\nit('works', () => expect(1).toBe(1));\n",
+    "checkBeforeExit": 1,
+    "writeExit": 0,
+    "checkAfterExit": 0
+  },
+  "nest12ForwardRefCycle": {
+    "packages": {
+      "@nestjs/common": "12.1.0",
+      "@nestjs/core": "12.1.0",
+      "typescript": "6.0.3",
+      "oxlint": "1.85.0"
+    },
+    "package": {
+      "private": true,
+      "type": "commonjs",
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/main.js"
+      },
+      "dependencies": {
+        "@nestjs/common": "12.1.0",
+        "@nestjs/core": "12.1.0",
+        "reflect-metadata": "0.2.2",
+        "rxjs": "7.8.2"
+      },
+      "devDependencies": {
+        "typescript": "6.0.3",
+        "oxlint": "1.85.0"
+      }
+    },
+    "tsconfig": {
+      "compilerOptions": {
+        "target": "ES2022",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "strict": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
+        "rootDir": "src",
+        "ignoreDeprecations": "6.0"
+      },
+      "include": [
+        "src/**/*.ts"
+      ]
+    },
+    "oxlintConfig": {
+      "plugins": [
+        "import"
+      ],
+      "categories": {
+        "correctness": "off"
+      },
+      "rules": {
+        "import/no-cycle": "error"
+      }
+    },
+    "sources": {
+      "a.service.ts": "import { forwardRef, Inject, Injectable } from '@nestjs/common'\nimport { BService } from './b.service'\n\n@Injectable()\nexport class AService {\n  constructor(@Inject(forwardRef(() => BService)) public readonly b: BService) {}\n}\n",
+      "b.service.ts": "import { forwardRef, Inject, Injectable } from '@nestjs/common'\nimport { AService } from './a.service'\n\n@Injectable()\nexport class BService {\n  constructor(@Inject(forwardRef(() => AService)) public readonly a: AService) {}\n}\n",
+      "main.ts": "import 'reflect-metadata'\nimport { Module } from '@nestjs/common'\nimport { NestFactory } from '@nestjs/core'\nimport { AService } from './a.service'\nimport { BService } from './b.service'\n\n@Module({ providers: [AService, BService] })\nclass AppModule {}\n\nasync function main() {\n  const app = await NestFactory.createApplicationContext(AppModule, { logger: false })\n  const a = app.get(AService)\n  console.log(JSON.stringify({ aHasB: a.b instanceof BService, bHasA: a.b.a === a }))\n  await app.close()\n}\n\nvoid main()\n"
+    },
+    "commands": [
+      "npm run build",
+      "npm run start",
+      "oxlint -c .oxlintrc.json -f json src"
+    ],
+    "observed": {
+      "buildExit": 0,
+      "startExit": 0,
+      "stdout": "{\"aHasB\":true,\"bHasA\":true}",
+      "oxlintExit": 1,
+      "diagnosticCodes": [
+        "import(no-cycle)",
+        "import(no-cycle)"
+      ]
+    }
+  }
+}

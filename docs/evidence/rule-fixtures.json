@@ -1,0 +1,811 @@
+{
+  "description": "Source/config fixture snapshot from 2026-09-27 isolated rule runs; no installed dependencies or temporary clone included. See docs/rule-ledger.md for observed diagnostics, fixes and decisions.",
+  "templatesCommit": "bfd1c9114aad9af3adfb60207d063e9d02d4f33e",
+  "versions": {
+    "coreOxlint": "1.82.0",
+    "reactNextOxlint": "1.85.0",
+    "a11yOxlint": [
+      "1.82.0",
+      "1.85.0"
+    ],
+    "nextOxlint": "1.85.0"
+  },
+  "rules": {
+    "typescript/no-floating-promises": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-floating-promises\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\nasync function work() {}\nwork();\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nasync function work() {}\nvoid work();\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-misused-promises": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-misused-promises\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\nasync function work() { return true }\nasync function main() { if (work()) {} }\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nasync function work() { return true }\nasync function main() { if (await work()) {} }\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/await-thenable": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/await-thenable\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\nasync function main() { await 1; }\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nasync function main() { await Promise.resolve(1); }\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-unsafe-argument": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-unsafe-argument\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\nfunction take(x: string) {}\ndeclare const x: any; take(x);\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nfunction take(x: string) {}\ntake('ok');\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-unsafe-assignment": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-unsafe-assignment\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\ndeclare const x: any; const y: string = x;\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nconst y: string = 'ok';\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-unsafe-call": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-unsafe-call\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\ndeclare const x: any; x();\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nfunction x() {} x();\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-unsafe-member-access": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-unsafe-member-access\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\ndeclare const x: any; x.foo;\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nconst x = {foo: 1}; x.foo;\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-unsafe-return": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-unsafe-return\": \"error\"}, \"options\": {\"typeAware\": true, \"typeCheck\": true}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "export {};\ndeclare const x: any; function f(): string { return x; }\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "export {};\nfunction f(): string { return 'ok'; }\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "sort-imports": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"sort-imports\": [\"error\", {\"ignoreDeclarationSort\": true}]}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "import { b, a } from './dep';\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import { a, b } from './dep';\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "react/rules-of-hooks": {
+      "files": {
+        "react-rules-of-hooks.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/rules-of-hooks\": \"error\"}}",
+        "react-rules-of-hooks-invalid.tsx": "// Don't call Hooks inside loops, conditions, or nested functions\nfunction BadComponent() {\n  if (condition) {\n    const [state, setState] = useState(); // ❌ Hook in condition\n  }\n\n  for (let i = 0; i < 10; i++) {\n    useEffect(() => {}); // ❌ Hook in loop\n  }\n}\n\n// Don't call Hooks from regular JavaScript functions\nfunction regularFunction() {\n  const [state, setState] = useState(); // ❌ Hook in regular function\n}\n\n",
+        "react-rules-of-hooks-valid.tsx": "// ✅ Call Hooks at the top level of a React component\nfunction GoodComponent() {\n  const [state, setState] = useState();\n\n  useEffect(() => {\n    // Effect logic here\n  });\n\n  return <div>{state}</div>;\n}\n\n// ✅ Call Hooks from custom Hooks\nfunction useCustomHook() {\n  const [state, setState] = useState();\n  return state;\n}\n\n"
+      }
+    },
+    "react/exhaustive-deps": {
+      "files": {
+        "react-exhaustive-deps.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/exhaustive-deps\": \"error\"}}",
+        "react-exhaustive-deps-invalid.tsx": "function MyComponent(props) {\n  useEffect(() => {\n    console.log(props.foo);\n  }, []);\n  // `props` is missing from the dependencies array\n  return <div />;\n}\n\n",
+        "react-exhaustive-deps-valid.tsx": "function MyComponent(props) {\n  useEffect(() => {\n    console.log(props.foo);\n  }, [props]);\n  return <div />;\n}\n\n"
+      }
+    },
+    "react/error-boundaries": {
+      "files": {
+        "react-error-boundaries.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/error-boundaries\": \"error\"}}",
+        "react-error-boundaries-invalid.tsx": "function Component(props) {\n  let el;\n  try {\n    el = <Child />;\n  } catch {\n    return null;\n  }\n  return el;\n}\n\n",
+        "react-error-boundaries-valid.tsx": "function Component(props) {\n  return (\n    <ErrorBoundary fallback={null}>\n      <Child />\n    </ErrorBoundary>\n  );\n}\n\n"
+      }
+    },
+    "react/globals": {
+      "files": {
+        "react-globals.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/globals\": \"error\"}}",
+        "react-globals-invalid.tsx": "let someGlobal = false;\nfunction Component() {\n  someGlobal = true; // assignment during render\n  return <div>{String(someGlobal)}</div>;\n}\n\n",
+        "react-globals-valid.tsx": "import { useEffect } from \"react\";\nlet someGlobal = false;\nfunction Component() {\n  useEffect(() => {\n    someGlobal = true;\n  }, []);\n  return <div />;\n}\n\n"
+      }
+    },
+    "react/immutability": {
+      "files": {
+        "react-immutability.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/immutability\": \"error\"}}",
+        "react-immutability-invalid.tsx": "import { useState } from \"react\";\nfunction Component() {\n  const [state] = useState({ a: 0 });\n  state.a = 1; // mutates state directly\n  return <div>{state.a}</div>;\n}\n\n",
+        "react-immutability-valid.tsx": "import { useState } from \"react\";\nfunction Component() {\n  const [state, setState] = useState({ a: 0 });\n  return <div onClick={() => setState({ a: state.a + 1 })}>{state.a}</div>;\n}\n\n"
+      }
+    },
+    "react/incompatible-library": {
+      "files": {
+        "react-incompatible-library.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/incompatible-library\": \"error\"}}",
+        "react-incompatible-library-invalid.tsx": "import { useReactTable } from \"@tanstack/react-table\";\nfunction Component({ columns, data }) {\n  const table = useReactTable({ columns, data });\n  return <div>{table.getRowModel().rows.length}</div>;\n}\n\n",
+        "react-incompatible-library-valid.tsx": "function Component({ rows }) {\n  return <div>{rows.length}</div>;\n}\n\n"
+      }
+    },
+    "react/preserve-manual-memoization": {
+      "files": {
+        "react-preserve-manual-memoization.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/preserve-manual-memoization\": \"error\"}}",
+        "react-preserve-manual-memoization-invalid.tsx": "import { useCallback } from \"react\";\nfunction useFoo(props) {\n  const values = [];\n  values.push(props);\n  return useCallback(() => values, [values]);\n}\n\n",
+        "react-preserve-manual-memoization-valid.tsx": "import { useMemo } from \"react\";\nfunction Component({ propA }) {\n  return useMemo(() => propA.x, [propA]);\n}\n\n"
+      }
+    },
+    "react/purity": {
+      "files": {
+        "react-purity.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/purity\": \"error\"}}",
+        "react-purity-invalid.tsx": "function Component() {\n  const rand = Math.random();\n  return <div>{rand}</div>;\n}\n\n",
+        "react-purity-valid.tsx": "import { useState } from \"react\";\nfunction Component() {\n  const [rand, setRand] = useState(0);\n  return <button onClick={() => setRand(Math.random())}>{rand}</button>;\n}\n\n"
+      }
+    },
+    "react/refs": {
+      "files": {
+        "react-refs.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/refs\": \"error\"}}",
+        "react-refs-invalid.tsx": "import { useRef } from \"react\";\nfunction Component() {\n  const ref = useRef(null);\n  const value = ref.current; // read during render\n  return <div>{value}</div>;\n}\n\n",
+        "react-refs-valid.tsx": "import { useEffect, useRef } from \"react\";\nfunction Component() {\n  const ref = useRef(null);\n  useEffect(() => {\n    ref.current.focus();\n  }, []);\n  return <input ref={ref} />;\n}\n\n"
+      }
+    },
+    "react/set-state-in-effect": {
+      "files": {
+        "react-set-state-in-effect.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/set-state-in-effect\": \"error\"}}",
+        "react-set-state-in-effect-invalid.tsx": "import { useEffect, useState } from \"react\";\nfunction Component() {\n  const [state, setState] = useState(0);\n  useEffect(() => {\n    setState((s) => s + 1);\n  });\n  return state;\n}\n\n",
+        "react-set-state-in-effect-valid.tsx": "function Component({ value }) {\n  const doubled = value * 2;\n  return <div>{doubled}</div>;\n}\n\n"
+      }
+    },
+    "react/set-state-in-render": {
+      "files": {
+        "react-set-state-in-render.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/set-state-in-render\": \"error\"}}",
+        "react-set-state-in-render-invalid.tsx": "import { useState } from \"react\";\nfunction Component() {\n  const [state, setState] = useState(0);\n  setState(state + 1); // schedules another render on every render\n  return <div>{state}</div>;\n}\n\n",
+        "react-set-state-in-render-valid.tsx": "import { useState } from \"react\";\nfunction Component() {\n  const [state, setState] = useState(0);\n  return <button onClick={() => setState(state + 1)}>{state}</button>;\n}\n\n"
+      }
+    },
+    "react/static-components": {
+      "files": {
+        "react-static-components.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/static-components\": \"error\"}}",
+        "react-static-components-invalid.tsx": "function Example(props) {\n  const Component = createComponent();\n  return <Component />;\n}\n\n",
+        "react-static-components-valid.tsx": "function Inner(props) {\n  return <div>{props.text}</div>;\n}\nfunction Outer() {\n  return <Inner text=\"hello\" />;\n}\n\n"
+      }
+    },
+    "react/use-memo": {
+      "files": {
+        "react-use-memo.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/use-memo\": \"error\"}}",
+        "react-use-memo-invalid.tsx": "import { useMemo } from \"react\";\nfunction Component({ a }) {\n  const x = useMemo(async () => {\n    await a;\n  }, [a]);\n  return <div>{x}</div>;\n}\n\n",
+        "react-use-memo-valid.tsx": "import { useMemo } from \"react\";\nfunction Component({ a }) {\n  const x = useMemo(() => a + 1, [a]);\n  return <div>{x}</div>;\n}\n\n"
+      }
+    },
+    "react/void-use-memo": {
+      "files": {
+        "react-void-use-memo.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/void-use-memo\": \"error\"}}",
+        "react-void-use-memo-invalid.tsx": "import { useMemo } from \"react\";\nfunction Component({ a }) {\n  useMemo(() => {\n    console.log(a); // returns nothing, result unused\n  }, [a]);\n  return <div>{a}</div>;\n}\n\n",
+        "react-void-use-memo-valid.tsx": "import { useMemo } from \"react\";\nfunction Component({ a }) {\n  const x = useMemo(() => a + 1, [a]);\n  return <div>{x}</div>;\n}\n\n"
+      }
+    },
+    "react/unsupported-syntax": {
+      "files": {
+        "react-unsupported-syntax.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/unsupported-syntax\": \"error\"}}",
+        "react-unsupported-syntax-invalid.tsx": "function Component(props) {\n  eval(\"props.x = true\");\n  return <div />;\n}\n\n",
+        "react-unsupported-syntax-valid.tsx": "function Component(props) {\n  return <div>{props.x}</div>;\n}\n\n"
+      }
+    },
+    "nextjs/google-font-display": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/google-font-display\": \"warn\"}}",
+        "valid/src/pages/_document.tsx": "export default function Doc(){return <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Roboto&display=swap\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/google-font-display\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Roboto\"/>}\n"
+      }
+    },
+    "nextjs/google-font-preconnect": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/google-font-preconnect\": \"warn\"}}",
+        "valid/src/pages/_document.tsx": "export default function Doc(){return <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossOrigin=\"anonymous\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/google-font-preconnect\": \"warn\"}}",
+        "invalid/src/pages/_document.tsx": "export default function Doc(){return <link rel=\"preload\" href=\"https://fonts.gstatic.com\"/>}\n"
+      }
+    },
+    "nextjs/next-script-for-ga": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/next-script-for-ga\": \"warn\"}}",
+        "valid/src/app/layout.tsx": "import Script from \"next/script\";export default function Layout(){return <Script src=\"https://www.googletagmanager.com/gtag/js?id=G-123\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/next-script-for-ga\": \"warn\"}}",
+        "invalid/src/app/layout.tsx": "export default function Layout(){return <script src=\"https://www.googletagmanager.com/gtag/js?id=G-123\"/>}\n"
+      }
+    },
+    "nextjs/no-async-client-component": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-async-client-component\": \"warn\"}}",
+        "valid/src/app/page.tsx": "export default async function Page(){return <div/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-async-client-component\": \"warn\"}}",
+        "invalid/src/app/page.tsx": "\"use client\";export default async function Page(){return <div/>}\n"
+      }
+    },
+    "nextjs/no-before-interactive-script-outside-document": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-before-interactive-script-outside-document\": \"warn\"}}",
+        "valid/src/pages/_document.tsx": "import Script from \"next/script\";export default function Document(){return <Script src=\"/a.js\" strategy=\"beforeInteractive\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-before-interactive-script-outside-document\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "import Script from \"next/script\";export default function Page(){return <Script src=\"/a.js\" strategy=\"beforeInteractive\"/>}\n"
+      }
+    },
+    "nextjs/no-css-tags": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-css-tags\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "export default function Page(){return <div className=\"styled\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-css-tags\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <link rel=\"stylesheet\" href=\"/styles.css\"/>}\n"
+      }
+    },
+    "nextjs/no-head-element": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-head-element\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "import Head from \"next/head\";export default function Page(){return <Head><title>A</title></Head>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-head-element\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <head><title>A</title></head>}\n"
+      }
+    },
+    "nextjs/no-img-element": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-img-element\": \"warn\"}}",
+        "valid/src/app/page.tsx": "import Image from \"next/image\";export default function Page(){return <Image src=\"/logo.svg\" width={100} height={100} alt=\"Logo\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-img-element\": \"warn\"}}",
+        "invalid/src/app/page.tsx": "export default function Page(){return <img src=\"/logo.svg\" alt=\"Logo\"/>}\n"
+      }
+    },
+    "nextjs/no-page-custom-font": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-page-custom-font\": \"warn\"}}",
+        "valid/src/pages/_document.tsx": "import {Head} from \"next/document\";export default function Doc(){return <Head><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Roboto&display=swap\"/></Head>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-page-custom-font\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "import Head from \"next/head\";export default function Page(){return <Head><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Roboto&display=swap\"/></Head>}\n"
+      }
+    },
+    "nextjs/no-styled-jsx-in-document": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-styled-jsx-in-document\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "export default function Page(){return <style jsx>{`div { color: red }`}</style>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-styled-jsx-in-document\": \"warn\"}}",
+        "invalid/src/pages/_document.tsx": "export default function Doc(){return <style jsx>{`body { color: red }`}</style>}\n"
+      }
+    },
+    "nextjs/no-title-in-document-head": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-title-in-document-head\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "import Head from \"next/head\";export default function Page(){return <Head><title>A</title></Head>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-title-in-document-head\": \"warn\"}}",
+        "invalid/src/pages/_document.tsx": "import {Head} from \"next/document\";export default function Doc(){return <Head><title>A</title></Head>}\n"
+      }
+    },
+    "nextjs/no-typos": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-typos\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "export default function Page(){return <div/>}export async function getServerSideProps(){return {props:{}}}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-typos\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <div/>}export async function getServurSideProps(){return {props:{}}}\n"
+      }
+    },
+    "nextjs/no-unwanted-polyfillio": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-unwanted-polyfillio\": \"warn\"}}",
+        "valid/src/pages/index.tsx": "export default function Page(){return <script src=\"https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=IntersectionObserver\"/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-unwanted-polyfillio\": \"warn\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <script src=\"https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.includes\"/>}\n"
+      }
+    },
+    "nextjs/no-html-link-for-pages": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-html-link-for-pages\": \"error\"}}",
+        "valid/src/pages/index.tsx": "import Link from \"next/link\";export default function Page(){return <Link href=\"/about\">About</Link>}\n",
+        "valid/src/pages/about.tsx": "export default function About(){return <div/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-html-link-for-pages\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <a href=\"/about\">About</a>}\n",
+        "invalid/src/pages/about.tsx": "export default function About(){return <div/>}\n"
+      }
+    },
+    "nextjs/no-sync-scripts": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-sync-scripts\": \"error\"}}",
+        "valid/src/pages/index.tsx": "export default function Page(){return <script src=\"/analytics.js\" defer/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-sync-scripts\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "export default function Page(){return <script src=\"/analytics.js\"/>}\n"
+      }
+    },
+    "nextjs/inline-script-id": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/inline-script-id\": \"error\"}}",
+        "valid/src/pages/index.tsx": "import Script from \"next/script\";export default function Page(){return <Script id=\"inline\">{`console.log(1)`}</Script>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/inline-script-id\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "import Script from \"next/script\";export default function Page(){return <Script>{`console.log(1)`}</Script>}\n"
+      }
+    },
+    "nextjs/no-assign-module-variable": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-assign-module-variable\": \"error\"}}",
+        "valid/src/pages/index.tsx": "const pageModule = {}; export default pageModule;\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-assign-module-variable\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "const module = {}; export default module;\n"
+      }
+    },
+    "nextjs/no-document-import-in-page": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-document-import-in-page\": \"error\"}}",
+        "valid/src/pages/_document.tsx": "import Document from \"next/document\";export default Document;\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-document-import-in-page\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "import Document from \"next/document\";export default function Page(){return <Document/>}\n"
+      }
+    },
+    "nextjs/no-duplicate-head": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-duplicate-head\": \"error\"}}",
+        "valid/src/pages/_document.tsx": "import {Head} from \"next/document\";export default function Doc(){return <Head/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-duplicate-head\": \"error\"}}",
+        "invalid/src/pages/_document.tsx": "import {Head} from \"next/document\";export default function Doc(){return <><Head/><Head/></>}\n"
+      }
+    },
+    "nextjs/no-head-import-in-document": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-head-import-in-document\": \"error\"}}",
+        "valid/src/pages/_document.tsx": "import {Head} from \"next/document\";export default function Doc(){return <Head/>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-head-import-in-document\": \"error\"}}",
+        "invalid/src/pages/_document.tsx": "import Head from \"next/head\";export default function Doc(){return <Head/>}\n"
+      }
+    },
+    "nextjs/no-script-component-in-head": {
+      "files": {
+        "valid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-script-component-in-head\": \"error\"}}",
+        "valid/src/pages/index.tsx": "import Head from \"next/head\";import Script from \"next/script\";export default function Page(){return <><Head><title>A</title></Head><Script src=\"/a.js\"/></>}\n",
+        "invalid/.oxlintrc.json": "{\"plugins\": [\"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"nextjs/no-script-component-in-head\": \"error\"}}",
+        "invalid/src/pages/index.tsx": "import Head from \"next/head\";import Script from \"next/script\";export default function Page(){return <Head><Script src=\"/a.js\"/></Head>}\n"
+      }
+    },
+    "jsx-a11y/alt-text": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/alt-text\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<img src=\"x.png\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<img src=\"x.png\" alt=\"A chart\" />); }\n"
+      }
+    },
+    "jsx-a11y/anchor-has-content": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/anchor-has-content\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<a href=\"/x\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<a href=\"/x\">Details</a>); }\n"
+      }
+    },
+    "jsx-a11y/anchor-is-valid": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/anchor-is-valid\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<a href=\"#\">Go</a>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<a href=\"/x\">Go</a>); }\n"
+      }
+    },
+    "jsx-a11y/aria-activedescendant-has-tabindex": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/aria-activedescendant-has-tabindex\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div aria-activedescendant=\"item\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div aria-activedescendant=\"item\" tabIndex={0} />); }\n"
+      }
+    },
+    "jsx-a11y/aria-props": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/aria-props\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div aria-foo=\"x\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div aria-label=\"Status\" />); }\n"
+      }
+    },
+    "jsx-a11y/aria-proptypes": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/aria-proptypes\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div aria-hidden=\"maybe\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div aria-hidden=\"true\" />); }\n"
+      }
+    },
+    "jsx-a11y/aria-role": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/aria-role\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div role=\"foobar\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div role=\"button\" />); }\n"
+      }
+    },
+    "jsx-a11y/aria-unsupported-elements": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/aria-unsupported-elements\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<meta aria-label=\"x\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div aria-label=\"x\" />); }\n"
+      }
+    },
+    "jsx-a11y/autocomplete-valid": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/autocomplete-valid\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<input autoComplete=\"foobar\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<input autoComplete=\"name\" />); }\n"
+      }
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/click-events-have-key-events\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div onClick={() => {}} />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div onClick={() => {}} onKeyDown={() => {}} />); }\n"
+      }
+    },
+    "jsx-a11y/control-has-associated-label": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/control-has-associated-label\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<button />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/heading-has-content": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/heading-has-content\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<h1 />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<h1>Title</h1>); }\n"
+      }
+    },
+    "jsx-a11y/html-has-lang": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/html-has-lang\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<html />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<html lang=\"en\" />); }\n"
+      }
+    },
+    "jsx-a11y/iframe-has-title": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/iframe-has-title\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<iframe src=\"/x\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<iframe src=\"/x\" title=\"Preview\" />); }\n"
+      }
+    },
+    "jsx-a11y/img-redundant-alt": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/img-redundant-alt\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<img src=\"x.png\" alt=\"image of dog\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<img src=\"x.png\" alt=\"Dog\" />); }\n"
+      }
+    },
+    "jsx-a11y/interactive-supports-focus": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/interactive-supports-focus\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div role=\"button\" onClick={() => {}} />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div role=\"button\" tabIndex={0} onClick={() => {}} />); }\n"
+      }
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/label-has-associated-control\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<label>Name</label>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<><label htmlFor=\"name\">Name</label><input id=\"name\" /></>); }\n"
+      }
+    },
+    "jsx-a11y/lang": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/lang\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<html lang=\"not a language\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<html lang=\"en\" />); }\n"
+      }
+    },
+    "jsx-a11y/media-has-caption": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/media-has-caption\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<video src=\"x.mp4\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<video src=\"x.mp4\"><track kind=\"captions\" src=\"x.vtt\" /></video>); }\n"
+      }
+    },
+    "jsx-a11y/mouse-events-have-key-events": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/mouse-events-have-key-events\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div onMouseOver={() => {}} />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div onMouseOver={() => {}} onFocus={() => {}} />); }\n"
+      }
+    },
+    "jsx-a11y/no-access-key": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-access-key\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<button accessKey=\"s\">Save</button>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-aria-hidden-on-focusable": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-aria-hidden-on-focusable\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<button aria-hidden=\"true\">Save</button>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-autofocus": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-autofocus\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<input autoFocus />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<input />); }\n"
+      }
+    },
+    "jsx-a11y/no-distracting-elements": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-distracting-elements\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<marquee>News</marquee>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div>News</div>); }\n"
+      }
+    },
+    "jsx-a11y/no-interactive-element-to-noninteractive-role": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-interactive-element-to-noninteractive-role\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<button role=\"heading\">Title</button>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-noninteractive-element-interactions": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-noninteractive-element-interactions\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<li onClick={() => {}}>Item</li>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<li>Item</li>); }\n"
+      }
+    },
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-noninteractive-element-to-interactive-role\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<article role=\"button\">Open</article>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Open</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-noninteractive-tabindex": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-noninteractive-tabindex\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div tabIndex={0}>Text</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Action</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-redundant-roles": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-redundant-roles\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<button role=\"button\">Save</button>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/no-static-element-interactions": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/no-static-element-interactions\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div onClick={() => {}}>Open</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button onClick={() => {}}>Open</button>); }\n"
+      }
+    },
+    "jsx-a11y/prefer-tag-over-role": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/prefer-tag-over-role\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div role=\"button\">Save</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<button>Save</button>); }\n"
+      }
+    },
+    "jsx-a11y/role-has-required-aria-props": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/role-has-required-aria-props\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div role=\"checkbox\" />); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div role=\"checkbox\" aria-checked=\"false\" />); }\n"
+      }
+    },
+    "jsx-a11y/role-supports-aria-props": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/role-supports-aria-props\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div role=\"heading\" aria-checked=\"true\">Title</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div role=\"heading\" aria-level={2}>Title</div>); }\n"
+      }
+    },
+    "jsx-a11y/scope": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/scope\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div scope=\"col\">Name</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<th scope=\"col\">Name</th>); }\n"
+      }
+    },
+    "jsx-a11y/tabindex-no-positive": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"jsx-a11y\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"jsx-a11y/tabindex-no-positive\": \"error\"}}",
+        "invalid.tsx": "export default function Fixture(){ return (<div tabIndex={2}>Text</div>); }\n",
+        "valid.tsx": "export default function Fixture(){ return (<div tabIndex={0}>Text</div>); }\n"
+      }
+    },
+    "react/forward-ref-uses-ref": {
+      "files": {
+        "react-forward-ref-uses-ref.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/forward-ref-uses-ref\": \"error\"}}",
+        "react-forward-ref-uses-ref-invalid.tsx": "const C = React.forwardRef((props) => <div />);\n",
+        "react-forward-ref-uses-ref-valid.tsx": "const C = React.forwardRef((props, ref) => <div ref={ref} />);\n"
+      }
+    },
+    "react/jsx-key": {
+      "files": {
+        "react-jsx-key.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/jsx-key\": \"error\"}}",
+        "react-jsx-key-invalid.tsx": "[1, 2, 3].map((x) => <App />);\n[1, 2, 3]?.map((x) => <ListItem />);\n\n",
+        "react-jsx-key-valid.tsx": "[1, 2, 3].map((x) => <App key={x} />);\n[1, 2, 3]?.map((x) => <ListItem key={x} />);\n\n"
+      }
+    },
+    "react/jsx-no-duplicate-props": {
+      "files": {
+        "react-jsx-no-duplicate-props.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/jsx-no-duplicate-props\": \"error\"}}",
+        "react-jsx-no-duplicate-props-invalid.tsx": "<App a a />;\n<App foo={2} bar baz foo={3} />;\n\n",
+        "react-jsx-no-duplicate-props-valid.tsx": "<App a />;\n<App bar baz foo={3} />;\n\n"
+      }
+    },
+    "react/jsx-no-undef": {
+      "files": {
+        "react-jsx-no-undef.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/jsx-no-undef\": \"error\"}}",
+        "react-jsx-no-undef-invalid.tsx": "export const X = () => <Missing />;\n",
+        "react-jsx-no-undef-valid.tsx": "function Present(){return <div/>}; export const X = () => <Present />;\n"
+      }
+    },
+    "react/jsx-props-no-spread-multi": {
+      "files": {
+        "react-jsx-props-no-spread-multi.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/jsx-props-no-spread-multi\": \"error\"}}",
+        "react-jsx-props-no-spread-multi-invalid.tsx": "const X = (props) => <App {...props} x=\"1\" {...props} />;\n",
+        "react-jsx-props-no-spread-multi-valid.tsx": "const X = (props) => <App {...props} x=\"1\" />;\n"
+      }
+    },
+    "react/no-children-prop": {
+      "files": {
+        "react-no-children-prop.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-children-prop\": \"error\"}}",
+        "react-no-children-prop-invalid.tsx": "const X = () => <div children=\"Child\" />;\n",
+        "react-no-children-prop-valid.tsx": "const X = () => <div>Child</div>;\n"
+      }
+    },
+    "react/no-danger-with-children": {
+      "files": {
+        "react-no-danger-with-children.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-danger-with-children\": \"error\"}}",
+        "react-no-danger-with-children-invalid.tsx": "const X = () => <div dangerouslySetInnerHTML={{__html:\"Hi\"}}>Child</div>;\n",
+        "react-no-danger-with-children-valid.tsx": "const X = () => <div dangerouslySetInnerHTML={{__html:\"Hi\"}} />;\n"
+      }
+    },
+    "react/no-did-mount-set-state": {
+      "files": {
+        "react-no-did-mount-set-state.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-did-mount-set-state\": \"error\"}}",
+        "react-no-did-mount-set-state-invalid.tsx": "var Hello = createReactClass({\n  componentDidMount: function () {\n    this.setState({\n      name: this.props.name.toUpperCase(),\n    });\n  },\n  render: function () {\n    return <div>Hello {this.state.name}</div>;\n  },\n});\n\n",
+        "react-no-did-mount-set-state-valid.tsx": "var Hello = createReactClass({\n  componentDidMount: function () {\n    this.onMount(function callback(newName) {\n      this.setState({\n        name: newName,\n      });\n    });\n  },\n  render: function () {\n    return <div>Hello {this.state.name}</div>;\n  },\n});\n\n"
+      }
+    },
+    "react/no-did-update-set-state": {
+      "files": {
+        "react-no-did-update-set-state.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-did-update-set-state\": \"error\"}}",
+        "react-no-did-update-set-state-invalid.tsx": "var Hello = createReactClass({\n  componentDidUpdate: function () {\n    this.setState({\n      name: this.props.name.toUpperCase(),\n    });\n  },\n  render: function () {\n    return <div>Hello {this.state.name}</div>;\n  },\n});\n\n",
+        "react-no-did-update-set-state-valid.tsx": "var Hello = createReactClass({\n  componentDidUpdate: function () {\n    this.props.onUpdate();\n  },\n  render: function () {\n    return <div>Hello {this.props.name}</div>;\n  },\n});\n\n"
+      }
+    },
+    "react/no-direct-mutation-state": {
+      "files": {
+        "react-no-direct-mutation-state.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-direct-mutation-state\": \"error\"}}",
+        "react-no-direct-mutation-state-invalid.tsx": "class C extends React.Component { update(){this.state.count = 1} render(){return <div/>} }\n",
+        "react-no-direct-mutation-state-valid.tsx": "class C extends React.Component { update(){this.setState({count:1})} render(){return <div/>} }\n"
+      }
+    },
+    "react/no-find-dom-node": {
+      "files": {
+        "react-no-find-dom-node.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-find-dom-node\": \"error\"}}",
+        "react-no-find-dom-node-invalid.tsx": "ReactDOM.findDOMNode(instance);\n",
+        "react-no-find-dom-node-valid.tsx": "const node = ref.current;\n"
+      }
+    },
+    "react/no-is-mounted": {
+      "files": {
+        "react-no-is-mounted.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-is-mounted\": \"error\"}}",
+        "react-no-is-mounted-invalid.tsx": "class C extends React.Component { update(){if(this.isMounted()) this.setState({x:1})} render(){return <div/>} }\n",
+        "react-no-is-mounted-valid.tsx": "class C extends React.Component { update(){this.setState({x:1})} render(){return <div/>} }\n"
+      }
+    },
+    "react/no-render-return-value": {
+      "files": {
+        "react-no-render-return-value.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-render-return-value\": \"error\"}}",
+        "react-no-render-return-value-invalid.tsx": "var inst = ReactDOM.render(<App />, document.body);\nfunction render() {\n  return ReactDOM.render(<App />, document.body);\n}\n\n",
+        "react-no-render-return-value-valid.tsx": "ReactDOM.render(<App />, document.body);\n\n"
+      }
+    },
+    "react/no-string-refs": {
+      "files": {
+        "react-no-string-refs.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-string-refs\": \"error\"}}",
+        "react-no-string-refs-invalid.tsx": "var Hello = createReactClass({\n  render: function () {\n    return <div ref=\"hello\">Hello, world.</div>;\n  },\n});\n\nvar Hello = createReactClass({\n  componentDidMount: function () {\n    var component = this.refs.hello;\n    // ...do something with component\n  },\n  render: function () {\n    return <div ref=\"hello\">Hello, world.</div>;\n  },\n});\n\n",
+        "react-no-string-refs-valid.tsx": "var Hello = createReactClass({\n  componentDidMount: function () {\n    var component = this.hello;\n    // ...do something with component\n  },\n  render() {\n    return (\n      <div\n        ref={(c) => {\n          this.hello = c;\n        }}\n      >\n        Hello, world.\n      </div>\n    );\n  },\n});\n\n"
+      }
+    },
+    "react/no-this-in-sfc": {
+      "files": {
+        "react-no-this-in-sfc.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-this-in-sfc\": \"error\"}}",
+        "react-no-this-in-sfc-invalid.tsx": "function Foo(props){return <div>{this.props.bar}</div>}\n",
+        "react-no-this-in-sfc-valid.tsx": "function Foo(props){return <div>{props.bar}</div>}\n"
+      }
+    },
+    "react/no-unsafe": {
+      "files": {
+        "react-no-unsafe.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-unsafe\": \"error\"}}",
+        "react-no-unsafe-invalid.tsx": "// By default, UNSAFE_ prefixed methods are flagged\nclass Foo extends React.Component {\n  UNSAFE_componentWillMount() {}\n  UNSAFE_componentWillReceiveProps() {}\n  UNSAFE_componentWillUpdate() {}\n}\n\n// With checkAliases: true, non-prefixed versions are also flagged\nclass Bar extends React.Component {\n  componentWillMount() {}\n  componentWillReceiveProps() {}\n  componentWillUpdate() {}\n}\n\n",
+        "react-no-unsafe-valid.tsx": "class Foo extends React.Component {\n  componentDidMount() {}\n  componentDidUpdate() {}\n  render() {}\n}\n\n"
+      }
+    },
+    "react/no-will-update-set-state": {
+      "files": {
+        "react-no-will-update-set-state.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/no-will-update-set-state\": \"error\"}}",
+        "react-no-will-update-set-state-invalid.tsx": "var Hello = createReactClass({\n  componentWillUpdate: function () {\n    this.setState({\n      name: this.props.name.toUpperCase(),\n    });\n  },\n  render: function () {\n    return <div>Hello {this.state.name}</div>;\n  },\n});\n\n",
+        "react-no-will-update-set-state-valid.tsx": "var Hello = createReactClass({\n  componentWillUpdate: function () {\n    this.props.prepareHandler();\n  },\n  render: function () {\n    return <div>Hello {this.state.name}</div>;\n  },\n});\n\n"
+      }
+    },
+    "react/void-dom-elements-no-children": {
+      "files": {
+        "react-void-dom-elements-no-children.json": "{\"plugins\": [\"react\", \"nextjs\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"react/void-dom-elements-no-children\": \"error\"}}",
+        "react-void-dom-elements-no-children-invalid.tsx": "const X = () => <img children=\"bad\" />;\n",
+        "react-void-dom-elements-no-children-valid.tsx": "const X = () => <img alt=\"good\" />;\n"
+      }
+    },
+    "node/no-sync": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"node/no-sync\": \"error\"}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "import fs from 'node:fs'; fs.readFileSync('file');\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import fs from 'node:fs/promises'; fs.readFile('file');\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "unicorn/no-process-exit": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"unicorn/no-process-exit\": \"error\"}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "process.exit(1);\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "process.exitCode = 1;\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "import/no-nodejs-modules": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"import/no-nodejs-modules\": \"error\"}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "import fs from 'node:fs';\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import { x } from './dep';\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "no-restricted-imports": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"no-restricted-imports\": [\"error\", {\"patterns\": [{\"group\": [\"@/server/**\"], \"message\": \"server only\"}]}]}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "import { privateValue } from '@/server/db';\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import { apiValue } from '@/api';\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/no-require-imports": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/no-require-imports\": \"error\"}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "const fs = require('node:fs');\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import fs from 'node:fs';\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    },
+    "typescript/consistent-type-imports": {
+      "files": {
+        ".oxlintrc.json": "{\"plugins\": [\"typescript\", \"oxc\", \"unicorn\", \"import\", \"node\"], \"categories\": {\"correctness\": \"off\"}, \"rules\": {\"typescript/consistent-type-imports\": \"error\"}}",
+        "types.ts": "export type Foo = string;\n",
+        "invalid.ts": "import { Foo } from './types'; let x: Foo;\n",
+        "tsconfig.json": "{\"compilerOptions\": {\"strict\": true, \"target\": \"ES2022\", \"module\": \"ESNext\", \"noEmit\": true}, \"include\": [\"*.ts\"]}",
+        "valid.ts": "import type { Foo } from './types'; let x: Foo;\n",
+        "dep.ts": "export const a = 1; export const b = 2; export const x = 3;\n"
+      }
+    }
+  }
+}
