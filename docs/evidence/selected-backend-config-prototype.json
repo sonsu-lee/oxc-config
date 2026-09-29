@@ -1,0 +1,38 @@
+{
+  "plugins": [
+    "import",
+    "typescript"
+  ],
+  "categories": {
+    "correctness": "off"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-eval": "error",
+    "no-unreachable": "error",
+    "no-const-assign": "error",
+    "no-duplicate-case": "error",
+    "no-async-promise-executor": "error",
+    "import/no-duplicates": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "eqeqeq": [
+      "error",
+      "smart"
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.{ts,tsx,mts}"
+      ],
+      "rules": {
+        "typescript/no-require-imports": "error"
+      }
+    }
+  ]
+}

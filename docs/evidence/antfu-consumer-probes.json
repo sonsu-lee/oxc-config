@@ -1,0 +1,270 @@
+{
+  "source": {
+    "commit": "df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e",
+    "package": "@antfu/eslint-config@9.5.1"
+  },
+  "testedVersions": {
+    "node": "24.18.1",
+    "eslint": "10.11.0",
+    "typescript": "6.0.3"
+  },
+  "configProbe": {
+    "versions": {
+      "antfu": "9.5.1",
+      "eslint": "10.11.0",
+      "typescript": "6.0.3"
+    },
+    "counts": {
+      "auto": 36,
+      "noTs": 33,
+      "typed": 38,
+      "custom": 37,
+      "named": 36
+    },
+    "autoNames": [
+      "antfu/ignores",
+      "antfu/javascript/setup",
+      "antfu/javascript/rules",
+      "antfu/eslint-comments/rules",
+      "antfu/command/rules",
+      "antfu/perfectionist/setup",
+      "antfu/node/setup",
+      "antfu/node/rules",
+      "antfu/jsdoc/setup",
+      "antfu/jsdoc/rules",
+      "antfu/imports/rules",
+      "antfu/e18e/rules",
+      "antfu/unicorn/setup",
+      "antfu/unicorn/rules",
+      "antfu/jsx/setup",
+      "antfu/typescript/setup",
+      "antfu/typescript/parser",
+      "antfu/typescript/rules",
+      "antfu/stylistic/rules",
+      "antfu/regexp/rules",
+      "antfu/test/setup",
+      "antfu/test/rules",
+      "antfu/jsonc/setup",
+      "antfu/jsonc/rules",
+      "antfu/sort/package-json",
+      "antfu/sort/tsconfig-json",
+      "antfu/yaml/setup",
+      "antfu/yaml/rules",
+      "antfu/toml/setup",
+      "antfu/toml/rules",
+      "antfu/disables/scripts",
+      "antfu/disables/cli",
+      "antfu/disables/bin",
+      "antfu/disables/dts",
+      "antfu/disables/cjs",
+      "antfu/disables/config-files"
+    ],
+    "noTsHasParser": false,
+    "autoHasParser": true,
+    "typedHasTypeAware": true,
+    "source": {
+      "no-console": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "test/no-only-tests": null,
+      "ts/no-require-imports": [
+        2
+      ]
+    },
+    "cli": {
+      "no-console": [
+        0,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "test/no-only-tests": null,
+      "ts/no-require-imports": [
+        2
+      ]
+    },
+    "test": {
+      "no-console": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "test/no-only-tests": [
+        2
+      ],
+      "ts/no-require-imports": [
+        2
+      ]
+    },
+    "customTest": {
+      "no-console": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "test/no-only-tests": [
+        0
+      ],
+      "ts/no-require-imports": [
+        2
+      ]
+    },
+    "namedTest": {
+      "no-console": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "test/no-only-tests": [
+        0
+      ],
+      "ts/no-require-imports": [
+        2
+      ]
+    }
+  },
+  "lintProbe": [
+    {
+      "file": "src.ts",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "no-console"
+      ]
+    },
+    {
+      "file": "cli.ts",
+      "errors": 0,
+      "warnings": 0,
+      "rules": []
+    },
+    {
+      "file": "focused.test.ts",
+      "errors": 3,
+      "warnings": 0,
+      "rules": [
+        "import/newline-after-import",
+        "style/max-statements-per-line",
+        "test/no-only-tests"
+      ]
+    }
+  ],
+  "editorProbe": {
+    "test/no-only-tests": [
+      1
+    ],
+    "command": "antfu({gitignore:false,vue:false,markdown:false,isInEditor:true}); ESLint.calculateConfigForFile(sample.test.ts)"
+  },
+  "ts7Probe": {
+    "typescript": "7.0.2",
+    "eslint": "10.11.0",
+    "status": "config import failed before lint",
+    "error": "ts-api-utils@2.5.0 TypeFlags.Intrinsic undefined"
+  },
+  "packageSort": {
+    "before": {
+      "name": "manifest-probe",
+      "version": "1.0.0",
+      "type": "module",
+      "scripts": {
+        "z": "echo z",
+        "a": "echo a"
+      },
+      "exports": {
+        ".": {
+          "default": "./default.mjs",
+          "import": "./import.mjs"
+        },
+        "./feature": {
+          "node": "./node.mjs",
+          "default": "./default.mjs"
+        }
+      }
+    },
+    "afterAntfu": {
+      "name": "manifest-probe",
+      "type": "module",
+      "version": "1.0.0",
+      "exports": {
+        ".": {
+          "import": "./import.mjs",
+          "default": "./default.mjs"
+        },
+        "./feature": {
+          "node": "./node.mjs",
+          "default": "./default.mjs"
+        }
+      },
+      "scripts": {
+        "z": "echo z",
+        "a": "echo a"
+      }
+    },
+    "afterOxfmt": {
+      "name": "manifest-probe",
+      "version": "1.0.0",
+      "type": "module",
+      "exports": {
+        ".": {
+          "default": "./default.mjs",
+          "import": "./import.mjs"
+        },
+        "./feature": {
+          "node": "./node.mjs",
+          "default": "./default.mjs"
+        }
+      },
+      "scripts": {
+        "a": "echo a",
+        "z": "echo z"
+      }
+    },
+    "nodeImportBefore": "default",
+    "nodeImportAfterAntfu": "import",
+    "nodeImportAfterOxfmt": "default"
+  },
+  "oxfmtPackagePackProbe": {
+    "inputExports": {
+      "default": "./default.cjs",
+      "require": "./require.cjs",
+      "import": "./import.mjs",
+      "types": "./types.d.ts"
+    },
+    "outputExports": {
+      "default": "./default.cjs",
+      "require": "./require.cjs",
+      "import": "./import.mjs",
+      "types": "./types.d.ts"
+    },
+    "npmPack": "exit 0",
+    "installedConsumer": {
+      "import": "default",
+      "require": "default"
+    },
+    "beforeImportResolve": "default.cjs",
+    "afterImportResolve": "default.cjs",
+    "beforeRequireResolve": "default.cjs",
+    "afterRequireResolve": "default.cjs"
+  }
+}

@@ -1,0 +1,1226 @@
+[
+  {
+    "kind": "pattern",
+    "pattern": "node:*",
+    "sample": "node:probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "fs",
+    "sample": "fs",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "fs/**",
+    "sample": "fs/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "path",
+    "sample": "path",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "path/**",
+    "sample": "path/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "crypto",
+    "sample": "crypto",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "os",
+    "sample": "os",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "net",
+    "sample": "net",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "tls",
+    "sample": "tls",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "http",
+    "sample": "http",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "https",
+    "sample": "https",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "http2",
+    "sample": "http2",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "child_process",
+    "sample": "child_process",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "worker_threads",
+    "sample": "worker_threads",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "stream",
+    "sample": "stream",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "stream/**",
+    "sample": "stream/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "buffer",
+    "sample": "buffer",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "process",
+    "sample": "process",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "module",
+    "sample": "module",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "url",
+    "sample": "url",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "util",
+    "sample": "util",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "util/**",
+    "sample": "util/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "events",
+    "sample": "events",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "assert",
+    "sample": "assert",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "assert/**",
+    "sample": "assert/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "async_hooks",
+    "sample": "async_hooks",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "cluster",
+    "sample": "cluster",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "dgram",
+    "sample": "dgram",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "dns",
+    "sample": "dns",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "dns/**",
+    "sample": "dns/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "inspector",
+    "sample": "inspector",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "perf_hooks",
+    "sample": "perf_hooks",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "readline",
+    "sample": "readline",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "readline/**",
+    "sample": "readline/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "repl",
+    "sample": "repl",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "timers",
+    "sample": "timers",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "timers/**",
+    "sample": "timers/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "tty",
+    "sample": "tty",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "v8",
+    "sample": "v8",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "vm",
+    "sample": "vm",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "wasi",
+    "sample": "wasi",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "zlib",
+    "sample": "zlib",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "server-only",
+    "sample": "server-only",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@/server",
+    "sample": "@/server",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@/server/**",
+    "sample": "@/server/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "**/server/**",
+    "sample": "./probe/server/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@nestjs/*",
+    "sample": "@nestjs/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@template/api",
+    "sample": "@template/api",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@template/api/**",
+    "sample": "@template/api/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "**/apps/api/**",
+    "sample": "./probe/apps/api/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "drizzle-orm",
+    "sample": "drizzle-orm",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "drizzle-orm/**",
+    "sample": "drizzle-orm/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "kysely",
+    "sample": "kysely",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "kysely/**",
+    "sample": "kysely/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "pg",
+    "sample": "pg",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "pg/**",
+    "sample": "pg/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "postgres",
+    "sample": "postgres",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "postgres/**",
+    "sample": "postgres/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "mysql2",
+    "sample": "mysql2",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "mysql2/**",
+    "sample": "mysql2/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "better-sqlite3",
+    "sample": "better-sqlite3",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "sqlite3",
+    "sample": "sqlite3",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@libsql/client",
+    "sample": "@libsql/client",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@libsql/client/**",
+    "sample": "@libsql/client/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "mongodb",
+    "sample": "mongodb",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@prisma/client",
+    "sample": "@prisma/client",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "@prisma/client/**",
+    "sample": "@prisma/client/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "node:sqlite",
+    "sample": "node:sqlite",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "**/api/src/**",
+    "sample": "./probe/api/src/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "pattern",
+    "pattern": "**/api/dist/**",
+    "sample": "./probe/api/dist/probe",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "path",
+    "pattern": "next/headers",
+    "sample": "next/headers",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  },
+  {
+    "kind": "path",
+    "pattern": "next/server",
+    "sample": "next/server",
+    "invalid": {
+      "exit": 1,
+      "codes": [
+        "eslint(no-restricted-imports)"
+      ],
+      "stderr": ""
+    },
+    "valid": {
+      "exit": 0,
+      "codes": [],
+      "stderr": ""
+    }
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "plugins": [
+    "import",
+    "typescript",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "off"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-eval": "error",
+    "no-unreachable": "error",
+    "no-const-assign": "error",
+    "no-duplicate-case": "error",
+    "no-async-promise-executor": "error",
+    "import/no-duplicates": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "eqeqeq": [
+      "error",
+      "smart"
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.{ts,tsx,mts}"
+      ],
+      "rules": {
+        "typescript/no-require-imports": "error"
+      }
+    },
+    {
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx}",
+        "**/*.e2e-spec.{ts,tsx,js,jsx}"
+      ],
+      "rules": {
+        "vitest/no-focused-tests": "error",
+        "vitest/no-identical-title": "error",
+        "vitest/no-standalone-expect": "error",
+        "vitest/valid-expect": "error",
+        "vitest/valid-title": "error",
+        "vitest/valid-describe-callback": "error",
+        "vitest/require-awaited-expect-poll": "error"
+      }
+    }
+  ]
+}

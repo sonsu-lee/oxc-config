@@ -1,0 +1,305 @@
+{
+  "date": "2026-09-27",
+  "node": "24.18.1",
+  "oxlint": "1.85.0",
+  "oxlintTsgolint": "7.0.2003",
+  "clones": {
+    "vercel/commerce": "3761e52e60df9c6a316e067dbfd7032e494d3634",
+    "nestjs/nest": "b58554ea5857445841674963211e4f3f41b0a3a4",
+    "honojs/examples": "3b0b62875a0e1265763fea1c6388866d5697ef81"
+  },
+  "ossLint": [
+    {
+      "case": "commerce",
+      "repo": "vercel/commerce",
+      "commit": "3761e52e60df9c6a316e067dbfd7032e494d3634",
+      "subset": "app components lib",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json app components lib",
+      "exit": 1,
+      "files": 64,
+      "rules": 77,
+      "diagnostics": [
+        {
+          "rule": "react(set-state-in-effect)",
+          "file": "components/layout/navbar/mobile-menu.tsx",
+          "line": 30,
+          "message": "Calling setState synchronously within an effect can trigger cascading renders"
+        },
+        {
+          "rule": "react(set-state-in-effect)",
+          "file": "components/layout/footer-menu.tsx",
+          "line": 14,
+          "message": "Calling setState synchronously within an effect can trigger cascading renders"
+        },
+        {
+          "rule": "react-hooks(exhaustive-deps)",
+          "file": "components/cart/cart-context.tsx",
+          "line": 234,
+          "message": "React Hook useMemo has missing dependencies: 'addCartItem', and 'updateCartItem'"
+        },
+        {
+          "rule": "jsx-a11y(no-static-element-interactions)",
+          "file": "components/layout/search/filter/dropdown.tsx",
+          "line": 41,
+          "message": "Static HTML elements with event handlers require a role."
+        },
+        {
+          "rule": "jsx-a11y(click-events-have-key-events)",
+          "file": "components/layout/search/filter/dropdown.tsx",
+          "line": 41,
+          "message": "Enforce a clickable non-interactive element has at least one keyboard event listener."
+        },
+        {
+          "rule": "jsx-a11y(no-static-element-interactions)",
+          "file": "components/layout/search/filter/dropdown.tsx",
+          "line": 51,
+          "message": "Static HTML elements with event handlers require a role."
+        },
+        {
+          "rule": "jsx-a11y(click-events-have-key-events)",
+          "file": "components/layout/search/filter/dropdown.tsx",
+          "line": 51,
+          "message": "Enforce a clickable non-interactive element has at least one keyboard event listener."
+        },
+        {
+          "rule": "react(set-state-in-effect)",
+          "file": "components/cart/modal.tsx",
+          "line": 44,
+          "message": "Calling setState synchronously within an effect can trigger cascading renders"
+        }
+      ]
+    },
+    {
+      "case": "nest-auth",
+      "repo": "nestjs/nest",
+      "commit": "b58554ea5857445841674963211e4f3f41b0a3a4",
+      "subset": "sample/19-auth-jwt/src e2e",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json src e2e",
+      "exit": 0,
+      "files": 12,
+      "rules": 17,
+      "diagnostics": []
+    },
+    {
+      "case": "nest-typeorm",
+      "repo": "nestjs/nest",
+      "commit": "b58554ea5857445841674963211e4f3f41b0a3a4",
+      "subset": "sample/05-sql-typeorm/src e2e test",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json src e2e test",
+      "exit": 1,
+      "files": 11,
+      "rules": 17,
+      "diagnostics": [
+        {
+          "rule": "import(no-duplicates)",
+          "file": "e2e/users/users.e2e-spec.ts",
+          "line": 3,
+          "message": "Module '@nestjs/typeorm' is imported more than once in this file"
+        },
+        {
+          "rule": "eslint(sort-imports)",
+          "file": "src/users/users.controller.ts",
+          "line": 8,
+          "message": "Member 'ParseIntPipe' of the import declaration should be sorted alphabetically."
+        },
+        {
+          "rule": "vitest(valid-expect)",
+          "file": "src/users/users.service.spec.ts",
+          "line": 59,
+          "message": "Async assertions must be awaited."
+        },
+        {
+          "rule": "vitest(valid-expect)",
+          "file": "src/users/users.service.spec.ts",
+          "line": 78,
+          "message": "Async assertions must be awaited."
+        },
+        {
+          "rule": "vitest(valid-expect)",
+          "file": "src/users/users.controller.spec.ts",
+          "line": 62,
+          "message": "Async assertions must be awaited."
+        },
+        {
+          "rule": "vitest(valid-expect)",
+          "file": "src/users/users.controller.spec.ts",
+          "line": 79,
+          "message": "Async assertions must be awaited."
+        },
+        {
+          "rule": "vitest(valid-title)",
+          "file": "src/users/users.controller.spec.ts",
+          "line": 71,
+          "message": "Should not have leading or trailing spaces"
+        }
+      ]
+    },
+    {
+      "case": "nest-cache",
+      "repo": "nestjs/nest",
+      "commit": "b58554ea5857445841674963211e4f3f41b0a3a4",
+      "subset": "sample/20-cache/src e2e",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json src e2e",
+      "exit": 0,
+      "files": 7,
+      "rules": 17,
+      "diagnostics": []
+    },
+    {
+      "case": "hono-blog",
+      "repo": "honojs/examples",
+      "commit": "3b0b62875a0e1265763fea1c6388866d5697ef81",
+      "subset": "blog/src",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json src",
+      "exit": 1,
+      "files": 5,
+      "rules": 17,
+      "diagnostics": [
+        {
+          "rule": "vitest(no-identical-title)",
+          "file": "src/api.test.ts",
+          "line": 91,
+          "message": "Test title is used multiple times in the same describe block."
+        },
+        {
+          "rule": "vitest(no-identical-title)",
+          "file": "src/api.test.ts",
+          "line": 36,
+          "message": "Test title is used multiple times in the same describe block."
+        }
+      ]
+    },
+    {
+      "case": "hono-durable",
+      "repo": "honojs/examples",
+      "commit": "3b0b62875a0e1265763fea1c6388866d5697ef81",
+      "subset": "durable-objects/src",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json src",
+      "exit": 0,
+      "files": 2,
+      "rules": 10,
+      "diagnostics": []
+    },
+    {
+      "case": "hono-stytch-api",
+      "repo": "honojs/examples",
+      "commit": "3b0b62875a0e1265763fea1c6388866d5697ef81",
+      "subset": "stytch-auth/api",
+      "command": "oxlint -c .oxlintrc.json --deny-warnings -f json api",
+      "exit": 0,
+      "files": 3,
+      "rules": 10,
+      "diagnostics": []
+    }
+  ],
+  "typescriptMatrix": [
+    {
+      "case": "plain-ts7",
+      "typescript": "7.0.2",
+      "tsgolintInstalled": false,
+      "mode": "enabled-by-config",
+      "command": "oxlint -c .oxlintrc.json -f json src",
+      "exit": 1,
+      "diagnostics": [],
+      "error": "Failed to find tsgolint executable. You may need to add the `oxlint-tsgolint` package to your project?"
+    },
+    {
+      "case": "typed-ts6",
+      "typescript": "6.0.3",
+      "tsgolintInstalled": true,
+      "mode": "enabled-by-config",
+      "command": "oxlint -c .oxlintrc.json -f json src",
+      "exit": 1,
+      "diagnostics": [
+        "typescript(no-unsafe-assignment)",
+        "typescript(no-unsafe-assignment)"
+      ],
+      "error": null
+    },
+    {
+      "case": "typed-ts6",
+      "typescript": "6.0.3",
+      "tsgolintInstalled": true,
+      "mode": "disabled",
+      "command": "oxlint -c .oxlintrc-disabled.json -f json src",
+      "exit": 0,
+      "diagnostics": [],
+      "error": null
+    },
+    {
+      "case": "typed-ts6",
+      "typescript": "6.0.3",
+      "tsgolintInstalled": true,
+      "mode": "disabled-plus-flag",
+      "command": "oxlint -c .oxlintrc-disabled.json --type-aware -f json src",
+      "exit": 1,
+      "diagnostics": [
+        "typescript(no-unsafe-assignment)",
+        "typescript(no-unsafe-assignment)"
+      ],
+      "error": null
+    },
+    {
+      "case": "typed-ts7",
+      "typescript": "7.0.2",
+      "tsgolintInstalled": true,
+      "mode": "enabled-by-config",
+      "command": "oxlint -c .oxlintrc.json -f json src",
+      "exit": 1,
+      "diagnostics": [
+        "typescript(no-unsafe-assignment)",
+        "typescript(no-unsafe-assignment)"
+      ],
+      "error": null
+    },
+    {
+      "case": "typed-ts7",
+      "typescript": "7.0.2",
+      "tsgolintInstalled": true,
+      "mode": "disabled",
+      "command": "oxlint -c .oxlintrc-disabled.json -f json src",
+      "exit": 0,
+      "diagnostics": [],
+      "error": null
+    },
+    {
+      "case": "typed-ts7",
+      "typescript": "7.0.2",
+      "tsgolintInstalled": true,
+      "mode": "disabled-plus-flag",
+      "command": "oxlint -c .oxlintrc-disabled.json --type-aware -f json src",
+      "exit": 1,
+      "diagnostics": [
+        "typescript(no-unsafe-assignment)",
+        "typescript(no-unsafe-assignment)"
+      ],
+      "error": null
+    },
+    {
+      "case": "plain-ts6",
+      "typescript": "6.0.3",
+      "tsgolintInstalled": false,
+      "mode": "disabled",
+      "command": "oxlint -c .oxlintrc-disabled.json -f json src",
+      "exit": 0,
+      "diagnostics": [],
+      "error": null
+    },
+    {
+      "case": "plain-ts7",
+      "typescript": "7.0.2",
+      "tsgolintInstalled": false,
+      "mode": "disabled",
+      "command": "oxlint -c .oxlintrc-disabled.json -f json src",
+      "exit": 0,
+      "diagnostics": [],
+      "error": null
+    }
+  ],
+  "scopeNotes": [
+    "React/Next overrides were adapted from src/**/*.{tsx,jsx} to app/components/lib paths for commerce.",
+    "OSS package dependencies were not installed and tests/builds were not run in these clones.",
+    "Nest repo was sparse cloned for three sample directories.",
+    "Configurations are temporary snapshots, not an implemented package."
+  ]
+}

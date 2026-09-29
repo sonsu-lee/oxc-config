@@ -1,0 +1,4266 @@
+{
+  "source_commit": "bfd1c9114aad9af3adfb60207d063e9d02d4f33e",
+  "oxlint_configs": {
+    "next-fullstack/.oxlintrc.json": {
+      "top_level": {
+        "$schema": "./node_modules/oxlint/configuration_schema.json",
+        "plugins": [
+          "typescript",
+          "oxc",
+          "unicorn",
+          "import",
+          "node"
+        ],
+        "categories": {
+          "correctness": "error"
+        },
+        "env": {
+          "builtin": true,
+          "node": true,
+          "browser": false
+        },
+        "options": {
+          "typeAware": true,
+          "typeCheck": true
+        },
+        "ignorePatterns": [
+          "node_modules/",
+          ".next/cache/",
+          ".next/server/",
+          ".next/static/",
+          ".next/dev/",
+          "out/",
+          "dist/",
+          "coverage/",
+          "next-env.d.ts",
+          "*.tsbuildinfo"
+        ]
+      },
+      "root_rules": {
+        "typescript/no-floating-promises": "error",
+        "typescript/no-misused-promises": "error",
+        "typescript/await-thenable": "error",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      },
+      "overrides": [
+        {
+          "files": [
+            "src/**"
+          ],
+          "plugins": [
+            "typescript",
+            "oxc",
+            "unicorn",
+            "import",
+            "node",
+            "react",
+            "nextjs",
+            "jsx-a11y"
+          ],
+          "env": {
+            "browser": true,
+            "node": true
+          },
+          "rules": {
+            "react/rules-of-hooks": "error",
+            "react/exhaustive-deps": "error",
+            "react/error-boundaries": "error",
+            "react/globals": "error",
+            "react/immutability": "error",
+            "react/incompatible-library": "error",
+            "react/preserve-manual-memoization": "error",
+            "react/purity": "error",
+            "react/refs": "error",
+            "react/set-state-in-effect": "error",
+            "react/set-state-in-render": "error",
+            "react/static-components": "error",
+            "react/use-memo": "error",
+            "react/void-use-memo": "error",
+            "react/unsupported-syntax": "error",
+            "nextjs/google-font-display": "warn",
+            "nextjs/google-font-preconnect": "warn",
+            "nextjs/next-script-for-ga": "warn",
+            "nextjs/no-async-client-component": "warn",
+            "nextjs/no-before-interactive-script-outside-document": "warn",
+            "nextjs/no-css-tags": "warn",
+            "nextjs/no-head-element": "warn",
+            "nextjs/no-img-element": "warn",
+            "nextjs/no-page-custom-font": "warn",
+            "nextjs/no-styled-jsx-in-document": "warn",
+            "nextjs/no-title-in-document-head": "warn",
+            "nextjs/no-typos": "warn",
+            "nextjs/no-unwanted-polyfillio": "warn",
+            "nextjs/no-html-link-for-pages": "error",
+            "nextjs/no-sync-scripts": "error",
+            "nextjs/inline-script-id": "error",
+            "nextjs/no-assign-module-variable": "error",
+            "nextjs/no-document-import-in-page": "error",
+            "nextjs/no-duplicate-head": "error",
+            "nextjs/no-head-import-in-document": "error",
+            "nextjs/no-script-component-in-head": "error",
+            "jsx-a11y/alt-text": "error",
+            "jsx-a11y/anchor-has-content": "error",
+            "jsx-a11y/anchor-is-valid": "error",
+            "jsx-a11y/aria-activedescendant-has-tabindex": "error",
+            "jsx-a11y/aria-props": "error",
+            "jsx-a11y/aria-proptypes": "error",
+            "jsx-a11y/aria-role": "error",
+            "jsx-a11y/aria-unsupported-elements": "error",
+            "jsx-a11y/autocomplete-valid": "error",
+            "jsx-a11y/click-events-have-key-events": "error",
+            "jsx-a11y/control-has-associated-label": "error",
+            "jsx-a11y/heading-has-content": "error",
+            "jsx-a11y/html-has-lang": "error",
+            "jsx-a11y/iframe-has-title": "error",
+            "jsx-a11y/img-redundant-alt": "error",
+            "jsx-a11y/interactive-supports-focus": "error",
+            "jsx-a11y/label-has-associated-control": "error",
+            "jsx-a11y/lang": "error",
+            "jsx-a11y/media-has-caption": "error",
+            "jsx-a11y/mouse-events-have-key-events": "error",
+            "jsx-a11y/no-access-key": "error",
+            "jsx-a11y/no-aria-hidden-on-focusable": "error",
+            "jsx-a11y/no-autofocus": "error",
+            "jsx-a11y/no-distracting-elements": "error",
+            "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+            "jsx-a11y/no-noninteractive-element-interactions": "error",
+            "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+            "jsx-a11y/no-noninteractive-tabindex": "error",
+            "jsx-a11y/no-redundant-roles": "error",
+            "jsx-a11y/no-static-element-interactions": "error",
+            "jsx-a11y/prefer-tag-over-role": "error",
+            "jsx-a11y/role-has-required-aria-props": "error",
+            "jsx-a11y/role-supports-aria-props": "error",
+            "jsx-a11y/scope": "error",
+            "jsx-a11y/tabindex-no-positive": "error",
+            "react/forward-ref-uses-ref": "error",
+            "react/jsx-key": "error",
+            "react/jsx-no-duplicate-props": "error",
+            "react/jsx-no-undef": "error",
+            "react/jsx-props-no-spread-multi": "error",
+            "react/no-children-prop": "error",
+            "react/no-danger-with-children": "error",
+            "react/no-did-mount-set-state": "error",
+            "react/no-did-update-set-state": "error",
+            "react/no-direct-mutation-state": "error",
+            "react/no-find-dom-node": "error",
+            "react/no-is-mounted": "error",
+            "react/no-render-return-value": "error",
+            "react/no-string-refs": "error",
+            "react/no-this-in-sfc": "error",
+            "react/no-unsafe": "error",
+            "react/no-will-update-set-state": "error",
+            "react/void-dom-elements-no-children": "error"
+          }
+        },
+        {
+          "files": [
+            "src/**"
+          ],
+          "rules": {
+            "node/no-sync": "error",
+            "unicorn/no-process-exit": "error"
+          }
+        },
+        {
+          "files": [
+            "src/client/**",
+            "src/**/*.client.*"
+          ],
+          "env": {
+            "browser": true,
+            "node": false
+          },
+          "rules": {
+            "import/no-nodejs-modules": "error",
+            "no-restricted-imports": [
+              "error",
+              {
+                "patterns": [
+                  {
+                    "group": [
+                      "node:*",
+                      "fs",
+                      "fs/**",
+                      "path",
+                      "path/**",
+                      "crypto",
+                      "os",
+                      "net",
+                      "tls",
+                      "http",
+                      "https",
+                      "http2",
+                      "child_process",
+                      "worker_threads",
+                      "stream",
+                      "stream/**",
+                      "buffer",
+                      "process",
+                      "module",
+                      "url",
+                      "util",
+                      "util/**",
+                      "events",
+                      "assert",
+                      "assert/**",
+                      "async_hooks",
+                      "cluster",
+                      "dgram",
+                      "dns",
+                      "dns/**",
+                      "inspector",
+                      "perf_hooks",
+                      "readline",
+                      "readline/**",
+                      "repl",
+                      "timers",
+                      "timers/**",
+                      "tty",
+                      "v8",
+                      "vm",
+                      "wasi",
+                      "zlib"
+                    ],
+                    "message": "Client modules cannot import Node builtins."
+                  },
+                  {
+                    "group": [
+                      "server-only",
+                      "@/server",
+                      "@/server/**",
+                      "**/server/**",
+                      "@nestjs/*",
+                      "@template/api",
+                      "@template/api/**",
+                      "**/apps/api/**",
+                      "drizzle-orm",
+                      "drizzle-orm/**",
+                      "kysely",
+                      "kysely/**",
+                      "pg",
+                      "pg/**",
+                      "postgres",
+                      "postgres/**",
+                      "mysql2",
+                      "mysql2/**",
+                      "better-sqlite3",
+                      "sqlite3",
+                      "@libsql/client",
+                      "@libsql/client/**",
+                      "mongodb",
+                      "@prisma/client",
+                      "@prisma/client/**"
+                    ],
+                    "message": "Client modules must call the server through an API."
+                  }
+                ]
+              }
+            ],
+            "typescript/no-require-imports": "error"
+          }
+        },
+        {
+          "files": [
+            "*.config.*",
+            "scripts/**"
+          ],
+          "env": {
+            "node": true,
+            "browser": false
+          }
+        }
+      ]
+    },
+    "next-node-nest/apps/api/.oxlintrc.json": {
+      "top_level": {
+        "$schema": "./node_modules/oxlint/configuration_schema.json",
+        "plugins": [
+          "typescript",
+          "oxc",
+          "unicorn",
+          "import",
+          "node"
+        ],
+        "categories": {
+          "correctness": "error"
+        },
+        "env": {
+          "builtin": true,
+          "node": true,
+          "browser": false
+        },
+        "options": {
+          "typeAware": false,
+          "typeCheck": false
+        },
+        "ignorePatterns": [
+          "node_modules/",
+          ".next/",
+          "out/",
+          "dist/",
+          "coverage/",
+          "*.tsbuildinfo"
+        ]
+      },
+      "root_rules": {
+        "typescript/consistent-type-imports": "off",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      },
+      "overrides": [
+        {
+          "files": [
+            "src/**/*.ts"
+          ],
+          "rules": {
+            "node/no-sync": "error",
+            "unicorn/no-process-exit": "error"
+          }
+        }
+      ]
+    },
+    "next-node-nest/apps/web/.oxlintrc.json": {
+      "top_level": {
+        "$schema": "./node_modules/oxlint/configuration_schema.json",
+        "plugins": [
+          "typescript",
+          "oxc",
+          "unicorn",
+          "import",
+          "node"
+        ],
+        "categories": {
+          "correctness": "error"
+        },
+        "env": {
+          "builtin": true,
+          "node": true,
+          "browser": false
+        },
+        "options": {
+          "typeAware": true,
+          "typeCheck": true
+        },
+        "ignorePatterns": [
+          "node_modules/",
+          ".next/cache/",
+          ".next/server/",
+          ".next/static/",
+          ".next/dev/",
+          "out/",
+          "dist/",
+          "coverage/",
+          "next-env.d.ts",
+          "*.tsbuildinfo"
+        ]
+      },
+      "root_rules": {
+        "typescript/no-floating-promises": "error",
+        "typescript/no-misused-promises": "error",
+        "typescript/await-thenable": "error",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "node:sqlite",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "The Nest API owns backend implementation and database access."
+              }
+            ]
+          }
+        ],
+        "typescript/no-require-imports": "error",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      },
+      "overrides": [
+        {
+          "files": [
+            "src/**"
+          ],
+          "plugins": [
+            "typescript",
+            "oxc",
+            "unicorn",
+            "import",
+            "node",
+            "react",
+            "nextjs",
+            "jsx-a11y"
+          ],
+          "env": {
+            "browser": true,
+            "node": true
+          },
+          "rules": {
+            "react/rules-of-hooks": "error",
+            "react/exhaustive-deps": "error",
+            "react/error-boundaries": "error",
+            "react/globals": "error",
+            "react/immutability": "error",
+            "react/incompatible-library": "error",
+            "react/preserve-manual-memoization": "error",
+            "react/purity": "error",
+            "react/refs": "error",
+            "react/set-state-in-effect": "error",
+            "react/set-state-in-render": "error",
+            "react/static-components": "error",
+            "react/use-memo": "error",
+            "react/void-use-memo": "error",
+            "react/unsupported-syntax": "error",
+            "nextjs/google-font-display": "warn",
+            "nextjs/google-font-preconnect": "warn",
+            "nextjs/next-script-for-ga": "warn",
+            "nextjs/no-async-client-component": "warn",
+            "nextjs/no-before-interactive-script-outside-document": "warn",
+            "nextjs/no-css-tags": "warn",
+            "nextjs/no-head-element": "warn",
+            "nextjs/no-img-element": "warn",
+            "nextjs/no-page-custom-font": "warn",
+            "nextjs/no-styled-jsx-in-document": "warn",
+            "nextjs/no-title-in-document-head": "warn",
+            "nextjs/no-typos": "warn",
+            "nextjs/no-unwanted-polyfillio": "warn",
+            "nextjs/no-html-link-for-pages": "error",
+            "nextjs/no-sync-scripts": "error",
+            "nextjs/inline-script-id": "error",
+            "nextjs/no-assign-module-variable": "error",
+            "nextjs/no-document-import-in-page": "error",
+            "nextjs/no-duplicate-head": "error",
+            "nextjs/no-head-import-in-document": "error",
+            "nextjs/no-script-component-in-head": "error",
+            "jsx-a11y/alt-text": "error",
+            "jsx-a11y/anchor-has-content": "error",
+            "jsx-a11y/anchor-is-valid": "error",
+            "jsx-a11y/aria-activedescendant-has-tabindex": "error",
+            "jsx-a11y/aria-props": "error",
+            "jsx-a11y/aria-proptypes": "error",
+            "jsx-a11y/aria-role": "error",
+            "jsx-a11y/aria-unsupported-elements": "error",
+            "jsx-a11y/autocomplete-valid": "error",
+            "jsx-a11y/click-events-have-key-events": "error",
+            "jsx-a11y/control-has-associated-label": "error",
+            "jsx-a11y/heading-has-content": "error",
+            "jsx-a11y/html-has-lang": "error",
+            "jsx-a11y/iframe-has-title": "error",
+            "jsx-a11y/img-redundant-alt": "error",
+            "jsx-a11y/interactive-supports-focus": "error",
+            "jsx-a11y/label-has-associated-control": "error",
+            "jsx-a11y/lang": "error",
+            "jsx-a11y/media-has-caption": "error",
+            "jsx-a11y/mouse-events-have-key-events": "error",
+            "jsx-a11y/no-access-key": "error",
+            "jsx-a11y/no-aria-hidden-on-focusable": "error",
+            "jsx-a11y/no-autofocus": "error",
+            "jsx-a11y/no-distracting-elements": "error",
+            "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+            "jsx-a11y/no-noninteractive-element-interactions": "error",
+            "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+            "jsx-a11y/no-noninteractive-tabindex": "error",
+            "jsx-a11y/no-redundant-roles": "error",
+            "jsx-a11y/no-static-element-interactions": "error",
+            "jsx-a11y/prefer-tag-over-role": "error",
+            "jsx-a11y/role-has-required-aria-props": "error",
+            "jsx-a11y/role-supports-aria-props": "error",
+            "jsx-a11y/scope": "error",
+            "jsx-a11y/tabindex-no-positive": "error",
+            "react/forward-ref-uses-ref": "error",
+            "react/jsx-key": "error",
+            "react/jsx-no-duplicate-props": "error",
+            "react/jsx-no-undef": "error",
+            "react/jsx-props-no-spread-multi": "error",
+            "react/no-children-prop": "error",
+            "react/no-danger-with-children": "error",
+            "react/no-did-mount-set-state": "error",
+            "react/no-did-update-set-state": "error",
+            "react/no-direct-mutation-state": "error",
+            "react/no-find-dom-node": "error",
+            "react/no-is-mounted": "error",
+            "react/no-render-return-value": "error",
+            "react/no-string-refs": "error",
+            "react/no-this-in-sfc": "error",
+            "react/no-unsafe": "error",
+            "react/no-will-update-set-state": "error",
+            "react/void-dom-elements-no-children": "error"
+          }
+        },
+        {
+          "files": [
+            "src/**"
+          ],
+          "rules": {
+            "node/no-sync": "error",
+            "unicorn/no-process-exit": "error"
+          }
+        },
+        {
+          "files": [
+            "src/client/**",
+            "src/**/*.client.*"
+          ],
+          "env": {
+            "browser": true,
+            "node": false
+          },
+          "rules": {
+            "import/no-nodejs-modules": "error",
+            "no-restricted-imports": [
+              "error",
+              {
+                "patterns": [
+                  {
+                    "group": [
+                      "node:*",
+                      "fs",
+                      "fs/**",
+                      "path",
+                      "path/**",
+                      "crypto",
+                      "os",
+                      "net",
+                      "tls",
+                      "http",
+                      "https",
+                      "http2",
+                      "child_process",
+                      "worker_threads",
+                      "stream",
+                      "stream/**",
+                      "buffer",
+                      "process",
+                      "module",
+                      "url",
+                      "util",
+                      "util/**",
+                      "events",
+                      "assert",
+                      "assert/**",
+                      "async_hooks",
+                      "cluster",
+                      "dgram",
+                      "dns",
+                      "dns/**",
+                      "inspector",
+                      "perf_hooks",
+                      "readline",
+                      "readline/**",
+                      "repl",
+                      "timers",
+                      "timers/**",
+                      "tty",
+                      "v8",
+                      "vm",
+                      "wasi",
+                      "zlib"
+                    ],
+                    "message": "Client modules cannot import Node builtins."
+                  },
+                  {
+                    "group": [
+                      "server-only",
+                      "@/server",
+                      "@/server/**",
+                      "**/server/**",
+                      "@nestjs/*",
+                      "@template/api",
+                      "@template/api/**",
+                      "**/apps/api/**",
+                      "drizzle-orm",
+                      "drizzle-orm/**",
+                      "kysely",
+                      "kysely/**",
+                      "pg",
+                      "pg/**",
+                      "postgres",
+                      "postgres/**",
+                      "mysql2",
+                      "mysql2/**",
+                      "better-sqlite3",
+                      "sqlite3",
+                      "@libsql/client",
+                      "@libsql/client/**",
+                      "mongodb",
+                      "@prisma/client",
+                      "@prisma/client/**",
+                      "**/api/src/**",
+                      "**/api/dist/**"
+                    ],
+                    "message": "Client modules must call the server through an API."
+                  }
+                ]
+              }
+            ],
+            "typescript/no-require-imports": "error"
+          }
+        },
+        {
+          "files": [
+            "*.config.*",
+            "scripts/**"
+          ],
+          "env": {
+            "node": true,
+            "browser": false
+          }
+        }
+      ]
+    },
+    "next-static-nest/apps/api/.oxlintrc.json": {
+      "top_level": {
+        "$schema": "./node_modules/oxlint/configuration_schema.json",
+        "plugins": [
+          "typescript",
+          "oxc",
+          "unicorn",
+          "import",
+          "node"
+        ],
+        "categories": {
+          "correctness": "error"
+        },
+        "env": {
+          "builtin": true,
+          "node": true,
+          "browser": false
+        },
+        "options": {
+          "typeAware": false,
+          "typeCheck": false
+        },
+        "ignorePatterns": [
+          "node_modules/",
+          ".next/",
+          "out/",
+          "dist/",
+          "coverage/",
+          "*.tsbuildinfo"
+        ]
+      },
+      "root_rules": {
+        "typescript/consistent-type-imports": "off",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      },
+      "overrides": [
+        {
+          "files": [
+            "src/**/*.ts"
+          ],
+          "rules": {
+            "node/no-sync": "error",
+            "unicorn/no-process-exit": "error"
+          }
+        }
+      ]
+    },
+    "next-static-nest/apps/web/.oxlintrc.json": {
+      "top_level": {
+        "$schema": "./node_modules/oxlint/configuration_schema.json",
+        "plugins": [
+          "typescript",
+          "oxc",
+          "unicorn",
+          "import",
+          "node"
+        ],
+        "categories": {
+          "correctness": "error"
+        },
+        "env": {
+          "builtin": true,
+          "node": true,
+          "browser": false
+        },
+        "options": {
+          "typeAware": true,
+          "typeCheck": true
+        },
+        "ignorePatterns": [
+          "node_modules/",
+          ".next/cache/",
+          ".next/server/",
+          ".next/static/",
+          ".next/dev/",
+          "out/",
+          "dist/",
+          "coverage/",
+          "next-env.d.ts",
+          "*.tsbuildinfo"
+        ]
+      },
+      "root_rules": {
+        "typescript/no-floating-promises": "error",
+        "typescript/no-misused-promises": "error",
+        "typescript/await-thenable": "error",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "node:sqlite",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "The Nest API owns backend implementation and database access."
+              }
+            ],
+            "paths": [
+              {
+                "name": "next/headers",
+                "message": "Static exports cannot use request-time headers or cookies."
+              },
+              {
+                "name": "next/server",
+                "importNames": [
+                  "connection"
+                ],
+                "message": "Static exports cannot wait for an incoming request."
+              }
+            ]
+          }
+        ],
+        "typescript/no-require-imports": "error",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ]
+      },
+      "overrides": [
+        {
+          "files": [
+            "src/**"
+          ],
+          "plugins": [
+            "typescript",
+            "oxc",
+            "unicorn",
+            "import",
+            "node",
+            "react",
+            "nextjs",
+            "jsx-a11y"
+          ],
+          "env": {
+            "browser": true,
+            "node": true
+          },
+          "rules": {
+            "react/rules-of-hooks": "error",
+            "react/exhaustive-deps": "error",
+            "react/error-boundaries": "error",
+            "react/globals": "error",
+            "react/immutability": "error",
+            "react/incompatible-library": "error",
+            "react/preserve-manual-memoization": "error",
+            "react/purity": "error",
+            "react/refs": "error",
+            "react/set-state-in-effect": "error",
+            "react/set-state-in-render": "error",
+            "react/static-components": "error",
+            "react/use-memo": "error",
+            "react/void-use-memo": "error",
+            "react/unsupported-syntax": "error",
+            "nextjs/google-font-display": "warn",
+            "nextjs/google-font-preconnect": "warn",
+            "nextjs/next-script-for-ga": "warn",
+            "nextjs/no-async-client-component": "warn",
+            "nextjs/no-before-interactive-script-outside-document": "warn",
+            "nextjs/no-css-tags": "warn",
+            "nextjs/no-head-element": "warn",
+            "nextjs/no-img-element": "warn",
+            "nextjs/no-page-custom-font": "warn",
+            "nextjs/no-styled-jsx-in-document": "warn",
+            "nextjs/no-title-in-document-head": "warn",
+            "nextjs/no-typos": "warn",
+            "nextjs/no-unwanted-polyfillio": "warn",
+            "nextjs/no-html-link-for-pages": "error",
+            "nextjs/no-sync-scripts": "error",
+            "nextjs/inline-script-id": "error",
+            "nextjs/no-assign-module-variable": "error",
+            "nextjs/no-document-import-in-page": "error",
+            "nextjs/no-duplicate-head": "error",
+            "nextjs/no-head-import-in-document": "error",
+            "nextjs/no-script-component-in-head": "error",
+            "jsx-a11y/alt-text": "error",
+            "jsx-a11y/anchor-has-content": "error",
+            "jsx-a11y/anchor-is-valid": "error",
+            "jsx-a11y/aria-activedescendant-has-tabindex": "error",
+            "jsx-a11y/aria-props": "error",
+            "jsx-a11y/aria-proptypes": "error",
+            "jsx-a11y/aria-role": "error",
+            "jsx-a11y/aria-unsupported-elements": "error",
+            "jsx-a11y/autocomplete-valid": "error",
+            "jsx-a11y/click-events-have-key-events": "error",
+            "jsx-a11y/control-has-associated-label": "error",
+            "jsx-a11y/heading-has-content": "error",
+            "jsx-a11y/html-has-lang": "error",
+            "jsx-a11y/iframe-has-title": "error",
+            "jsx-a11y/img-redundant-alt": "error",
+            "jsx-a11y/interactive-supports-focus": "error",
+            "jsx-a11y/label-has-associated-control": "error",
+            "jsx-a11y/lang": "error",
+            "jsx-a11y/media-has-caption": "error",
+            "jsx-a11y/mouse-events-have-key-events": "error",
+            "jsx-a11y/no-access-key": "error",
+            "jsx-a11y/no-aria-hidden-on-focusable": "error",
+            "jsx-a11y/no-autofocus": "error",
+            "jsx-a11y/no-distracting-elements": "error",
+            "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+            "jsx-a11y/no-noninteractive-element-interactions": "error",
+            "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+            "jsx-a11y/no-noninteractive-tabindex": "error",
+            "jsx-a11y/no-redundant-roles": "error",
+            "jsx-a11y/no-static-element-interactions": "error",
+            "jsx-a11y/prefer-tag-over-role": "error",
+            "jsx-a11y/role-has-required-aria-props": "error",
+            "jsx-a11y/role-supports-aria-props": "error",
+            "jsx-a11y/scope": "error",
+            "jsx-a11y/tabindex-no-positive": "error",
+            "react/forward-ref-uses-ref": "error",
+            "react/jsx-key": "error",
+            "react/jsx-no-duplicate-props": "error",
+            "react/jsx-no-undef": "error",
+            "react/jsx-props-no-spread-multi": "error",
+            "react/no-children-prop": "error",
+            "react/no-danger-with-children": "error",
+            "react/no-did-mount-set-state": "error",
+            "react/no-did-update-set-state": "error",
+            "react/no-direct-mutation-state": "error",
+            "react/no-find-dom-node": "error",
+            "react/no-is-mounted": "error",
+            "react/no-render-return-value": "error",
+            "react/no-string-refs": "error",
+            "react/no-this-in-sfc": "error",
+            "react/no-unsafe": "error",
+            "react/no-will-update-set-state": "error",
+            "react/void-dom-elements-no-children": "error"
+          }
+        },
+        {
+          "files": [
+            "src/**"
+          ],
+          "rules": {
+            "unicorn/no-process-exit": "error"
+          }
+        },
+        {
+          "files": [
+            "src/client/**",
+            "src/**/*.client.*"
+          ],
+          "env": {
+            "browser": true,
+            "node": false
+          },
+          "rules": {
+            "import/no-nodejs-modules": "error",
+            "no-restricted-imports": [
+              "error",
+              {
+                "patterns": [
+                  {
+                    "group": [
+                      "node:*",
+                      "fs",
+                      "fs/**",
+                      "path",
+                      "path/**",
+                      "crypto",
+                      "os",
+                      "net",
+                      "tls",
+                      "http",
+                      "https",
+                      "http2",
+                      "child_process",
+                      "worker_threads",
+                      "stream",
+                      "stream/**",
+                      "buffer",
+                      "process",
+                      "module",
+                      "url",
+                      "util",
+                      "util/**",
+                      "events",
+                      "assert",
+                      "assert/**",
+                      "async_hooks",
+                      "cluster",
+                      "dgram",
+                      "dns",
+                      "dns/**",
+                      "inspector",
+                      "perf_hooks",
+                      "readline",
+                      "readline/**",
+                      "repl",
+                      "timers",
+                      "timers/**",
+                      "tty",
+                      "v8",
+                      "vm",
+                      "wasi",
+                      "zlib"
+                    ],
+                    "message": "Client modules cannot import Node builtins."
+                  },
+                  {
+                    "group": [
+                      "server-only",
+                      "@/server",
+                      "@/server/**",
+                      "**/server/**",
+                      "@nestjs/*",
+                      "@template/api",
+                      "@template/api/**",
+                      "**/apps/api/**",
+                      "drizzle-orm",
+                      "drizzle-orm/**",
+                      "kysely",
+                      "kysely/**",
+                      "pg",
+                      "pg/**",
+                      "postgres",
+                      "postgres/**",
+                      "mysql2",
+                      "mysql2/**",
+                      "better-sqlite3",
+                      "sqlite3",
+                      "@libsql/client",
+                      "@libsql/client/**",
+                      "mongodb",
+                      "@prisma/client",
+                      "@prisma/client/**",
+                      "**/api/src/**",
+                      "**/api/dist/**"
+                    ],
+                    "message": "Client modules must call the server through an API."
+                  }
+                ],
+                "paths": [
+                  {
+                    "name": "next/headers",
+                    "message": "Static exports cannot use request-time headers or cookies."
+                  },
+                  {
+                    "name": "next/server",
+                    "importNames": [
+                      "connection"
+                    ],
+                    "message": "Static exports cannot wait for an incoming request."
+                  }
+                ]
+              }
+            ],
+            "typescript/no-require-imports": "error"
+          }
+        },
+        {
+          "files": [
+            "*.config.*",
+            "scripts/**"
+          ],
+          "env": {
+            "node": true,
+            "browser": false
+          }
+        }
+      ]
+    }
+  },
+  "oxfmt_configs": {
+    "next-fullstack/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-node-nest/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-node-nest/apps/api/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-node-nest/apps/web/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-static-nest/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-static-nest/apps/api/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    },
+    "next-static-nest/apps/web/.oxfmtrc.json": {
+      "$schema": "./node_modules/oxfmt/configuration_schema.json",
+      "ignorePatterns": [
+        "node_modules/",
+        ".next/",
+        "out/",
+        "dist/",
+        "coverage/",
+        "next-env.d.ts",
+        "*.tsbuildinfo"
+      ],
+      "singleAttributePerLine": true,
+      "singleQuote": true,
+      "sortImports": true,
+      "sortPackageJson": {
+        "sortScripts": true
+      }
+    }
+  },
+  "rules": {
+    "typescript/no-floating-promises": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-misused-promises": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/await-thenable": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-unsafe-argument": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-unsafe-assignment": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-unsafe-call": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-unsafe-member-access": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "typescript/no-unsafe-return": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      }
+    ],
+    "sort-imports": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/api/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/api/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "ignoreDeclarationSort": true
+          }
+        ],
+        "source": "rules"
+      }
+    ],
+    "react/rules-of-hooks": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/exhaustive-deps": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/error-boundaries": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/globals": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/immutability": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/incompatible-library": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/preserve-manual-memoization": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/purity": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/refs": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/set-state-in-effect": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/set-state-in-render": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/static-components": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/use-memo": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/void-use-memo": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/unsupported-syntax": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/google-font-display": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/google-font-preconnect": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/next-script-for-ga": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-async-client-component": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-before-interactive-script-outside-document": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-css-tags": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-head-element": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-img-element": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-page-custom-font": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-styled-jsx-in-document": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-title-in-document-head": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-typos": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-unwanted-polyfillio": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "warn",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-html-link-for-pages": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-sync-scripts": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/inline-script-id": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-assign-module-variable": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-document-import-in-page": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-duplicate-head": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-head-import-in-document": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "nextjs/no-script-component-in-head": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/alt-text": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/anchor-has-content": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/anchor-is-valid": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/aria-activedescendant-has-tabindex": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/aria-props": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/aria-proptypes": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/aria-role": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/aria-unsupported-elements": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/autocomplete-valid": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/click-events-have-key-events": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/control-has-associated-label": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/heading-has-content": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/html-has-lang": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/iframe-has-title": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/img-redundant-alt": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/interactive-supports-focus": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/label-has-associated-control": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/lang": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/media-has-caption": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/mouse-events-have-key-events": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-access-key": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-aria-hidden-on-focusable": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-autofocus": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-distracting-elements": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-interactive-element-to-noninteractive-role": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-noninteractive-element-interactions": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-noninteractive-tabindex": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-redundant-roles": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/no-static-element-interactions": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/prefer-tag-over-role": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/role-has-required-aria-props": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/role-supports-aria-props": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/scope": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "jsx-a11y/tabindex-no-positive": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/forward-ref-uses-ref": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/jsx-key": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/jsx-no-duplicate-props": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/jsx-no-undef": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/jsx-props-no-spread-multi": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-children-prop": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-danger-with-children": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-did-mount-set-state": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-did-update-set-state": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-direct-mutation-state": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-find-dom-node": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-is-mounted": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-render-return-value": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-string-refs": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-this-in-sfc": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-unsafe": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/no-will-update-set-state": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "react/void-dom-elements-no-children": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "node/no-sync": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[1].rules"
+      },
+      {
+        "config": "next-node-nest/apps/api/.oxlintrc.json",
+        "scope": [
+          "src/**/*.ts"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[1].rules"
+      },
+      {
+        "config": "next-static-nest/apps/api/.oxlintrc.json",
+        "scope": [
+          "src/**/*.ts"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      }
+    ],
+    "unicorn/no-process-exit": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[1].rules"
+      },
+      {
+        "config": "next-node-nest/apps/api/.oxlintrc.json",
+        "scope": [
+          "src/**/*.ts"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[1].rules"
+      },
+      {
+        "config": "next-static-nest/apps/api/.oxlintrc.json",
+        "scope": [
+          "src/**/*.ts"
+        ],
+        "value": "error",
+        "source": "overrides[0].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/**"
+        ],
+        "value": "error",
+        "source": "overrides[1].rules"
+      }
+    ],
+    "import/no-nodejs-modules": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      }
+    ],
+    "no-restricted-imports": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "node:*",
+                  "fs",
+                  "fs/**",
+                  "path",
+                  "path/**",
+                  "crypto",
+                  "os",
+                  "net",
+                  "tls",
+                  "http",
+                  "https",
+                  "http2",
+                  "child_process",
+                  "worker_threads",
+                  "stream",
+                  "stream/**",
+                  "buffer",
+                  "process",
+                  "module",
+                  "url",
+                  "util",
+                  "util/**",
+                  "events",
+                  "assert",
+                  "assert/**",
+                  "async_hooks",
+                  "cluster",
+                  "dgram",
+                  "dns",
+                  "dns/**",
+                  "inspector",
+                  "perf_hooks",
+                  "readline",
+                  "readline/**",
+                  "repl",
+                  "timers",
+                  "timers/**",
+                  "tty",
+                  "v8",
+                  "vm",
+                  "wasi",
+                  "zlib"
+                ],
+                "message": "Client modules cannot import Node builtins."
+              },
+              {
+                "group": [
+                  "server-only",
+                  "@/server",
+                  "@/server/**",
+                  "**/server/**",
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**"
+                ],
+                "message": "Client modules must call the server through an API."
+              }
+            ]
+          }
+        ],
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "node:sqlite",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "The Nest API owns backend implementation and database access."
+              }
+            ]
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "node:*",
+                  "fs",
+                  "fs/**",
+                  "path",
+                  "path/**",
+                  "crypto",
+                  "os",
+                  "net",
+                  "tls",
+                  "http",
+                  "https",
+                  "http2",
+                  "child_process",
+                  "worker_threads",
+                  "stream",
+                  "stream/**",
+                  "buffer",
+                  "process",
+                  "module",
+                  "url",
+                  "util",
+                  "util/**",
+                  "events",
+                  "assert",
+                  "assert/**",
+                  "async_hooks",
+                  "cluster",
+                  "dgram",
+                  "dns",
+                  "dns/**",
+                  "inspector",
+                  "perf_hooks",
+                  "readline",
+                  "readline/**",
+                  "repl",
+                  "timers",
+                  "timers/**",
+                  "tty",
+                  "v8",
+                  "vm",
+                  "wasi",
+                  "zlib"
+                ],
+                "message": "Client modules cannot import Node builtins."
+              },
+              {
+                "group": [
+                  "server-only",
+                  "@/server",
+                  "@/server/**",
+                  "**/server/**",
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "Client modules must call the server through an API."
+              }
+            ]
+          }
+        ],
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "node:sqlite",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "The Nest API owns backend implementation and database access."
+              }
+            ],
+            "paths": [
+              {
+                "name": "next/headers",
+                "message": "Static exports cannot use request-time headers or cookies."
+              },
+              {
+                "name": "next/server",
+                "importNames": [
+                  "connection"
+                ],
+                "message": "Static exports cannot wait for an incoming request."
+              }
+            ]
+          }
+        ],
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "node:*",
+                  "fs",
+                  "fs/**",
+                  "path",
+                  "path/**",
+                  "crypto",
+                  "os",
+                  "net",
+                  "tls",
+                  "http",
+                  "https",
+                  "http2",
+                  "child_process",
+                  "worker_threads",
+                  "stream",
+                  "stream/**",
+                  "buffer",
+                  "process",
+                  "module",
+                  "url",
+                  "util",
+                  "util/**",
+                  "events",
+                  "assert",
+                  "assert/**",
+                  "async_hooks",
+                  "cluster",
+                  "dgram",
+                  "dns",
+                  "dns/**",
+                  "inspector",
+                  "perf_hooks",
+                  "readline",
+                  "readline/**",
+                  "repl",
+                  "timers",
+                  "timers/**",
+                  "tty",
+                  "v8",
+                  "vm",
+                  "wasi",
+                  "zlib"
+                ],
+                "message": "Client modules cannot import Node builtins."
+              },
+              {
+                "group": [
+                  "server-only",
+                  "@/server",
+                  "@/server/**",
+                  "**/server/**",
+                  "@nestjs/*",
+                  "@template/api",
+                  "@template/api/**",
+                  "**/apps/api/**",
+                  "drizzle-orm",
+                  "drizzle-orm/**",
+                  "kysely",
+                  "kysely/**",
+                  "pg",
+                  "pg/**",
+                  "postgres",
+                  "postgres/**",
+                  "mysql2",
+                  "mysql2/**",
+                  "better-sqlite3",
+                  "sqlite3",
+                  "@libsql/client",
+                  "@libsql/client/**",
+                  "mongodb",
+                  "@prisma/client",
+                  "@prisma/client/**",
+                  "**/api/src/**",
+                  "**/api/dist/**"
+                ],
+                "message": "Client modules must call the server through an API."
+              }
+            ],
+            "paths": [
+              {
+                "name": "next/headers",
+                "message": "Static exports cannot use request-time headers or cookies."
+              },
+              {
+                "name": "next/server",
+                "importNames": [
+                  "connection"
+                ],
+                "message": "Static exports cannot wait for an incoming request."
+              }
+            ]
+          }
+        ],
+        "source": "overrides[2].rules"
+      }
+    ],
+    "typescript/no-require-imports": [
+      {
+        "config": "next-fullstack/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-node-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "error",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/web/.oxlintrc.json",
+        "scope": [
+          "src/client/**",
+          "src/**/*.client.*"
+        ],
+        "value": "error",
+        "source": "overrides[2].rules"
+      }
+    ],
+    "typescript/consistent-type-imports": [
+      {
+        "config": "next-node-nest/apps/api/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "off",
+        "source": "rules"
+      },
+      {
+        "config": "next-static-nest/apps/api/.oxlintrc.json",
+        "scope": "config root; excluding ignored paths",
+        "value": "off",
+        "source": "rules"
+      }
+    ]
+  }
+}

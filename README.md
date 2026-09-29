@@ -107,3 +107,18 @@ pnpm run verify           # All of the above checks
 ```
 
 `pnpm run format` formats maintained files. Research evidence and regression fixtures are excluded. The consumer check needs registry access, uses a temporary pnpm store, and removes its own temporary directory; pass `pnpm run verify:consumer -- --keep` to inspect it.
+
+```text
+src/
+  oxlint/
+    index.ts             Public exports and type aliases
+    scoped.ts            Shared files validation and override construction
+    configs/             One module per rule area
+  oxfmt/index.ts         Shared formatter options
+scripts/                 Build and installed-consumer verification
+test/                    Public contract tests and fixtures
+dist/                    Generated JS and declarations (ignored)
+docs/                    Design, rule decisions, verification and raw evidence
+```
+
+Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verification.md`. Research documents, source and tests are excluded from the tarball.

@@ -1,0 +1,221 @@
+{
+  "versions": {
+    "oxlint": "1.85.0",
+    "oxfmt": "0.70.0",
+    "next": "16.3.6",
+    "nextReact": "19.2.8",
+    "nextTypeScript": "5.9.3",
+    "nestCore": "12.1.0",
+    "nestTypeScript": "6.0.3",
+    "nestVitest": "4.1.11",
+    "hono": "4.13.9",
+    "honoNodeTypeScript": "7.0.2",
+    "workerTypeScript": "7.0.2",
+    "wrangler": "4.141.0"
+  },
+  "configSnapshot": "selected-next-config-prototype.json",
+  "next": {
+    "lint": {
+      "diagnostics": [],
+      "number_of_files": 6,
+      "number_of_rules": 77,
+      "threads_count": 8,
+      "start_time": 0.044125417
+    },
+    "staticLint": {
+      "diagnostics": [],
+      "number_of_files": 6,
+      "number_of_rules": 77,
+      "threads_count": 8,
+      "start_time": 0.044125417
+    },
+    "sourceFiles": 6,
+    "tscNoEmit": "exit 0",
+    "oxfmtWriteThenCheck": "exit 0",
+    "normalBuild": "exit 0 before Listbox was added, with 5 source files; / static and /api/status dynamic",
+    "staticBuild": "exit 0 with 6 source files including accessible Listbox; / and /api/status static",
+    "staticLocalRefs": {
+      "count": 14,
+      "missing": []
+    },
+    "staticRouteFile": "out/api/status",
+    "modifications": [
+      "removed next/font/google because initial build could not fetch Google Fonts",
+      "added client Counter and AccessibleButton",
+      "added static GET Route Handler",
+      "output export and images.unoptimized true",
+      "added keyboard-operated ARIA listbox and rendered it from page"
+    ]
+  },
+  "nest": {
+    "lint": {
+      "diagnostics": [],
+      "number_of_files": 6,
+      "number_of_rules": 17,
+      "threads_count": 8,
+      "start_time": 0.038144667
+    },
+    "oxfmtWriteThenCheck": "exit 0",
+    "tscBuild": "exit 0",
+    "nestBuild": "exit 0",
+    "vitest": "unit 1 file/1 test passed; e2e 1 file/1 test passed",
+    "http": "GET / -> 200 Hello World!",
+    "e2eFocusedSentinel": {
+      "command": "oxlint -c oxlint.selected.json --deny-warnings -f json test/focused.e2e-spec.ts",
+      "exit": 1,
+      "rule": "vitest(no-focused-tests)",
+      "afterRemoval": "src test lint exit 0"
+    }
+  },
+  "honoNode": {
+    "lint": {
+      "diagnostics": [],
+      "number_of_files": 1,
+      "number_of_rules": 10,
+      "threads_count": 8,
+      "start_time": 0.020606708
+    },
+    "oxfmtWriteThenCheck": "exit 0",
+    "tscBuild": "exit 0",
+    "http": "GET /api/me -> 200 {\"userId\":\"u1\"}",
+    "normalPattern": "typed Variables plus async middleware"
+  },
+  "honoWorkers": {
+    "lint": {
+      "diagnostics": [],
+      "number_of_files": 1,
+      "number_of_rules": 10,
+      "threads_count": 8,
+      "start_time": 0.020605791
+    },
+    "oxfmtWriteThenCheck": "exit 0",
+    "wranglerTypes": "exit 0 after temp WRANGLER_LOG_PATH and local port permission",
+    "tscNoEmit": "exit 0",
+    "wranglerDryRun": "exit 0",
+    "http": "GET /env/value -> 200 fixture, x-fixture yes",
+    "normalPattern": "typed MY_VAR binding plus async middleware"
+  },
+  "honoNodeTyped": {
+    "valid": {
+      "diagnostics": [],
+      "number_of_files": 1,
+      "number_of_rules": 14,
+      "threads_count": 8,
+      "start_time": 1.170177417
+    },
+    "invalid": {
+      "diagnostics": [
+        {
+          "message": "Unsafe assignment of an any value.",
+          "code": "typescript(no-unsafe-assignment)",
+          "severity": "error",
+          "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-unsafe-assignment.html",
+          "filename": "src/unsafe.ts",
+          "labels": [
+            {
+              "label": "Assigned value has type `any`.",
+              "span": {
+                "offset": 55,
+                "length": 6,
+                "line": 2,
+                "column": 30
+              }
+            },
+            {
+              "label": "Target expects type `string`.",
+              "span": {
+                "offset": 46,
+                "length": 6,
+                "line": 2,
+                "column": 21
+              }
+            },
+            {
+              "span": {
+                "offset": 53,
+                "length": 1,
+                "line": 2,
+                "column": 28
+              }
+            }
+          ]
+        },
+        {
+          "message": "Unsafe return of a value of type `any`.",
+          "code": "typescript(no-unsafe-return)",
+          "severity": "error",
+          "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-unsafe-return.html",
+          "filename": "src/unsafe.ts",
+          "labels": [
+            {
+              "label": "Returned expression has type `any`.",
+              "span": {
+                "offset": 96,
+                "length": 8,
+                "line": 3,
+                "column": 35
+              }
+            },
+            {
+              "span": {
+                "offset": 89,
+                "length": 6,
+                "line": 3,
+                "column": 28
+              }
+            }
+          ]
+        },
+        {
+          "message": "Unsafe call of a(n) `any` typed value.",
+          "code": "typescript(no-unsafe-call)",
+          "severity": "error",
+          "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-unsafe-call.html",
+          "filename": "src/unsafe.ts",
+          "labels": [
+            {
+              "span": {
+                "offset": 96,
+                "length": 6,
+                "line": 3,
+                "column": 35
+              }
+            }
+          ]
+        }
+      ],
+      "number_of_files": 1,
+      "number_of_rules": 14,
+      "threads_count": 8,
+      "start_time": 0.077187125
+    },
+    "command": "oxlint --type-aware -c oxlint.typed.json --deny-warnings -f json <file>; TS 7.0.2, tsgolint 7.0.2003"
+  },
+  "namedExportProbe": {
+    "package": "@fixture/oxc-config@0.0.1 temporary npm pack",
+    "exports": [
+      "./oxlint",
+      "./oxfmt"
+    ],
+    "typecheck": "tsc --noEmit exit 0",
+    "lint": "3 intended errors, clean source 0",
+    "node22": "same 3 intended errors, clean source 0",
+    "oxfmt": "unformatted check exit 1, ignored dist exit 2"
+  },
+  "isolatedFixtureComposition": "61 individually valid single-rule fixtures yielded 19 cross-rule diagnostics, including incomplete JSX and undefined names. Official starter integrated normal patterns were used for final normal-composition evidence.",
+  "configSnapshots": {
+    "next": "selected-next-config-prototype.json",
+    "backend": "selected-backend-config-prototype.json",
+    "nest": "selected-nest-config-prototype.json"
+  },
+  "normalSourceSnippets": {
+    "nextCounter": "'use client';\nimport { useState } from 'react';\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <button\n      type=\"button\"\n      onClick={() => setCount((value) => value + 1)}\n    >\n      Count {count}\n    </button>\n  );\n}\n",
+    "nextAccessibleButton": "'use client';\nexport function AccessibleButton() {\n  return (\n    <div\n      role=\"button\"\n      tabIndex={0}\n      aria-label=\"Open panel\"\n      onClick={() => {}}\n      onKeyDown={() => {}}\n    />\n  );\n}\n",
+    "nextListbox": "'use client';\nimport { useState } from 'react';\nconst options = ['Alpha', 'Beta'];\nexport function Listbox() {\n  const [selected, setSelected] = useState(0);\n  function onKeyDown(event: React.KeyboardEvent<HTMLUListElement>) {\n    if (event.key === 'ArrowDown') setSelected((index) => Math.min(index + 1, options.length - 1));\n    if (event.key === 'ArrowUp') setSelected((index) => Math.max(index - 1, 0));\n  }\n  return (\n    <ul\n      role=\"listbox\"\n      aria-label=\"Choices\"\n      tabIndex={0}\n      aria-activedescendant={`choice-${selected}`}\n      onKeyDown={onKeyDown}\n    >\n      {options.map((label, index) => (\n        <li\n          id={`choice-${index}`}\n          role=\"option\"\n          aria-selected={selected === index}\n          key={label}\n        >\n          {label}\n        </li>\n      ))}\n    </ul>\n  );\n}\n",
+    "nextRoute": "export const dynamic = 'force-static';\nexport function GET() {\n  return Response.json({ ok: true });\n}\n",
+    "nextConfig": "import type { NextConfig } from 'next'\nconst nextConfig: NextConfig = { output: 'export', images: { unoptimized: true } }\nexport default nextConfig\n",
+    "honoNode": "import { serve } from '@hono/node-server';\nimport { Hono } from 'hono';\ntype Variables = { userId: string };\nconst app = new Hono<{ Variables: Variables }>();\napp.use('*', async (c, next) => {\n  c.set('userId', 'u1');\n  await next();\n});\napp.get('/api/me', (c) => c.json({ userId: c.get('userId') }));\nserve({ fetch: app.fetch, port: 3000 }, (info) => {\n  console.log(`Server on ${info.port}`);\n});\n",
+    "honoWorker": "import { Hono } from 'hono';\ntype Bindings = { MY_VAR: string };\nconst app = new Hono<{ Bindings: Bindings }>();\napp.use('*', async (c, next) => {\n  c.header('x-fixture', 'yes');\n  await next();\n});\napp.get('/env/value', (c) => c.text(c.env.MY_VAR));\nexport default app;\n",
+    "honoWorkerWrangler": "{\n  \"$schema\": \"node_modules/wrangler/config-schema.json\",\n  \"name\": \"hono-worker\",\n  \"main\": \"src/index.ts\",\n  \"compatibility_date\": \"2026-09-27\",\n  \"vars\": { \"MY_VAR\": \"fixture\" }\n  // \"compatibility_flags\": [\n  //   \"nodejs_compat\"\n  // ],\n  // \"vars\": {\n  //   \"MY_VAR\": \"my-variable\"\n  // },\n  // \"kv_namespaces\": [\n  //   {\n  //     \"binding\": \"MY_KV_NAMESPACE\",\n  //     \"id\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n  //   }\n  // ],\n  // \"r2_buckets\": [\n  //   {\n  //     \"binding\": \"MY_BUCKET\",\n  //     \"bucket_name\": \"my-bucket\"\n  //   }\n  // ],\n  // \"d1_databases\": [\n  //   {\n  //     \"binding\": \"MY_DB\",\n  //     \"database_name\": \"my-database\",\n  //     \"database_id\": \"\"\n  //   }\n  // ],\n  // \"ai\": {\n  //   \"binding\": \"AI\"\n  // },\n  // \"observability\": {\n  //   \"enabled\": true,\n  //   \"head_sampling_rate\": 1\n  // }\n}"
+  }
+}
