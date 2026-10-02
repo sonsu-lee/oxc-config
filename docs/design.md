@@ -1,6 +1,6 @@
 # 패키지 설계
 
-현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. `private: true`인 로컬 패키지이며 이름 변경과 배포는 [#1](https://github.com/sonsu-lee/oxc-config/issues/1)의 별도 범위다.
+현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. 패키지 scope와 작성자 표기는 `sonsu-lee`, 홈페이지는 [sonsu.dev](https://sonsu.dev)로 통일한다. `private: true`인 로컬 패키지이며 배포는 [#1](https://github.com/sonsu-lee/oxc-config/issues/1)의 별도 범위다.
 
 ## 소스와 배포 구조
 
@@ -20,7 +20,7 @@ src/oxfmt/index.ts
 dist/**/*.js + dist/**/*.d.ts
          │ pnpm pack (prepack → build)
          ▼
-@sonsu/oxc-config/oxlint · @sonsu/oxc-config/oxfmt
+@sonsu-lee/oxc-config/oxlint · @sonsu-lee/oxc-config/oxfmt
 ```
 
 - 각 영역 모듈은 자신의 규칙·plugin·적용 범위를 함께 가진다. 규칙을 바꿀 때 한 영역 파일에서 판단할 수 있다.

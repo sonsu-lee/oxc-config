@@ -46,7 +46,13 @@ pnpm run verify
 - 전체 factory의 74개 규칙 조합과 기존 개별 조각 검사를 모두 유지했다. 추가 `e2e-spec.ts` 경로, 잘못된 glob의 로더 오류, 경고가 보이되 차단하지 않는 소비자 `pnpm run lint`도 factory로 확인했다.
 - 설치된 `SonsuOptions`와 반환값의 `OxlintConfig` 호환성을 소비자 `tsc`로 확인했다. `files` 누락·boolean 옵션·잘못된 배열 타입·미지원 옵션을 타입 오류로 검출한다.
 
-패키지명 변경·registry 배포는 실행하지 않았다. 설치 대상은 현재 이름인 `@sonsu/oxc-config`의 로컬 tarball이다.
+위 factory 검증 당시에는 패키지명 변경·registry 배포를 실행하지 않았으며, 설치 대상은 당시 이름인 `@sonsu/oxc-config`의 로컬 tarball이었다.
+
+## 패키지 명칭과 홈페이지 정리
+
+2026-10-03 패키지명을 `@sonsu-lee/oxc-config`로 변경하고 작성자 `sonsu-lee`, 홈페이지 `https://sonsu.dev`, GitHub 저장소·이슈 URL을 manifest에 추가했다. README와 소비자 검사의 import도 새 scope로 변경했다. 과거 evidence의 기존 명칭은 당시 실행 기록이므로 보존한다.
+
+변경 후 `pnpm run verify`가 통과했다. 새 이름의 tarball을 임시 프로젝트에 설치해 `/oxlint` factory·개별 조각, `/oxfmt`, 타입 선언, 74개 규칙의 실제 CLI 동작을 확인했다. 버전 `0.0.0`과 `private: true`를 유지하며 registry publish는 실행하지 않았다.
 
 ## Severity 재검토 결과
 

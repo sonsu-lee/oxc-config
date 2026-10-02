@@ -1,6 +1,8 @@
-# @sonsu/oxc-config
+# @sonsu-lee/oxc-config
 
 Composable Oxlint and Oxfmt configurations, authored in TypeScript and built as ESM with generated type declarations. This is a private local package; it has not been published.
+
+Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://sonsu.dev).
 
 ## Use in a project
 
@@ -12,7 +14,7 @@ pnpm install --frozen-lockfile
 pnpm pack
 
 # Consumer project: replace the tarball path
-pnpm add -D /path/to/sonsu-oxc-config-0.0.0.tgz oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D /path/to/sonsu-lee-oxc-config-0.0.0.tgz oxlint@1.85.0 oxfmt@0.70.0
 ```
 
 `pnpm pack` runs the build automatically. Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
@@ -21,7 +23,7 @@ pnpm add -D /path/to/sonsu-oxc-config-0.0.0.tgz oxlint@1.85.0 oxfmt@0.70.0
 
 ```ts
 // oxlint.config.ts
-import sonsu from '@sonsu/oxc-config/oxlint';
+import sonsu from '@sonsu-lee/oxc-config/oxlint';
 
 export default sonsu();
 ```
@@ -30,7 +32,7 @@ export default sonsu();
 
 ```ts
 // oxlint.config.ts
-import sonsu from '@sonsu/oxc-config/oxlint';
+import sonsu from '@sonsu-lee/oxc-config/oxlint';
 
 export default sonsu({
   react: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
@@ -66,7 +68,7 @@ Pass native Oxlint fields such as `rules`, `settings`, `ignorePatterns`, `extend
 - `ignorePatterns` is a root list you supply; the factory adds no default ignores. Other native fields keep Oxlint's own semantics.
 
 ```ts
-import sonsu from '@sonsu/oxc-config/oxlint';
+import sonsu from '@sonsu-lee/oxc-config/oxlint';
 
 export default sonsu({
   react: { files: ['src/**/*.{tsx,jsx}'] },
@@ -89,7 +91,7 @@ Named exports remain available when you want only selected areas rather than the
 
 ```ts
 import { defineConfig } from 'oxlint';
-import { javascript, react } from '@sonsu/oxc-config/oxlint';
+import { javascript, react } from '@sonsu-lee/oxc-config/oxlint';
 
 export default defineConfig({
   extends: [javascript, react({ files: ['src/**/*.{tsx,jsx}'] })],
@@ -103,7 +105,7 @@ Use the exported `SonsuOptions` type for reusable factory options. The `FilesPre
 ```ts
 // oxfmt.config.ts
 import { defineConfig } from 'oxfmt';
-import { shared } from '@sonsu/oxc-config/oxfmt';
+import { shared } from '@sonsu-lee/oxc-config/oxfmt';
 
 export default defineConfig({
   ...shared,
