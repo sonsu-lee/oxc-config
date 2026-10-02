@@ -30,13 +30,13 @@ function run(command, args, { cwd, expectedStatus = 0, maxBuffer = 10 * 1024 * 1
     throw result.error;
   }
 
-  if (result.status !== expectedStatus) {
+  if (expectedStatus !== null && result.status !== expectedStatus) {
     throw new Error(
       `${command.split('/').at(-1)} exited ${result.status} (signal ${result.signal ?? 'none'})\n${result.stdout?.slice(0, 1200) ?? ''}\n${result.stderr?.slice(0, 1200) ?? ''}`,
     );
   }
 
-  return { stdout: result.stdout, stderr: result.stderr };
+  return { stdout: result.stdout, stderr: result.stderr, status: result.status };
 }
 
 function writeFile(relativePath, contents) {
@@ -46,11 +46,14 @@ function writeFile(relativePath, contents) {
   return path;
 }
 
-function ruleCode(diagnostic) {
-  return String(diagnostic.code ?? diagnostic.ruleId ?? diagnostic.rule_id ?? '').replace(
-    /^([^()]+)\(([^()]+)\)$/,
-    '$1/$2',
-  );
+const diagnosticPlugins = { eslint: '', 'react-hooks': 'react', next: 'nextjs' };
+
+function ruleIdOf(diagnostic) {
+  const [, plugin, name] =
+    String(diagnostic.code ?? '').match(/^(?:eslint-plugin-)?([^()]+)\(([^()]+)\)$/) ?? [];
+  assert.ok(name, `unrecognized diagnostic code ${JSON.stringify(diagnostic.code)}`);
+  const prefix = diagnosticPlugins[plugin] ?? plugin;
+  return prefix ? `${prefix}/${name}` : name;
 }
 
 function diagnosticsFrom(stdout) {
@@ -86,20 +89,20 @@ function lint(oxlintPath, config, files, expectedStatus, flags = []) {
   return diagnosticsFrom(stdout);
 }
 
-function assertDiagnostic(diagnostics, fragment, severity) {
-  const diagnostic = diagnostics.find((entry) => ruleCode(entry).includes(fragment));
+function assertDiagnostic(diagnostics, id, severity) {
+  const diagnostic = diagnostics.find((entry) => ruleIdOf(entry) === id);
   assert.ok(
     diagnostic,
-    `expected ${fragment} ${severity}; received: ${JSON.stringify(diagnostics, null, 2)}`,
+    `expected ${id} ${severity}; received: ${JSON.stringify(diagnostics, null, 2)}`,
   );
   assert.equal(severityOf(diagnostic), severity, JSON.stringify(diagnostic, null, 2));
 }
 
-function assertNoDiagnostic(diagnostics, fragment) {
+function assertNoDiagnostic(diagnostics, id) {
   assert.equal(
-    diagnostics.some((entry) => ruleCode(entry).includes(fragment)),
+    diagnostics.some((entry) => ruleIdOf(entry) === id),
     false,
-    `unexpected ${fragment}: ${JSON.stringify(diagnostics, null, 2)}`,
+    `unexpected ${id}: ${JSON.stringify(diagnostics, null, 2)}`,
   );
 }
 
@@ -249,42 +252,48 @@ try {
     expectedConfig.rules,
     ...expectedConfig.overrides.map((entry) => entry.rules),
   );
+  const areaOf = (id) =>
+    id.startsWith('jsx-a11y/')
+      ? 'jsxA11y'
+      : id.startsWith('import/') || id === 'sort-imports'
+        ? 'imports'
+        : id.includes('/')
+          ? id.split('/')[0]
+          : 'javascript';
+  const ruleInputs = (id, kind) => {
+    const standalone = standaloneCases.find((entry) => entry.rule === id);
+    let inputs;
+    if (standalone) {
+      inputs = { 'input.test.tsx': standalone[`${kind}Source`] };
+    } else {
+      assert.ok(historicalFiles[id], `missing historical inputs for ${id}`);
+      inputs = Object.fromEntries(
+        Object.entries(historicalFiles[id].files)
+          .filter(
+            ([path]) =>
+              !path.endsWith('.json') &&
+              (path.startsWith(`${kind}/`) ||
+                path === `${kind}.tsx` ||
+                path === `${kind}.ts` ||
+                path.endsWith(`-${kind}.tsx`)),
+          )
+          .map(([path, source]) => [path.replace(new RegExp(`^${kind}/`), ''), source]),
+      );
+    }
+    assert.ok(Object.keys(inputs).length, `${id} ${kind} must have a source`);
+    return inputs;
+  };
   const ruleFailures = [];
   for (const [id, expectedValue] of Object.entries(expectedRules)) {
     try {
-      const name = id.startsWith('jsx-a11y/')
-        ? 'jsxA11y'
-        : id.startsWith('import/') || id === 'sort-imports'
-          ? 'imports'
-          : id.includes('/')
-            ? id.split('/')[0]
-            : 'javascript';
+      const name = areaOf(id);
       const expression = ['react', 'jsxA11y', 'nextjs', 'vitest'].includes(name)
         ? `${name}({ files: ['**/*'] })`
         : name;
       const severity = Array.isArray(expectedValue) ? expectedValue[0] : expectedValue;
-      const standalone = standaloneCases.find((entry) => entry.rule === id);
       for (const kind of ['invalid', 'valid']) {
         const directory = `rule-cases/${id.replace('/', '-')}/${kind}`;
-        let inputs;
-        if (standalone) {
-          inputs = { 'input.test.tsx': standalone[`${kind}Source`] };
-        } else {
-          assert.ok(historicalFiles[id], `missing historical inputs for ${id}`);
-          inputs = Object.fromEntries(
-            Object.entries(historicalFiles[id].files)
-              .filter(
-                ([path]) =>
-                  !path.endsWith('.json') &&
-                  (path.startsWith(`${kind}/`) ||
-                    path === `${kind}.tsx` ||
-                    path === `${kind}.ts` ||
-                    path.endsWith(`-${kind}.tsx`)),
-              )
-              .map(([path, source]) => [path.replace(new RegExp(`^${kind}/`), ''), source]),
-          );
-        }
-        assert.ok(Object.keys(inputs).length, `${id} ${kind} must have a source`);
+        const inputs = ruleInputs(id, kind);
         for (const [path, source] of Object.entries(inputs))
           writeFile(`${directory}/${path}`, source);
         writeFile(
@@ -300,7 +309,7 @@ try {
           },
         );
         const diagnostics = diagnosticsFrom(result.stdout);
-        if (kind === 'invalid') assertDiagnostic(diagnostics, id.split('/').at(-1), severity);
+        if (kind === 'invalid') assertDiagnostic(diagnostics, id, severity);
         else
           assert.equal(
             diagnostics.length,
@@ -315,6 +324,68 @@ try {
   assert.deepEqual(ruleFailures, [], 'per-rule installed-consumer regressions');
   console.log(
     `Verified normal/violation inputs and exit status for all ${Object.keys(expectedRules).length} selected rules.`,
+  );
+
+  // Run the same inputs through the README composition: area fragments in `extends`
+  // with consumer path globs. Other rules may also report; only the target is asserted.
+  const composedConfig = `import { defineConfig } from 'oxlint'\nimport { imports, javascript, jsxA11y, nextjs, react, typescript, vitest } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({\n  extends: [\n    javascript,\n    imports,\n    typescript,\n    react({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),\n    jsxA11y({ files: ['src/**/*.{tsx,jsx}'] }),\n    nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),\n    vitest({ files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] }),\n  ],\n})\n`;
+  writeFile('oxlint-composed.config.mts', composedConfig);
+  const nextRouterPaths = {
+    app: {
+      'src/app/page.tsx': 'src/app/page.tsx',
+      'src/pages/index.tsx': 'src/app/page.tsx',
+      'src/pages/about.tsx': 'src/app/about/page.tsx',
+    },
+    pages: {
+      'src/app/page.tsx': 'src/pages/index.tsx',
+      'src/pages/index.tsx': 'src/pages/index.tsx',
+      'src/pages/about.tsx': 'src/pages/about.tsx',
+    },
+  };
+  const composedFailures = [];
+  for (const [id, expectedValue] of Object.entries(expectedRules)) {
+    const area = areaOf(id);
+    const severity = Array.isArray(expectedValue) ? expectedValue[0] : expectedValue;
+    for (const kind of ['invalid', 'valid']) {
+      for (const router of area === 'nextjs' ? ['app', 'pages'] : [undefined]) {
+        try {
+          const directory = `composed-cases/${id.replace('/', '-')}/${router ? `${kind}-${router}` : kind}`;
+          const placedPaths = Object.entries(ruleInputs(id, kind)).map(([path, source]) => {
+            const placed = router
+              ? nextRouterPaths[router][path]
+              : `${area === 'vitest' ? 'tests' : 'src'}/${path}`;
+            assert.ok(placed, `no ${router} router placement for ${path}`);
+            writeFile(`${directory}/${placed}`, source);
+            return placed;
+          });
+          writeFile(`${directory}/oxlint.config.mts`, composedConfig);
+          const { stdout, status } = run(
+            oxlintPath,
+            ['--config', 'oxlint.config.mts', '--format', 'json', ...placedPaths],
+            { cwd: join(consumerDirectory, directory), expectedStatus: null },
+          );
+          const diagnostics = diagnosticsFrom(stdout);
+          const targets = diagnostics.filter((diagnostic) => ruleIdOf(diagnostic) === id);
+          if (kind === 'invalid') {
+            assert.ok(targets.length > 0, `${id} not reported: ${JSON.stringify(diagnostics)}`);
+            for (const diagnostic of targets)
+              assert.equal(severityOf(diagnostic), severity, JSON.stringify(diagnostic));
+          } else {
+            assert.equal(targets.length, 0, `unexpected ${id}: ${JSON.stringify(targets)}`);
+          }
+          const errorStatus = diagnostics.some((diagnostic) => severityOf(diagnostic) === 'error')
+            ? 1
+            : 0;
+          assert.equal(status, errorStatus, `exit status for ${JSON.stringify(diagnostics)}`);
+        } catch (error) {
+          composedFailures.push(`${id} ${kind}${router ? ` (${router})` : ''}: ${error.message}`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(composedFailures, [], 'composed installed-consumer regressions');
+  console.log(
+    `Verified all ${Object.keys(expectedRules).length} selected rules through the README composition, including nextjs rules under src/app and src/pages.`,
   );
 
   const candidateAreas = Object.values(areaExpressions).join(',\n    ');
@@ -377,31 +448,31 @@ try {
     typescript: {
       bad: 'src/require-invalid.ts',
       good: 'src/require-valid.mts',
-      code: 'no-require-imports',
+      code: 'typescript/no-require-imports',
       severity: 'warn',
     },
     react: {
       bad: 'src/react-invalid.tsx',
       good: 'src/react-valid.tsx',
-      code: 'rules-of-hooks',
+      code: 'react/rules-of-hooks',
       severity: 'error',
     },
     jsxA11y: {
       bad: 'src/a11y-invalid.tsx',
       good: 'src/a11y-valid.tsx',
-      code: 'alt-text',
+      code: 'jsx-a11y/alt-text',
       severity: 'error',
     },
     nextjs: {
       bad: 'src/next-invalid.tsx',
       good: 'src/next-valid.tsx',
-      code: 'no-async-client-component',
+      code: 'nextjs/no-async-client-component',
       severity: 'error',
     },
     vitest: {
       bad: 'tests/focused.test.ts',
       good: 'tests/normal.test.ts',
-      code: 'no-focused-tests',
+      code: 'vitest/no-focused-tests',
       severity: 'error',
     },
   };
@@ -424,8 +495,8 @@ try {
     ['tests/contextual.test.ts'],
     0,
   );
-  assertDiagnostic(contextualTests, 'no-standalone-expect', 'warn');
-  assertDiagnostic(contextualTests, 'valid-describe-callback', 'warn');
+  assertDiagnostic(contextualTests, 'vitest/no-standalone-expect', 'warn');
+  assertDiagnostic(contextualTests, 'vitest/valid-describe-callback', 'warn');
   writeFile(
     'tests/async-suite.test.ts',
     "import { describe, expect, it } from 'vitest'\ndescribe('suite', async () => { it('works', () => { expect(1).toBe(1) }) })\n",
@@ -464,8 +535,8 @@ try {
       ['src/polyfill.tsx'],
       detected ? 1 : 0,
     );
-    if (detected) assertDiagnostic(diagnostics, 'no-unwanted-polyfillio', 'error');
-    else assertNoDiagnostic(diagnostics, 'no-unwanted-polyfillio');
+    if (detected) assertDiagnostic(diagnostics, 'nextjs/no-unwanted-polyfillio', 'error');
+    else assertNoDiagnostic(diagnostics, 'nextjs/no-unwanted-polyfillio');
   }
 
   const importsConfig = 'oxlint-imports.config.mts';
@@ -476,7 +547,7 @@ try {
   const deniedWarning = lint(oxlintPath, typescriptConfig, ['src/require-invalid.ts'], 1, [
     '--deny-warnings',
   ]);
-  assertDiagnostic(deniedWarning, 'no-require-imports', 'warn');
+  assertDiagnostic(deniedWarning, 'typescript/no-require-imports', 'warn');
   assert.equal(
     lint(oxlintPath, typescriptConfig, ['src/require-valid.mts'], 0, ['--deny-warnings']).length,
     0,
@@ -493,19 +564,22 @@ try {
     0,
   );
   const ctsDiagnostics = lint(oxlintPath, typescriptConfig, ['src/ignored.cts'], 0);
-  assertNoDiagnostic(ctsDiagnostics, 'no-require-imports');
+  assertNoDiagnostic(ctsDiagnostics, 'typescript/no-require-imports');
 
   const reactConfig = 'oxlint-react.config.mts';
   assertNoDiagnostic(
     lint(oxlintPath, reactConfig, ['outside/react-invalid.tsx'], 0),
-    'rules-of-hooks',
+    'react/rules-of-hooks',
   );
   const vitestConfig = 'oxlint-vitest.config.mts';
   assertNoDiagnostic(
     lint(oxlintPath, vitestConfig, ['outside/focused.test.ts'], 0),
-    'no-focused-tests',
+    'vitest/no-focused-tests',
   );
-  assertNoDiagnostic(lint(oxlintPath, vitestConfig, ['src/not-test.ts'], 0), 'no-focused-tests');
+  assertNoDiagnostic(
+    lint(oxlintPath, vitestConfig, ['src/not-test.ts'], 0),
+    'vitest/no-focused-tests',
+  );
 
   const combinedDiagnostics = lint(
     oxlintPath,
@@ -520,10 +594,10 @@ try {
     1,
   );
   assertDiagnostic(combinedDiagnostics, 'no-debugger', 'error');
-  assertDiagnostic(combinedDiagnostics, 'no-require-imports', 'warn');
-  assertDiagnostic(combinedDiagnostics, 'rules-of-hooks', 'error');
-  assertDiagnostic(combinedDiagnostics, 'alt-text', 'error');
-  assertDiagnostic(combinedDiagnostics, 'no-focused-tests', 'error');
+  assertDiagnostic(combinedDiagnostics, 'typescript/no-require-imports', 'warn');
+  assertDiagnostic(combinedDiagnostics, 'react/rules-of-hooks', 'error');
+  assertDiagnostic(combinedDiagnostics, 'jsx-a11y/alt-text', 'error');
+  assertDiagnostic(combinedDiagnostics, 'vitest/no-focused-tests', 'error');
   assert.equal(
     lint(oxlintPath, 'oxlint.config.mts', ['src/override.tsx'], 0).length,
     0,
