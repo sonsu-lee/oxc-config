@@ -8,6 +8,8 @@ export type OxlintConfigFragment = OxlintConfig;
 
 export type { FilesPresetOptions } from './scoped.ts';
 
+export { default, type SonsuOptions } from './factory.ts';
+
 export { javascript } from './configs/javascript.ts';
 export { imports } from './configs/imports.ts';
 export { typescript } from './configs/typescript.ts';

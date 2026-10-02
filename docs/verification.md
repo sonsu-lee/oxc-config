@@ -1,6 +1,6 @@
 # 패키지 검증
 
-이 문서는 현재 TS 소스·빌드 산출물·tarball 소비자를 확인하는 명령과 관찰 범위를 기록한다. 2026-09-29 환경은 macOS arm64, Node 24.21.0 LTS, pnpm 12.6.0, TypeScript 6.0.3, Oxlint 1.85.0, Oxfmt 0.70.0이다. 버전은 개발 의존성과 lockfile에 고정하며 소비자 verifier도 manifest의 값을 읽는다.
+이 문서는 현재 TS 소스·빌드 산출물·tarball 소비자를 확인하는 명령과 관찰 범위를 기록한다. 2026-10-03 factory 검증 환경은 macOS arm64, Node 24.21.0 LTS, pnpm 12.6.0, TypeScript 6.0.3, Oxlint 1.85.0, Oxfmt 0.70.0이다. 버전은 개발 의존성과 lockfile에 고정하며 소비자 verifier도 manifest의 값을 읽는다.
 
 ## 재현
 
@@ -11,12 +11,12 @@ pnpm run verify
 
 `verify`는 아래 순서로 실행하며 하나라도 실패하면 종료한다. pack과 소비자 설치는 pnpm으로 실행하며 설치에는 npm registry 접근이 필요하다. `.node-version`과 `packageManager`에 실행 버전을 고정하고 `pnpm-lock.yaml`로 설치를 재현한다.
 
-| 단계                       | 확인하는 계약                                                                  |
-| -------------------------- | ------------------------------------------------------------------------------ |
-| `pnpm test`                | `dist/` 정리 후 strict TS 빌드·선언 emit, 생성 JS의 public contract 6개 테스트 |
-| `pnpm run lint`            | 저장소 소스·스크립트·config에 JavaScript/import/TypeScript 조각 적용           |
-| `pnpm run format:check`    | 유지하는 소스·설정·문서의 포맷; 연구 원본·회귀 fixture 제외                    |
-| `pnpm run verify:consumer` | prepack 빌드, tarball 파일 목록, 실제 설치된 package imports·타입·lint·format  |
+| 단계                       | 확인하는 계약                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| `pnpm test`                | `dist/` 정리 후 strict TS 빌드·선언 emit, 생성 JS의 public contract 검사      |
+| `pnpm run lint`            | 저장소 소스·스크립트·config에 `sonsu()`의 기본 세트 적용                      |
+| `pnpm run format:check`    | 유지하는 소스·설정·문서의 포맷; 연구 원본·회귀 fixture 제외                   |
+| `pnpm run verify:consumer` | prepack 빌드, tarball 파일 목록, 실제 설치된 package imports·타입·lint·format |
 
 소비자 verifier는 시스템 임시 폴더에 별도 package와 pnpm store를 만든다. 완료 또는 실패 후 자기 임시 폴더를 제거한다. 보존하려면 `pnpm run verify:consumer -- --keep`을 사용한다.
 
@@ -24,11 +24,11 @@ pnpm run verify
 
 - 배포 경로를 `dist`로 바꾼 기존 검사부터 실행해, 이전 패키지가 `tarball is missing dist/oxlint/index.js`로 실패함을 확인했다.
 - 빌드는 TS 소스에서 JS와 `.d.ts`를 함께 생성한다. 기존 수동 선언 파일은 제거했다. 상대 `.ts` import를 배포 `.js`로 변환하므로 저장소의 TS config도 소스를 직접 읽을 수 있다.
-- 계약 테스트 6개는 7개 runtime export, 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자에서 `lint` script를 실제로 실행해 확인한다.
+- 계약 테스트는 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. Factory의 잘못된 opt-in 입력과 기본 세트·선택 preset의 호출 간 변경 격리도 검사한다. Export 이름 목록 자체는 고정하지 않는다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자에서 `lint` script를 실제로 실행해 확인한다.
 - tarball에는 package.json·README·dist만 허용하고 두 subpath의 JS·타입 선언 존재를 검사한다. 소비자 `tsc`는 `skipLibCheck` 없이 생성 선언을 확인한다.
 - Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다. error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
 - 74개 전부의 정상·위반 소스를 설치된 tarball의 개별 규칙 값으로 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.
-- 같은 74개 입력을 README의 7영역 조합(`extends`와 README 경로 glob)으로 다시 실행한다. 일반 규칙은 `src/`, Vitest는 `tests/`에 두고, Next 6개는 App(`src/app/page.tsx`, `src/app/about/page.tsx`)과 Pages(`src/pages/index.tsx`, `src/pages/about.tsx`) 배치로 각각 실행한다(일반 68×2 + Next 6×2×2 = 160 case). 위반은 정확한 대상 규칙 ID와 severity, 정상은 대상 ID 없음을 단언한다. 다른 조각의 진단은 허용하고, 전체 진단의 error 유무로 exit 0/1을 확인한다. 같은 조합 config는 소비자 root의 `oxlint-composed.config.mts`로도 생성되어 소비자 `tsc` 검사에 포함된다. Next 앱 build·router runtime은 확인하지 않는다.
+- 같은 74개 입력을 README의 전체 factory 설정(`sonsu`와 README 경로 glob)으로 다시 실행한다. 일반 규칙은 `src/`, Vitest는 `tests/`에 두고, Next 6개는 App(`src/app/page.tsx`, `src/app/about/page.tsx`)과 Pages(`src/pages/index.tsx`, `src/pages/about.tsx`) 배치로 각각 실행한다(일반 68×2 + Next 6×2×2 = 160 case). 위반은 정확한 대상 규칙 ID와 severity, 정상은 대상 ID 없음을 단언한다. 다른 조각의 진단은 허용하고, 전체 진단의 error 유무로 exit 0/1을 확인한다. 같은 조합 config는 소비자 root의 `oxlint-composed.config.mts`로도 생성되어 소비자 `tsc` 검사에 포함된다. Next 앱 build·router runtime은 확인하지 않는다.
 - 진단 판정은 Oxlint의 `plugin(rule)` code를 공개 규칙 ID로 정규화한 뒤 정확히 비교한다(`eslint` 접두사 제거, `react-hooks`→`react`, `next`→`nextjs`). 인식하지 못한 code는 실패로 처리한다.
 - warning만 있으면 exit 0, 같은 warning에 `--deny-warnings`를 붙이면 severity는 warning인 채 exit 1, error는 옵션과 무관하게 exit 1, `off` override는 옵션을 붙여도 진단 없이 exit 0임을 설치 소비자로 확인한다. 결합 설정에서도 error와 warn이 각각 유지된다.
 - 저장소 manifest의 `lint` script를 설치 소비자 안의 별도 project에서 `pnpm run lint`로 실행한다. warning만 있으면 warning을 출력하고 exit 0, error 파일을 더하면 exit 1이어야 한다. script에 `--deny-warnings`나 `--quiet`를 붙이거나 대상 경로를 바꾸면 이 검사가 실패한다.
@@ -36,6 +36,17 @@ pnpm run verify
 - Oxfmt의 quote·JSX attribute·scripts 정렬·import 선언 순서·파일별 override·생성물 ignore를 write 후 check로 확인한다.
 
 2026-09-29 구조·pnpm 전환 실행 결과: TS 빌드와 계약 테스트 6/6, 저장소 lint·format, tarball 설치 소비자 검사가 모두 통과했다. 검사 명령과 tarball 소비자도 pnpm으로 전환했고 `pnpm install --frozen-lockfile`로 설치했다. 로컬 Markdown 링크의 대상 파일 존재를 확인했다. 독립 리뷰에서 발견한 호출 간 규칙 공유 문제는 재현 후 복사로 수정했고, 회귀 검사에서 기존 구현의 실패와 수정 후 통과를 확인했다. 이 결과의 적용 범위는 위 단계의 입력에 한정된다.
+
+## Factory API 검증
+
+2026-10-03 `pnpm run verify` 통과: TS 빌드·계약 테스트 7/7, 저장소 lint·format, 별도 임시 프로젝트에 설치한 tarball의 실제 CLI 검사를 실행했다.
+
+- `sonsu()` 기본 세트의 error/warn과 TypeScript의 `.ts`·`.tsx`·`.mts` 적용, `.js`·`.cts` 제외를 확인했다. 옵션을 생략한 React·접근성·Next.js·Vitest 규칙은 활성화되지 않는다.
+- root 규칙 변경, 소비자 `extends`의 순서, root 규칙보다 우선하는 scoped 규칙, preset 뒤에서 적용되는 소비자 override와 여러 override의 순서를 실제 진단으로 확인했다. 두 ignore 경로의 위반은 제외되고 나머지 파일은 검사된다.
+- 전체 factory의 74개 규칙 조합과 기존 개별 조각 검사를 모두 유지했다. 추가 `e2e-spec.ts` 경로, 잘못된 glob의 로더 오류, 경고가 보이되 차단하지 않는 소비자 `pnpm run lint`도 factory로 확인했다.
+- 설치된 `SonsuOptions`와 반환값의 `OxlintConfig` 호환성을 소비자 `tsc`로 확인했다. `files` 누락·boolean 옵션·잘못된 배열 타입·미지원 옵션을 타입 오류로 검출한다.
+
+패키지명 변경·registry 배포는 실행하지 않았다. 설치 대상은 현재 이름인 `@sonsu/oxc-config`의 로컬 tarball이다.
 
 ## Severity 재검토 결과
 

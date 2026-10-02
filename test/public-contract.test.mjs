@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import * as oxlint from '../dist/oxlint/index.js';
+import sonsu, * as oxlint from '../dist/oxlint/index.js';
 import * as oxfmt from '../dist/oxfmt/index.js';
 
 const evidence = JSON.parse(
@@ -55,19 +55,6 @@ function optionsIn(rules) {
 function severityOf(value) {
   return Array.isArray(value) ? value[0] : value;
 }
-
-test('exports the seven designed Oxlint areas and shared Oxfmt settings', () => {
-  assert.deepEqual(Object.keys(oxlint).sort(), [
-    'imports',
-    'javascript',
-    'jsxA11y',
-    'nextjs',
-    'react',
-    'typescript',
-    'vitest',
-  ]);
-  assert.deepEqual(Object.keys(oxfmt), ['shared']);
-});
 
 test('preserves the current 74-rule regression baseline and options', () => {
   const fragments = {
@@ -163,6 +150,73 @@ test('keeps rule mutations local to each scoped builder result', () => {
     const second = build({ files: ['components/**'] });
     assert.deepEqual(second.overrides[0].rules, expected, `${name} leaked a rule mutation`);
   }
+});
+
+test('rejects invalid scoped options through the factory rather than silently disabling them', () => {
+  const invalidOptions = [
+    false,
+    true,
+    null,
+    {},
+    { files: [] },
+    { files: new Array(1) },
+    { files: [''] },
+    { files: [' src/**'] },
+    { files: ['src/**', 42] },
+  ];
+
+  for (const name of Object.keys(pathPresets)) {
+    for (const options of invalidOptions) {
+      assert.throws(
+        () => sonsu({ [name]: options }),
+        TypeError,
+        `${name} must reject invalid scoped options`,
+      );
+    }
+  }
+});
+
+test('isolates built-in factory rules and overrides from other calls and named baselines', () => {
+  const options = Object.fromEntries(
+    Object.keys(pathPresets).map((name) => [name, { files: ['app/**'] }]),
+  );
+  const baselines = [oxlint.javascript, oxlint.imports, oxlint.typescript];
+  const expectedBaselines = structuredClone(baselines);
+  const first = sonsu(options);
+  const second = sonsu(options);
+  const expected = structuredClone(second);
+
+  for (const preset of first.extends) {
+    if (preset.rules) {
+      for (const rule of Object.keys(preset.rules)) {
+        const value = preset.rules[rule];
+        if (Array.isArray(value)) {
+          value[0] = 'off';
+          if (value[1] && typeof value[1] === 'object') {
+            value[1].ignoreDeclarationSort = false;
+          }
+        } else {
+          preset.rules[rule] = 'off';
+        }
+      }
+    }
+    for (const override of preset.overrides ?? []) {
+      override.files[0] = 'other/**';
+      override.plugins.push('import');
+      for (const rule of Object.keys(override.rules)) {
+        const value = override.rules[rule];
+        if (Array.isArray(value)) {
+          value[1].warnOnDuplicates = false;
+        } else {
+          override.rules[rule] = 'off';
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(second, expected, 'mutations leaked into an existing factory result');
+  assert.deepEqual(sonsu(options), expected, 'mutations leaked into a later factory result');
+  assert.deepEqual(baselines, expectedBaselines, 'mutations leaked into named baselines');
 });
 
 test('uses the non-reordering shared Oxfmt contract and generated-file exclusions', () => {

@@ -1,11 +1,12 @@
 # 패키지 설계
 
-현재 공개 API는 Oxlint의 7개 규칙 영역과 Oxfmt의 `shared`다. 소비자가 필요한 영역을 `extends`로 조합하고 실제 파일 경로·프레임워크 설정·예외를 지정한다. 74개 규칙 ID·옵션·파일 범위는 유지하고 severity는 규칙별로 재검토했다. `private: true`인 로컬 패키지이며 배포 결정은 별도다.
+현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. `private: true`인 로컬 패키지이며 이름 변경과 배포는 [#1](https://github.com/sonsu-lee/oxc-config/issues/1)의 별도 범위다.
 
 ## 소스와 배포 구조
 
 ```text
 src/oxlint/index.ts
+  ├─ factory.ts          기본 세트와 명시적 옵션을 native extends로 구성
   ├─ configs/javascript.ts
   ├─ configs/imports.ts
   ├─ configs/typescript.ts
@@ -25,20 +26,27 @@ dist/**/*.js + dist/**/*.d.ts
 - 각 영역 모듈은 자신의 규칙·plugin·적용 범위를 함께 가진다. 규칙을 바꿀 때 한 영역 파일에서 판단할 수 있다.
 - `scoped.ts`는 네 builder의 `files` 검사와 동일한 override 구조만 공유한다. 경로 추론과 glob 해석은 하지 않는다.
 - `index.ts`는 공개 export와 기존 type alias를 유지한다. 내부 모듈은 package exports로 열지 않는다.
+- `factory.ts`는 기본 세트와 선택한 조각을 모으고 native 설정 필드는 root에 둔다. 규칙 데이터의 정본은 기존 `configs/` 모듈이다.
 - `tsc`의 strict 검사와 Oxc 공식 설정 타입으로 소스와 옵션을 확인한다. 선언 파일은 같은 소스에서 생성한다.
 - `scripts/build.mjs`는 지정된 `dist/`를 비우고 로컬 TypeScript compiler를 실행한다. 소스 이동 후 오래된 파일이 tarball에 남지 않는다.
 - ESM과 타입 선언만 필요하므로 번들러 없이 `tsc`를 사용한다. type-only import는 JS 출력에서 사라진다. 소스의 상대 `.ts` import는 `rewriteRelativeImportExtensions`로 배포 JS에서 `.js`로 변환한다.
 - `files`에는 `dist`와 README만 포함한다. `dist`, `node_modules`, 로컬 작업 기록은 Git에서 제외한다.
 
-Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e/src)의 영역별 구성을 참고했다. 이 패키지는 Oxlint의 native `extends`로 합성하므로 별도 composer나 자동 감지 factory가 필요하지 않다.
+Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e/src)의 영역별 구성을 참고했다. [Factory 설계 #4](https://github.com/sonsu-lee/oxc-config/issues/4)는 기본 사용을 한 번의 호출로 줄이되, 설치된 의존성이나 폴더로 프레임워크를 자동 감지하지 않는다. 합성은 Oxlint의 native `extends`에 맡기고 별도 deep merge 엔진이나 설치 wizard를 만들지 않는다.
 
 ## 합성과 파일 범위
+
+`sonsu(options?: SonsuOptions)`는 기존 세 기본 조각, 선택한 `react`·`jsxA11y`·`nextjs`·`vitest`, 소비자 `extends` 순서로 설정을 구성한다. 프레임워크 옵션은 `FilesPresetOptions`이며 생략하면 비활성이다. `true`·`false` 축약형은 지원하지 않는다. 옵션의 나머지 native Oxlint 필드는 root 설정으로 전달한다.
+
+호출별 기본 조각은 복사하여 반환된 설정을 수정해도 다음 호출이나 공개 원본 조각으로 전파되지 않게 한다. 사용자 제공 설정에 별도의 deep clone이나 병합 규칙을 추가하지 않는다.
 
 `javascript`, `imports`, `typescript`는 설정 객체다. `react`, `jsxA11y`, `nextjs`, `vitest`는 `{ files: readonly string[] }`를 받아 설정을 반환한다. 각 조각은 단독 사용에서도 `categories.correctness: 'off'`로 암묵 규칙을 끈다. [초기 합성 반례](evidence/oxlint-module-composition.md)에서 이를 생략하면 선택하지 않은 규칙이 함께 활성화됐다.
 
 `files`는 누락·빈 배열·sparse 배열·비문자열·빈 문자열·앞뒤 공백을 거부하고 유효한 배열은 복사한다. `src/[` 같은 glob 문법 오류는 Oxlint 로더가 판단한다. 각 호출의 규칙 데이터와 중첩 옵션도 복사하여 한 결과의 수정이 다음 결과에 전파되지 않게 한다. 소비자는 `src/`, `app/`, `components/`, workspace 및 실제 Vitest 경로를 명시한다. Nest의 `*.e2e-spec.ts`나 접미사 없는 테스트도 runner 대상에 맞춰 추가한다.
 
-소비자의 root `settings`와 뒤쪽 `overrides`로 조정한다. plugin rule을 바꿀 때 해당 override에 `plugins`도 명시한다. root settings와 실제 진단을 함께 검사하며, `--print-config` 출력만으로 파일별 최종 적용을 단정하지 않는다.
+소비자의 root `rules`는 확장 설정의 root 규칙보다 우선하지만, matching override의 scoped 규칙보다 우선하지 않는다. scoped preset을 바꾸려면 뒤쪽 root `overrides`에서 파일 경로와 규칙을 지정한다. 소비자 override는 preset override 뒤에 적용되고 같은 파일에 일치하는 항목 중 뒤쪽이 우선한다. plugin rule을 바꿀 때 해당 override에 `plugins`도 명시한다.
+
+`extends` 배열은 기본 세트 뒤에 소비자가 지정한 순서로 추가한다. `ignorePatterns`는 소비자가 제공하는 root 목록이며 factory의 기본 ignore는 없다. `settings`와 다른 native 필드의 의미는 Oxlint가 결정한다. root settings와 실제 진단을 함께 검사하며, `--print-config` 출력만으로 파일별 최종 적용을 단정하지 않는다.
 
 ## 강제 수준
 

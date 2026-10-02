@@ -1,7 +1,5 @@
-import { defineConfig } from 'oxlint';
-import { imports, javascript, typescript } from './src/oxlint/index.ts';
+import sonsu from './src/oxlint/index.ts';
 
-export default defineConfig({
-  extends: [javascript, imports, typescript],
+export default sonsu({
   ignorePatterns: ['dist/', 'docs/evidence/', 'test/fixtures/'],
 });
