@@ -24,11 +24,12 @@ pnpm run verify
 
 - 배포 경로를 `dist`로 바꾼 기존 검사부터 실행해, 이전 패키지가 `tarball is missing dist/oxlint/index.js`로 실패함을 확인했다.
 - 빌드는 TS 소스에서 JS와 `.d.ts`를 함께 생성한다. 기존 수동 선언 파일은 제거했다. 상대 `.ts` import를 배포 `.js`로 변환하므로 저장소의 TS config도 소스를 직접 읽을 수 있다.
-- 계약 테스트 6개는 7개 runtime export, 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자의 실제 CLI 종료 코드로 확인한다.
+- 계약 테스트 6개는 7개 runtime export, 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자에서 `lint` script를 실제로 실행해 확인한다.
 - tarball에는 package.json·README·dist만 허용하고 두 subpath의 JS·타입 선언 존재를 검사한다. 소비자 `tsc`는 `skipLibCheck` 없이 생성 선언을 확인한다.
 - Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다. error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
 - 74개 전부의 정상·위반 소스를 설치된 tarball의 개별 규칙 값으로 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.
 - warning만 있으면 exit 0, 같은 warning에 `--deny-warnings`를 붙이면 severity는 warning인 채 exit 1, error는 옵션과 무관하게 exit 1, `off` override는 옵션을 붙여도 진단 없이 exit 0임을 설치 소비자로 확인한다. 결합 설정에서도 error와 warn이 각각 유지된다.
+- 저장소 manifest의 `lint` script를 설치 소비자 안의 별도 project에서 `pnpm run lint`로 실행한다. warning만 있으면 warning을 출력하고 exit 0, error 파일을 더하면 exit 1이어야 한다. script에 `--deny-warnings`나 `--quiet`를 붙이거나 대상 경로를 바꾸면 이 검사가 실패한다.
 - 장식 이미지의 빈 alt·activedescendant의 음수 tabindex, Vitest hook assertion·간결한 describe의 비차단 warning, async describe의 진단 없음, polyfill의 알려진 URL 탐지/누락과 중복 polyfill 차단을 회귀 검사한다. Vitest runner나 브라우저 실행 검사는 아니다.
 - Oxfmt의 quote·JSX attribute·scripts 정렬·import 선언 순서·파일별 override·생성물 ignore를 write 후 check로 확인한다.
 

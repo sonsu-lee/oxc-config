@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { delimiter, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -10,7 +10,7 @@ const temporaryRoot = mkdtempSync(join(tmpdir(), 'oxc-config-consumer-'));
 const packageDirectory = join(temporaryRoot, 'package');
 const consumerDirectory = join(temporaryRoot, 'consumer');
 const storeDirectory = join(temporaryRoot, 'pnpm-store');
-const { devDependencies, packageManager } = JSON.parse(
+const { devDependencies, packageManager, scripts } = JSON.parse(
   readFileSync(join(repositoryRoot, 'package.json'), 'utf8'),
 );
 const toolVersions = ['oxlint', 'oxfmt', 'typescript'].map(
@@ -18,9 +18,10 @@ const toolVersions = ['oxlint', 'oxfmt', 'typescript'].map(
 );
 const keepTemporaryFiles = process.argv.includes('--keep');
 
-function run(command, args, { cwd, expectedStatus = 0, maxBuffer = 10 * 1024 * 1024 } = {}) {
+function run(command, args, { cwd, env, expectedStatus = 0, maxBuffer = 10 * 1024 * 1024 } = {}) {
   const result = spawnSync(command, args, {
     cwd,
+    env,
     encoding: 'utf8',
     maxBuffer,
     timeout: 180_000,
@@ -494,6 +495,31 @@ try {
   );
   const ctsDiagnostics = lint(oxlintPath, typescriptConfig, ['src/ignored.cts'], 0);
   assertNoDiagnostic(ctsDiagnostics, 'no-require-imports');
+
+  // Run the repository's own `lint` script through pnpm, not the binary: warnings must
+  // stay visible and nonblocking while errors still fail. The nested project limits `.`
+  // to these inputs and resolves the installed package from the consumer.
+  writeFile(
+    'lint-script/package.json',
+    JSON.stringify({ private: true, type: 'module', scripts: { lint: scripts.lint } }),
+  );
+  writeFile(
+    'lint-script/oxlint.config.ts',
+    "import { defineConfig } from 'oxlint'\nimport { javascript, typescript } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({ extends: [javascript, typescript] })\n",
+  );
+  writeFile('lint-script/warning.ts', "const fs = require('node:fs')\nvoid fs\n");
+  const lintScript = {
+    cwd: join(consumerDirectory, 'lint-script'),
+    env: {
+      ...process.env,
+      PATH: `${join(consumerDirectory, 'node_modules/.bin')}${delimiter}${process.env.PATH}`,
+    },
+  };
+  const warningOnlyLint = run('pnpm', ['run', 'lint'], lintScript);
+  assert.match(warningOnlyLint.stdout, /no-require-imports/, 'pnpm run lint must report warnings');
+  writeFile('lint-script/error.js', 'debugger\n');
+  const erroringLint = run('pnpm', ['run', 'lint'], { ...lintScript, expectedStatus: 1 });
+  assert.match(erroringLint.stdout, /no-debugger/, 'pnpm run lint must report errors');
 
   const reactConfig = 'oxlint-react.config.mts';
   assertNoDiagnostic(
