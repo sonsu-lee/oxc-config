@@ -28,6 +28,8 @@ pnpm run verify
 - tarball에는 package.json·README·dist만 허용하고 두 subpath의 JS·타입 선언 존재를 검사한다. 소비자 `tsc`는 `skipLibCheck` 없이 생성 선언을 확인한다.
 - Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다. error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
 - 74개 전부의 정상·위반 소스를 설치된 tarball의 개별 규칙 값으로 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.
+- 같은 74개 입력을 README의 7영역 조합(`extends`와 README 경로 glob)으로 다시 실행한다. 일반 규칙은 `src/`, Vitest는 `tests/`에 두고, Next 6개는 App(`src/app/page.tsx`, `src/app/about/page.tsx`)과 Pages(`src/pages/index.tsx`, `src/pages/about.tsx`) 배치로 각각 실행한다(일반 68×2 + Next 6×2×2 = 160 case). 위반은 정확한 대상 규칙 ID와 severity, 정상은 대상 ID 없음을 단언한다. 다른 조각의 진단은 허용하고, 전체 진단의 error 유무로 exit 0/1을 확인한다. 같은 조합 config는 소비자 root의 `oxlint-composed.config.mts`로도 생성되어 소비자 `tsc` 검사에 포함된다. Next 앱 build·router runtime은 확인하지 않는다.
+- 진단 판정은 Oxlint의 `plugin(rule)` code를 공개 규칙 ID로 정규화한 뒤 정확히 비교한다(`eslint` 접두사 제거, `react-hooks`→`react`, `next`→`nextjs`). 인식하지 못한 code는 실패로 처리한다.
 - warning만 있으면 exit 0, 같은 warning에 `--deny-warnings`를 붙이면 severity는 warning인 채 exit 1, error는 옵션과 무관하게 exit 1, `off` override는 옵션을 붙여도 진단 없이 exit 0임을 설치 소비자로 확인한다. 결합 설정에서도 error와 warn이 각각 유지된다.
 - 장식 이미지의 빈 alt·activedescendant의 음수 tabindex, Vitest hook assertion·간결한 describe의 비차단 warning, async describe의 진단 없음, polyfill의 알려진 URL 탐지/누락과 중복 polyfill 차단을 회귀 검사한다. Vitest runner나 브라우저 실행 검사는 아니다.
 - Oxfmt의 quote·JSX attribute·scripts 정렬·import 선언 순서·파일별 override·생성물 ignore를 write 후 check로 확인한다.
@@ -61,7 +63,7 @@ pnpm run verify
 - 새 tarball을 실제 Next/Nest/Hono 앱에 넣은 전체 build·test·runtime 통합: `not_run`. 이번 소비자는 package/config API와 대표 진단·formatter 동작을 확인한다.
 - 다른 Node·OS·TypeScript·Oxc 버전, editor와 원격 CI: `not_run`.
 - registry 이름 소유권·publish·release 작업: `not_run`. 패키지는 `private: true`다.
-- 74개 채택 규칙의 개별 정상·위반 입력은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, 모든 glob·옵션·사용자 정의 component 조합: `not_run`.
+- 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
 빌드 성공은 설정 패키지의 출력과 타입을 확인한다. 소비 앱의 제품 동작은 해당 앱의 타입·테스트·빌드·런타임 검사로 확인한다.
