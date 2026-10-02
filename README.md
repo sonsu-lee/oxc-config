@@ -15,37 +15,32 @@ pnpm pack
 pnpm add -D /path/to/sonsu-oxc-config-0.0.0.tgz oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`pnpm pack` runs the build automatically. Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports objects and has no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
+`pnpm pack` runs the build automatically. Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
 ### Oxlint
 
 ```ts
 // oxlint.config.ts
-import { defineConfig } from 'oxlint';
-import {
-  imports,
-  javascript,
-  jsxA11y,
-  nextjs,
-  react,
-  typescript,
-  vitest,
-} from '@sonsu/oxc-config/oxlint';
+import sonsu from '@sonsu/oxc-config/oxlint';
 
-export default defineConfig({
-  extends: [
-    javascript,
-    imports,
-    typescript,
-    react({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    jsxA11y({ files: ['src/**/*.{tsx,jsx}'] }),
-    nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    vitest({ files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] }),
-  ],
+export default sonsu();
+```
+
+`sonsu()` combines `javascript`, `imports` and `typescript`. Framework and test rules are opt-in; choose the options your project uses and supply its actual paths:
+
+```ts
+// oxlint.config.ts
+import sonsu from '@sonsu/oxc-config/oxlint';
+
+export default sonsu({
+  react: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  jsxA11y: { files: ['src/**/*.{tsx,jsx}'] },
+  nextjs: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  vitest: { files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] },
 });
 ```
 
-Select the areas your project uses and supply its actual paths. `react`, `jsxA11y`, `nextjs`, and `vitest` require a non-empty array of non-empty, unpadded strings. Missing, sparse or invalid entries throw `TypeError`. Accepted arrays and each result’s rule data are copied, including nested options; Oxlint validates glob syntax. There is no framework, directory or test-runner detection.
+Each option requires a non-empty array of non-empty, unpadded strings. Missing, sparse or invalid entries throw `TypeError`. Omit an option to disable it; booleans are not supported. Accepted arrays and built-in rule data are copied, including nested options, so modifying one result does not change another. Oxlint validates glob syntax. There is no framework, directory or test-runner detection.
 
 | Area                 | Current rules | error / warn | Scope                     |
 | -------------------- | ------------: | -----------: | ------------------------- |
@@ -57,17 +52,26 @@ Select the areas your project uses and supply its actual paths. `react`, `jsxA11
 | `nextjs({ files })`  |             6 |        4 / 2 | Consumer App Router paths |
 | `vitest({ files })`  |             7 |        3 / 4 | Consumer Vitest paths     |
 
-The current baseline is **42 errors and 32 warnings**. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each fragment disables implicit `correctness` rules. `typescript` is syntax-only, excludes `.cts`, and does not enable typed lint.
+With all areas enabled, the current baseline is **42 errors and 32 warnings**. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each fragment disables implicit `correctness` rules. `typescript` is syntax-only, excludes `.cts`, and does not enable typed lint.
 
 One explicit exception is `nextjs/no-unwanted-polyfillio`: Oxlint reports unsafe URLs and safe-CDN duplicate polyfills under the same rule ID. The shared preset prioritizes blocking the unsafe URLs, so **both findings are errors**, including performance-only duplicates. A consumer that needs the duplicate polyfill can override the rule to `warn`, but then unsafe-URL reports also become nonblocking. This rule is not comprehensive URL security enforcement.
 
 The default `pnpm run lint` runs `oxlint .`: warnings remain visible and exit successfully when there are no errors. [`--deny-warnings`](https://oxc.rs/docs/guide/usage/linter/cli#handle-warnings) changes the exit policy, not diagnostic severity. Use `pnpm exec oxlint --deny-warnings .` only when a project explicitly requires zero warnings. For selected mandatory checks, override those rules to `error` instead. `--quiet` only hides warning reports; it is not an alternative severity policy.
 
-Add project `settings`, `ignorePatterns` and overrides in the root consumer config. When overriding a plugin rule, include the plugin in that override:
+Pass native Oxlint fields such as `rules`, `settings`, `ignorePatterns`, `extends` and `overrides` to `sonsu()`. The factory uses Oxlint's native merge behavior rather than a custom deep merge:
+
+- Built-in configs come first in `extends`, followed by your additional `extends` entries in order. Root rules take precedence over extended root rules.
+- Matching file overrides apply after root rules. To change a scoped preset rule, add a matching entry to `overrides`; changing root `rules` alone does not override a scoped rule.
+- Your `overrides` follow the presets' overrides, and later matching entries win. Include the plugin when changing a plugin rule.
+- `ignorePatterns` is a root list you supply; the factory adds no default ignores. Other native fields keep Oxlint's own semantics.
 
 ```ts
-// The consumer can add these fields alongside extends.
-defineConfig({
+import sonsu from '@sonsu/oxc-config/oxlint';
+
+export default sonsu({
+  react: { files: ['src/**/*.{tsx,jsx}'] },
+  ignorePatterns: ['dist/**'],
+  rules: { 'no-debugger': 'warn' },
   settings: { react: { version: '19.0.0' } },
   overrides: [
     {
@@ -78,6 +82,21 @@ defineConfig({
   ],
 });
 ```
+
+#### Composing individual fragments
+
+Named exports remain available when you want only selected areas rather than the factory's baseline:
+
+```ts
+import { defineConfig } from 'oxlint';
+import { javascript, react } from '@sonsu/oxc-config/oxlint';
+
+export default defineConfig({
+  extends: [javascript, react({ files: ['src/**/*.{tsx,jsx}'] })],
+});
+```
+
+Use the exported `SonsuOptions` type for reusable factory options. The `FilesPresetOptions` and existing fragment types remain available.
 
 ### Oxfmt
 
@@ -112,6 +131,7 @@ pnpm run verify           # All of the above checks
 src/
   oxlint/
     index.ts             Public exports and type aliases
+    factory.ts           Default Oxlint composition and typed options
     scoped.ts            Shared files validation and override construction
     configs/             One module per rule area
   oxfmt/index.ts         Shared formatter options

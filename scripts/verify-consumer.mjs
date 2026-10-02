@@ -111,6 +111,10 @@ function configFor(imports) {
   return `import { defineConfig } from 'oxlint'\nimport { ${imports} } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({ extends: [${imports}] })\n`;
 }
 
+function factoryConfig(options = '') {
+  return `import sonsu from '@sonsu/oxc-config/oxlint'\nexport default sonsu(${options})\n`;
+}
+
 try {
   mkdirSync(packageDirectory);
   mkdirSync(consumerDirectory);
@@ -327,9 +331,14 @@ try {
     `Verified normal/violation inputs and exit status for all ${Object.keys(expectedRules).length} selected rules.`,
   );
 
-  // Run the same inputs through the README composition: area fragments in `extends`
-  // with consumer path globs. Other rules may also report; only the target is asserted.
-  const composedConfig = `import { defineConfig } from 'oxlint'\nimport { imports, javascript, jsxA11y, nextjs, react, typescript, vitest } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({\n  extends: [\n    javascript,\n    imports,\n    typescript,\n    react({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),\n    jsxA11y({ files: ['src/**/*.{tsx,jsx}'] }),\n    nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),\n    vitest({ files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] }),\n  ],\n})\n`;
+  // Run the same inputs through the README factory with consumer path globs.
+  // Other rules may also report; only the target is asserted.
+  const composedConfig = factoryConfig(`{
+  react: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  jsxA11y: { files: ['src/**/*.{tsx,jsx}'] },
+  nextjs: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  vitest: { files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] },
+}`);
   writeFile('oxlint-composed.config.mts', composedConfig);
   const nextRouterPaths = {
     app: {
@@ -389,10 +398,79 @@ try {
     `Verified all ${Object.keys(expectedRules).length} selected rules through the README composition, including nextjs rules under src/app and src/pages.`,
   );
 
-  const candidateAreas = Object.values(areaExpressions).join(',\n    ');
+  writeFile('oxlint-baseline.config.mts', factoryConfig());
   writeFile(
     'oxlint.config.mts',
-    `import { defineConfig } from 'oxlint'\nimport { javascript, imports, typescript, react, jsxA11y, nextjs, vitest } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({\n  extends: [\n    ${candidateAreas},\n  ],\n  overrides: [{ files: ['src/override.tsx'], plugins: ['react', 'jsx-a11y'], rules: { 'react/rules-of-hooks': 'off', 'jsx-a11y/alt-text': 'off' } }],\n  settings: { react: { version: '19.0.0' } },\n})\n`,
+    factoryConfig(`{
+  react: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  jsxA11y: { files: ['src/**/*.{tsx,jsx}'] },
+  nextjs: { files: ['src/**/*.{ts,tsx,js,jsx}'] },
+  vitest: { files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}', 'tests/**/*.e2e-spec.ts'] },
+  ignorePatterns: ['ignored-first/**', 'ignored-second/**'],
+  overrides: [
+    { files: ['src/override.tsx'], plugins: ['react', 'jsx-a11y'], rules: { 'react/rules-of-hooks': 'warn', 'jsx-a11y/alt-text': 'warn' } },
+    { files: ['src/override.tsx'], plugins: ['react', 'jsx-a11y'], rules: { 'react/rules-of-hooks': 'off', 'jsx-a11y/alt-text': 'off' } },
+  ],
+  settings: { react: { version: '19.0.0' } },
+}`),
+  );
+  writeFile('oxlint-custom-root.config.mts', factoryConfig("{ rules: { 'no-debugger': 'warn' } }"));
+  writeFile(
+    'oxlint-user-extends.config.mts',
+    factoryConfig(`{
+  react: { files: ['src/**/*.tsx'] },
+  extends: [
+    { rules: { 'no-debugger': 'off' } },
+    {
+      rules: { 'no-debugger': 'warn' },
+      overrides: [{ files: ['src/react-invalid.tsx'], plugins: ['react'], rules: { 'react/rules-of-hooks': 'off' } }],
+    },
+  ],
+}`),
+  );
+  writeFile(
+    'oxlint-root-scoped.config.mts',
+    factoryConfig(`{
+  react: { files: ['src/**/*.tsx'] },
+  plugins: ['react'],
+  rules: { 'react/rules-of-hooks': 'off' },
+}`),
+  );
+  writeFile(
+    'factory-types.mts',
+    `import sonsu, { type SonsuOptions } from '@sonsu/oxc-config/oxlint'
+import type { OxlintConfig } from 'oxlint'
+const options: SonsuOptions = {
+  react: { files: ['src/**/*.tsx'] },
+  jsxA11y: { files: ['src/**/*.jsx'] },
+  nextjs: { files: ['src/app/**/*.tsx'] },
+  vitest: { files: ['tests/**/*.test.ts'] },
+  extends: [{ rules: { 'no-debugger': 'warn' } }],
+  rules: { 'no-debugger': 'off' },
+  ignorePatterns: ['generated/**', 'vendor/**'],
+  overrides: [{ files: ['src/**/*.tsx'], plugins: ['react'], rules: { 'react/rules-of-hooks': 'off' } }],
+}
+const config: OxlintConfig = sonsu(options)
+const empty: OxlintConfig = sonsu({})
+const omitted: OxlintConfig = sonsu()
+void [config, empty, omitted]
+${['react', 'jsxA11y', 'nextjs', 'vitest']
+  .map(
+    (name) => `// @ts-expect-error ${name} requires explicit files
+sonsu({ ${name}: {} })
+// @ts-expect-error ${name} does not accept boolean toggles
+sonsu({ ${name}: true })`,
+  )
+  .join('\n')}
+// @ts-expect-error disabling an area means omitting it, not passing false
+sonsu({ react: false })
+// @ts-expect-error files must be an array
+sonsu({ react: { files: 'src/**/*.tsx' } })
+// @ts-expect-error unsupported factory option
+sonsu({ autodetect: true })
+// @ts-expect-error scoped options only accept native supported fields
+sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
+`,
   );
   writeFile(
     'oxfmt.config.mts',
@@ -402,6 +480,7 @@ try {
   const typeConfigs = [
     'oxlint.config.mts',
     'oxfmt.config.mts',
+    'factory-types.mts',
     ...readdirSync(consumerDirectory).filter(
       (file) => file.startsWith('oxlint-') && file.endsWith('.config.mts'),
     ),
@@ -422,10 +501,7 @@ try {
     { cwd: consumerDirectory },
   );
 
-  writeFile(
-    'oxlint-malformed-glob.config.mts',
-    "import { defineConfig } from 'oxlint'\nimport { react } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({ extends: [react({ files: ['src/['] })] })\n",
-  );
+  writeFile('oxlint-malformed-glob.config.mts', factoryConfig("{ react: { files: ['src/['] } }"));
   const malformedGlob = run(
     oxlintPath,
     ['--config', 'oxlint-malformed-glob.config.mts', '--print-config', 'src/react-invalid.tsx'],
@@ -485,6 +561,81 @@ try {
     const valid = lint(oxlintPath, config, [check.good], 0);
     assertNoDiagnostic(valid, check.code);
   }
+
+  const baselineConfig = 'oxlint-baseline.config.mts';
+  for (const name of ['javascript', 'imports', 'typescript']) {
+    const check = checks[name];
+    assertDiagnostic(
+      lint(oxlintPath, baselineConfig, [check.bad], check.severity === 'error' ? 1 : 0),
+      check.code,
+      check.severity,
+    );
+  }
+  // The baseline scopes TypeScript to ts/tsx/mts, not JavaScript or CommonJS cts.
+  for (const [extension, scoped] of [
+    ['tsx', true],
+    ['mts', true],
+    ['js', false],
+    ['cts', false],
+  ]) {
+    const path = `src/require-scope.${extension}`;
+    writeFile(path, "const fs = require('node:fs')\nvoid fs\n");
+    const diagnostics = lint(oxlintPath, baselineConfig, [path], 0);
+    if (scoped) assertDiagnostic(diagnostics, 'typescript/no-require-imports', 'warn');
+    else assertNoDiagnostic(diagnostics, 'typescript/no-require-imports');
+  }
+  const optionalAreas = ['react', 'jsxA11y', 'nextjs', 'vitest'];
+  const baselineOptIns = lint(
+    oxlintPath,
+    baselineConfig,
+    optionalAreas.map((name) => checks[name].bad),
+    0,
+  );
+  for (const name of optionalAreas) assertNoDiagnostic(baselineOptIns, checks[name].code);
+
+  assertDiagnostic(
+    lint(oxlintPath, 'oxlint-custom-root.config.mts', ['src/core-invalid.js'], 0),
+    'no-debugger',
+    'warn',
+  );
+  const extended = lint(
+    oxlintPath,
+    'oxlint-user-extends.config.mts',
+    ['src/core-invalid.js', 'src/react-invalid.tsx'],
+    0,
+  );
+  assertDiagnostic(extended, 'no-debugger', 'warn');
+  assertNoDiagnostic(extended, 'react/rules-of-hooks');
+  // Native scoped overrides win over root rules, even when the root says off.
+  assertDiagnostic(
+    lint(oxlintPath, 'oxlint-root-scoped.config.mts', ['src/react-invalid.tsx'], 1),
+    'react/rules-of-hooks',
+    'error',
+  );
+
+  writeFile('ignored-first/error.js', 'debugger\n');
+  writeFile('ignored-second/error.js', 'debugger\n');
+  const ignored = lint(
+    oxlintPath,
+    'oxlint.config.mts',
+    ['ignored-first/error.js', 'ignored-second/error.js', 'src/core-invalid.js'],
+    1,
+  );
+  assertDiagnostic(ignored, 'no-debugger', 'error');
+  assert.equal(
+    ignored.filter((diagnostic) => ruleIdOf(diagnostic) === 'no-debugger').length,
+    1,
+    'both ignorePatterns must suppress their invalid files, but not the control',
+  );
+  writeFile(
+    'tests/focused.e2e-spec.ts',
+    "import { it } from 'vitest'\nit.only('focused', () => {})\n",
+  );
+  assertDiagnostic(
+    lint(oxlintPath, 'oxlint.config.mts', ['tests/focused.e2e-spec.ts'], 1),
+    'vitest/no-focused-tests',
+    'error',
+  );
 
   writeFile(
     'tests/contextual.test.ts',
@@ -574,10 +725,7 @@ try {
     'lint-script/package.json',
     JSON.stringify({ private: true, type: 'module', scripts: { lint: scripts.lint } }),
   );
-  writeFile(
-    'lint-script/oxlint.config.ts',
-    "import { defineConfig } from 'oxlint'\nimport { javascript, typescript } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({ extends: [javascript, typescript] })\n",
-  );
+  writeFile('lint-script/oxlint.config.ts', factoryConfig());
   writeFile('lint-script/warning.ts', "const fs = require('node:fs')\nvoid fs\n");
   const lintScript = {
     cwd: join(consumerDirectory, 'lint-script'),
@@ -627,7 +775,7 @@ try {
   assert.equal(
     lint(oxlintPath, 'oxlint.config.mts', ['src/override.tsx'], 0).length,
     0,
-    'consumer overrides must run after the shared fragments',
+    'later root overrides must win over selected presets and earlier root overrides',
   );
 
   const printConfig = run(
@@ -695,7 +843,7 @@ try {
   run(oxfmtPath, ['--check', '.'], { cwd: consumerDirectory });
 
   console.log(
-    `Verified packed subpaths, seven independent Oxlint areas and their combined consumer, TypeScript declarations, and Oxfmt options, import order, scripts sorting, overrides, and ignores using ${toolVersions.join(', ')}.`,
+    `Verified packed factory baseline, opt-ins, native precedence, seven advanced Oxlint fragments, installed TypeScript declarations, and Oxfmt options, import order, scripts sorting, overrides, and ignores using ${toolVersions.join(', ')}.`,
   );
 } finally {
   if (keepTemporaryFiles) {
