@@ -108,11 +108,11 @@ function assertNoDiagnostic(diagnostics, id) {
 }
 
 function configFor(imports) {
-  return `import { defineConfig } from 'oxlint'\nimport { ${imports} } from '@sonsu/oxc-config/oxlint'\nexport default defineConfig({ extends: [${imports}] })\n`;
+  return `import { defineConfig } from 'oxlint'\nimport { ${imports} } from '@sonsu-lee/oxc-config/oxlint'\nexport default defineConfig({ extends: [${imports}] })\n`;
 }
 
 function factoryConfig(options = '') {
-  return `import sonsu from '@sonsu/oxc-config/oxlint'\nexport default sonsu(${options})\n`;
+  return `import sonsu from '@sonsu-lee/oxc-config/oxlint'\nexport default sonsu(${options})\n`;
 }
 
 try {
@@ -303,7 +303,7 @@ try {
           writeFile(`${directory}/${path}`, source);
         writeFile(
           `${directory}/oxlint.config.mts`,
-          `import { defineConfig } from 'oxlint'\nimport { ${name} } from '@sonsu/oxc-config/oxlint'\nconst fragment = ${expression}\nconst area = fragment.rules ? fragment : fragment.overrides[0]\nexport default defineConfig({ categories: { correctness: 'off' }, plugins: area.plugins, rules: { ${JSON.stringify(id)}: area.rules[${JSON.stringify(id)}] } })\n`,
+          `import { defineConfig } from 'oxlint'\nimport { ${name} } from '@sonsu-lee/oxc-config/oxlint'\nconst fragment = ${expression}\nconst area = fragment.rules ? fragment : fragment.overrides[0]\nexport default defineConfig({ categories: { correctness: 'off' }, plugins: area.plugins, rules: { ${JSON.stringify(id)}: area.rules[${JSON.stringify(id)}] } })\n`,
         );
         const result = run(
           oxlintPath,
@@ -438,7 +438,7 @@ try {
   );
   writeFile(
     'factory-types.mts',
-    `import sonsu, { type SonsuOptions } from '@sonsu/oxc-config/oxlint'
+    `import sonsu, { type SonsuOptions } from '@sonsu-lee/oxc-config/oxlint'
 import type { OxlintConfig } from 'oxlint'
 const options: SonsuOptions = {
   react: { files: ['src/**/*.tsx'] },
@@ -474,7 +474,7 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
   );
   writeFile(
     'oxfmt.config.mts',
-    "import { defineConfig } from 'oxfmt'\nimport { shared } from '@sonsu/oxc-config/oxfmt'\nexport default defineConfig({ ...shared, ignorePatterns: [...shared.ignorePatterns, '.wrangler/', 'vendor/'], overrides: [{ files: ['format/special.ts'], options: { singleQuote: false } }] })\n",
+    "import { defineConfig } from 'oxfmt'\nimport { shared } from '@sonsu-lee/oxc-config/oxfmt'\nexport default defineConfig({ ...shared, ignorePatterns: [...shared.ignorePatterns, '.wrangler/', 'vendor/'], overrides: [{ files: ['format/special.ts'], options: { singleQuote: false } }] })\n",
   );
 
   const typeConfigs = [
