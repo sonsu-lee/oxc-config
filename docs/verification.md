@@ -24,7 +24,7 @@ pnpm run verify
 
 - 배포 경로를 `dist`로 바꾼 기존 검사부터 실행해, 이전 패키지가 `tarball is missing dist/oxlint/index.js`로 실패함을 확인했다.
 - 빌드는 TS 소스에서 JS와 `.d.ts`를 함께 생성한다. 기존 수동 선언 파일은 제거했다. 상대 `.ts` import를 배포 `.js`로 변환하므로 저장소의 TS config도 소스를 직접 읽을 수 있다.
-- 계약 테스트 6개는 7개 runtime export, 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약과 기본 lint의 경고 허용, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다.
+- 계약 테스트 6개는 7개 runtime export, 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자의 실제 CLI 종료 코드로 확인한다.
 - tarball에는 package.json·README·dist만 허용하고 두 subpath의 JS·타입 선언 존재를 검사한다. 소비자 `tsc`는 `skipLibCheck` 없이 생성 선언을 확인한다.
 - Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다. error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
 - 74개 전부의 정상·위반 소스를 설치된 tarball의 개별 규칙 값으로 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.

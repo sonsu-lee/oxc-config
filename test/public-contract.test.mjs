@@ -95,7 +95,7 @@ test('preserves the current 74-rule regression baseline and options', () => {
   assert.deepEqual([...actualIds].sort(), [...expectedIds].sort());
 });
 
-test('preserves per-rule severity and leaves warnings nonblocking by default', () => {
+test('preserves per-rule severity and disables implicit correctness rules', () => {
   const fragments = {
     javascript: oxlint.javascript,
     imports: oxlint.imports,
@@ -119,8 +119,6 @@ test('preserves per-rule severity and leaves warnings nonblocking by default', (
       Object.fromEntries(Object.entries(rules).map(([id, value]) => [id, severityOf(value)]));
     assert.deepEqual(severities(rulesIn(fragment)), severities(candidateRules[name]), name);
   }
-  const { scripts } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(scripts.lint, 'oxlint .', 'default lint must honor nonblocking warnings');
 });
 
 test('requires explicit non-empty file patterns and copies them for every builder', () => {
