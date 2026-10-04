@@ -97,9 +97,9 @@ jobs:
       # npm serves package metadata through a CDN, so a version published seconds ago can
       # still be missing for several minutes. `pnpm add` reads the abbreviated document
       # first and `pnpm view` the full one, and the CDN caches them separately, so wait
-      # until both list the version instead of failing verification.
+      # until both list the version before verifying it, including on re-runs.
       - name: Wait for npm to serve the new version
-        if: steps.release.outputs.published == 'false'
+        if: steps.release.outputs.released == 'false'
         env:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
@@ -108,8 +108,8 @@ jobs:
           log="$RUNNER_TEMP/npm-propagation.log"
           for attempt in $(seq 1 20); do
             if pnpm view "$name@$VERSION" version "--config.${name%%/*}:registry=https://registry.npmjs.org/" > /dev/null 2> "$log" \
-              && curl -fsS -H 'Accept: application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*' "$url" 2>> "$log" \
-                | node -e 'let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => process.exit(JSON.parse(s).versions?.[process.env.VERSION] ? 0 : 1))' 2>> "$log"; then
+              && curl -fsS --max-time 30 -H 'Accept: application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*' "$url" 2>> "$log" \
+                | node -e 'let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => { if (JSON.parse(s).versions?.[process.env.VERSION]) process.exit(0); console.error(`abbreviated npm document does not list ${process.env.VERSION} yet`); process.exit(1); })' 2>> "$log"; then
               exit 0
             fi
             if [ "$attempt" -lt 20 ]; then
