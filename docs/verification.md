@@ -62,7 +62,7 @@ pnpm run verify
 
 - `Verify`: ubuntu-24.04에서 `pnpm run verify`가 통과했다. 첫 Linux·원격 CI 실행은 앞선 [PR #7의 Verify run](https://github.com/sonsu-lee/oxc-config/actions/runs/37210182148)에서 통과했다.
 - `Publish`: `pnpm publish`가 `📦 @sonsu-lee/oxc-config@0.1.0 → https://npm.pkg.github.com/`를 출력했다. 이어서 registry 재설치 검증이 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났고, Release [`v0.1.0`](https://github.com/sonsu-lee/oxc-config/releases/tag/v0.1.0)이 생성됐다. Release의 `targetCommitish`는 병합 커밋과 같다.
-- Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. 조회 시 이미 `public`이므로 추가 visibility 전환은 필요하지 않았다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. README가 설치에 토큰을 요구하는 이유다.
+- Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. 조회 시 이미 `public`이므로 추가 visibility 전환은 필요하지 않았다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. 이 제약 때문에 배포 registry를 npm으로 옮겼다.
 - 로컬: 2026-10-05 최신 main(macOS arm64, Node 24.21.0, pnpm 12.6.0)에서 `NODE_AUTH_TOKEN="$(gh auth token)" pnpm run verify:consumer -- --published 0.1.0`을 실행했다. registry에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다. 토큰은 `read:packages` scope를 가진 `gh` OAuth 토큰이다.
 
 ## Severity 재검토 결과
@@ -91,7 +91,7 @@ pnpm run verify
 
 - 새 tarball을 실제 Next/Nest/Hono 앱에 넣은 전체 build·test·runtime 통합: `not_run`. 이번 소비자는 package/config API와 대표 진단·formatter 동작을 확인한다.
 - 다른 Node·OS·TypeScript·Oxc 버전과 editor: `not_run`. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
-- 다른 저장소의 GitHub Actions에서 README 예제로 설치하는 경로: `not_run`. registry 설치는 이 저장소의 `Publish` job과 로컬에서만 확인했다.
+- CI가 npm trusted publishing(OIDC)으로 게시하는 경로: 다음 version PR이 병합될 때까지 `not_run`. npm의 `0.1.0`은 trusted publisher를 등록하기 위해 로컬에서 게시했다.
 - 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
