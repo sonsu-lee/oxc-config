@@ -1,6 +1,6 @@
 # 패키지 설계
 
-현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. 패키지 scope와 작성자 표기는 `sonsu-lee`, 홈페이지는 [sonsu.dev](https://sonsu.dev)로 통일한다. `private: true`인 로컬 패키지이며 배포는 [#1](https://github.com/sonsu-lee/oxc-config/issues/1)의 별도 범위다.
+현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. 패키지 scope와 작성자 표기는 `sonsu-lee`, 홈페이지는 [sonsu.dev](https://sonsu.dev)로 통일한다. MIT 라이선스로 GitHub Packages에 배포한다([#1](https://github.com/sonsu-lee/oxc-config/issues/1)).
 
 ## 소스와 배포 구조
 
@@ -30,7 +30,9 @@ dist/**/*.js + dist/**/*.d.ts
 - `tsc`의 strict 검사와 Oxc 공식 설정 타입으로 소스와 옵션을 확인한다. 선언 파일은 같은 소스에서 생성한다.
 - `scripts/build.mjs`는 지정된 `dist/`를 비우고 로컬 TypeScript compiler를 실행한다. 소스 이동 후 오래된 파일이 tarball에 남지 않는다.
 - ESM과 타입 선언만 필요하므로 번들러 없이 `tsc`를 사용한다. type-only import는 JS 출력에서 사라진다. 소스의 상대 `.ts` import는 `rewriteRelativeImportExtensions`로 배포 JS에서 `.js`로 변환한다.
-- `files`에는 `dist`와 README만 포함한다. `dist`, `node_modules`, 로컬 작업 기록은 Git에서 제외한다.
+- `files`에는 `dist`와 README만 지정하고, npm·pnpm이 `LICENSE`를 자동으로 포함한다. `dist`, `node_modules`, 로컬 작업 기록은 Git에서 제외한다.
+- 배포는 `package.json`의 `version`을 올린 PR의 병합으로 시작한다. main push의 `Verify`가 통과하면 `Publish` job이 `pnpm publish`로 GitHub Packages에 게시하고, `verify:consumer --published`로 registry에서 다시 설치해 확인한 뒤 그 커밋에 `vX.Y.Z` Release를 만든다. `Verify`가 검사한 `pnpm pack` 결과와 같은 도구로 tarball을 만들기 위해 npm CLI 대신 pnpm을 쓴다. 인증은 `actions/setup-node`의 `registry-url`이 만든 사용자 수준 `.npmrc`와 `NODE_AUTH_TOKEN`을 쓴다.
+- 게시·검증·Release는 부모 커밋과 `version`이 다른 커밋의 run에서만 실행한다. 그래서 나중의 main push가 이미 게시된 버전을 다른 커밋에 tag하거나 다시 검증하지 않는다. 실패하면 그 커밋의 run을 다시 실행한다. 이미 게시된 버전과 이미 있는 Release는 건너뛰므로 재실행해도 재게시하지 않는다.
 
 Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e/src)의 영역별 구성을 참고했다. [Factory 설계 #4](https://github.com/sonsu-lee/oxc-config/issues/4)는 기본 사용을 한 번의 호출로 줄이되, 설치된 의존성이나 폴더로 프레임워크를 자동 감지하지 않는다. 합성은 Oxlint의 native `extends`에 맡기고 별도 deep merge 엔진이나 설치 wizard를 만들지 않는다.
 

@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          cache: true
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify package
+        run: pnpm run verify
+
+  publish:
+    name: Publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+          registry-url: https://npm.pkg.github.com
+          scope: '@sonsu-lee'
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          cache: true
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # Publishing and releasing happen only in the run of the commit that changes the
+      # version, so a rerun of that run recovers it and later pushes never retag or
+      # republish. Without published/released outputs, the steps below are skipped.
+      - name: Resolve release state
+        id: release
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="$(node -p 'require("./package.json").name')"
+          version="$(node -p 'require("./package.json").version')"
+          git show HEAD^:package.json > "$RUNNER_TEMP/previous-package.json"
+          previous_version="$(node -p 'require(process.argv[1]).version' "$RUNNER_TEMP/previous-package.json")"
+          if [ "$previous_version" = "$version" ]; then
+            echo "::notice::This commit keeps version $version; publish and release run only for the commit that changes it. Re-run that commit's workflow run to recover a failed release."
+            exit 0
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if pnpm view "$name@$version" version --registry https://npm.pkg.github.com/ > /dev/null 2> "$RUNNER_TEMP/pnpm-view.log"; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$name@$version is already on GitHub Packages; publish is skipped."
+          elif grep -qE 'ERR_PNPM_(FETCH_404|PACKAGE_NOT_FOUND)' "$RUNNER_TEMP/pnpm-view.log"; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            cat "$RUNNER_TEMP/pnpm-view.log"
+            echo "::error::Could not read $name@$version from GitHub Packages; see the pnpm output above and the job's packages permission."
+            exit 1
+          fi
+          if gh release view "v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release v$version already exists; nothing to release."
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish to GitHub Packages
+        if: steps.release.outputs.published == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: pnpm publish --no-git-checks
+      - name: Verify the published package
+        if: steps.release.outputs.released == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: pnpm run verify:consumer -- --published "$VERSION"
+      - name: Create GitHub Release
+        if: steps.release.outputs.released == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes

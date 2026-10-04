@@ -6,11 +6,25 @@ import { delimiter, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const publishedFlagIndex = process.argv.indexOf('--published');
+const publishedVersion =
+  publishedFlagIndex === -1 ? undefined : process.argv[publishedFlagIndex + 1];
+if (publishedFlagIndex !== -1) {
+  assert.match(
+    publishedVersion ?? '',
+    /^\d+\.\d+\.\d+$/,
+    '--published requires an exact version such as 0.1.0',
+  );
+  assert.ok(
+    process.env.NODE_AUTH_TOKEN,
+    '--published requires NODE_AUTH_TOKEN with read:packages access to https://npm.pkg.github.com',
+  );
+}
 const temporaryRoot = mkdtempSync(join(tmpdir(), 'oxc-config-consumer-'));
 const packageDirectory = join(temporaryRoot, 'package');
 const consumerDirectory = join(temporaryRoot, 'consumer');
 const storeDirectory = join(temporaryRoot, 'pnpm-store');
-const { devDependencies, packageManager, scripts } = JSON.parse(
+const { devDependencies, name, packageManager, scripts } = JSON.parse(
   readFileSync(join(repositoryRoot, 'package.json'), 'utf8'),
 );
 const toolVersions = ['oxlint', 'oxfmt', 'typescript'].map(
@@ -123,29 +137,46 @@ try {
     JSON.stringify({ private: true, type: 'module', packageManager }),
   );
 
-  const packed = run('pnpm', ['pack', '--json', '--pack-destination', packageDirectory], {
-    cwd: repositoryRoot,
-  });
-  const metadata = JSON.parse(packed.stdout);
-  const packedPaths = new Set(metadata.files.map((file) => file.path));
-  for (const path of [
-    'package.json',
-    'README.md',
-    'dist/oxlint/index.js',
-    'dist/oxlint/index.d.ts',
-    'dist/oxfmt/index.js',
-    'dist/oxfmt/index.d.ts',
-  ]) {
-    assert.ok(packedPaths.has(path), `tarball is missing ${path}`);
-  }
-  for (const path of packedPaths) {
-    assert.ok(
-      path === 'README.md' || path === 'package.json' || path.startsWith('dist/'),
-      `tarball contains development-only file ${path}`,
-    );
+  let packageSpec;
+  let installEnv;
+  if (publishedVersion) {
+    // pnpm ignores ${...} credentials in a project .npmrc, so the token travels as a
+    // URL-scoped pnpm_config_ variable and the project file only routes the scope.
+    writeFile('.npmrc', `${name.split('/')[0]}:registry=https://npm.pkg.github.com/\n`);
+    packageSpec = `${name}@${publishedVersion}`;
+    installEnv = {
+      ...process.env,
+      'pnpm_config_//npm.pkg.github.com/:_authToken': process.env.NODE_AUTH_TOKEN,
+    };
+  } else {
+    const packed = run('pnpm', ['pack', '--json', '--pack-destination', packageDirectory], {
+      cwd: repositoryRoot,
+    });
+    const metadata = JSON.parse(packed.stdout);
+    const packedPaths = new Set(metadata.files.map((file) => file.path));
+    for (const path of [
+      'package.json',
+      'README.md',
+      'LICENSE',
+      'dist/oxlint/index.js',
+      'dist/oxlint/index.d.ts',
+      'dist/oxfmt/index.js',
+      'dist/oxfmt/index.d.ts',
+    ]) {
+      assert.ok(packedPaths.has(path), `tarball is missing ${path}`);
+    }
+    for (const path of packedPaths) {
+      assert.ok(
+        path === 'README.md' ||
+          path === 'package.json' ||
+          path === 'LICENSE' ||
+          path.startsWith('dist/'),
+        `tarball contains development-only file ${path}`,
+      );
+    }
+    packageSpec = resolve(packageDirectory, metadata.filename);
   }
 
-  const tarballPath = resolve(packageDirectory, metadata.filename);
   run(
     'pnpm',
     [
@@ -154,11 +185,17 @@ try {
       '--save-exact',
       '--store-dir',
       storeDirectory,
-      tarballPath,
+      packageSpec,
       ...toolVersions,
     ],
-    { cwd: consumerDirectory },
+    { cwd: consumerDirectory, env: installEnv },
   );
+  if (publishedVersion) {
+    const installed = JSON.parse(
+      readFileSync(join(consumerDirectory, 'node_modules', name, 'package.json'), 'utf8'),
+    );
+    assert.equal(installed.version, publishedVersion, `installed ${name} version`);
+  }
 
   const oxlintPath = join(consumerDirectory, 'node_modules/.bin/oxlint');
   const oxfmtPath = join(consumerDirectory, 'node_modules/.bin/oxfmt');
@@ -843,7 +880,7 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
   run(oxfmtPath, ['--check', '.'], { cwd: consumerDirectory });
 
   console.log(
-    `Verified packed factory baseline, opt-ins, native precedence, seven advanced Oxlint fragments, installed TypeScript declarations, and Oxfmt options, import order, scripts sorting, overrides, and ignores using ${toolVersions.join(', ')}.`,
+    `Verified ${publishedVersion ? `published ${name}@${publishedVersion}` : 'packed'} factory baseline, opt-ins, native precedence, seven advanced Oxlint fragments, installed TypeScript declarations, and Oxfmt options, import order, scripts sorting, overrides, and ignores using ${toolVersions.join(', ')}.`,
   );
 } finally {
   if (keepTemporaryFiles) {
