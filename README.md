@@ -16,6 +16,8 @@ pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
 
 Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
+The examples below name the config files `oxlint.config.ts` and `oxfmt.config.ts`. In a package without `"type": "module"` (for example a default Next.js app), name them `oxlint.config.mts` and `oxfmt.config.mts` with the same contents; both tools find them, and Node no longer prints a `MODULE_TYPELESS_PACKAGE_JSON` warning on every run.
+
 ### Oxlint
 
 ```ts
@@ -24,8 +26,6 @@ import sonsu from '@sonsu-lee/oxc-config/oxlint';
 
 export default sonsu();
 ```
-
-In a package without `"type": "module"` (for example a default Next.js app), name the files `oxlint.config.mts` and `oxfmt.config.mts` with the same contents; both tools find them, and Node no longer prints a `MODULE_TYPELESS_PACKAGE_JSON` warning on every run.
 
 `sonsu()` combines `javascript`, `imports` and `typescript`. Framework and test rules are opt-in; choose the options your project uses and supply its actual paths:
 
