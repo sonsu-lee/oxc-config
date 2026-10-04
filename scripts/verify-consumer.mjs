@@ -534,6 +534,35 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
     { cwd: consumerDirectory },
   );
 
+  // Declaration emit must name the factory and fragment return types through this package.
+  // A program file that imports `oxlint` itself lets TypeScript reuse that symlink and
+  // hides TS2883, so these inputs import only the package.
+  writeFile(
+    'declaration-factory.mts',
+    factoryConfig("{ vitest: { files: ['src/**/*.spec.ts'] } }"),
+  );
+  writeFile(
+    'declaration-fragments.mts',
+    "import { javascript, imports, typescript } from '@sonsu-lee/oxc-config/oxlint'\nexport const fragments = [javascript, imports, typescript]\n",
+  );
+  run(
+    tscPath,
+    [
+      '--noEmit',
+      '--declaration',
+      '--strict',
+      '--module',
+      'NodeNext',
+      '--moduleResolution',
+      'NodeNext',
+      '--target',
+      'ES2022',
+      'declaration-factory.mts',
+      'declaration-fragments.mts',
+    ],
+    { cwd: consumerDirectory },
+  );
+
   writeFile('oxlint-malformed-glob.config.mts', factoryConfig("{ react: { files: ['src/['] } }"));
   const malformedGlob = run(
     oxlintPath,
