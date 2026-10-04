@@ -1,23 +1,56 @@
 # @sonsu-lee/oxc-config
 
-Composable Oxlint and Oxfmt configurations, authored in TypeScript and built as ESM with generated type declarations. This is a private local package; it has not been published.
+Composable Oxlint and Oxfmt configurations, authored in TypeScript and built as ESM with generated type declarations. Published to GitHub Packages; installation requires a GitHub token even though the package is public.
 
 Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://sonsu.dev).
 
 ## Use in a project
 
-Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Build a tarball in this repository, then install it in the consumer:
+Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once.
 
-```sh
-# This repository
-pnpm install --frozen-lockfile
-pnpm pack
+1. Route the `@sonsu-lee` scope to GitHub Packages in the consumer's `.npmrc`. The file holds no secret, so commit it:
 
-# Consumer project: replace the tarball path
-pnpm add -D /path/to/sonsu-lee-oxc-config-0.0.0.tgz oxlint@1.85.0 oxfmt@0.70.0
-```
+   ```ini
+   @sonsu-lee:registry=https://npm.pkg.github.com
+   ```
 
-`pnpm pack` runs the build automatically. Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
+2. Once per machine, store a personal access token (classic) with the `read:packages` scope in your user-level pnpm config:
+
+   ```sh
+   pnpm config set //npm.pkg.github.com/:_authToken <TOKEN>
+   ```
+
+   Never commit the token. pnpm 11.5.3 and later ignore `${...}` token placeholders in a project `.npmrc`, so the token must live in user-level config or the environment.
+
+3. Install the package with the Oxc tools you use:
+
+   ```sh
+   pnpm add -D @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+   ```
+
+4. To install it in GitHub Actions of another repository, add that repository with the Read role under the package's **Package settings → Manage Actions access**, then pass the workflow token to the install step:
+
+   ```yaml
+   jobs:
+     verify:
+       runs-on: ubuntu-24.04
+       permissions:
+         contents: read
+         packages: read
+       steps:
+         - uses: actions/checkout@v6
+         - uses: actions/setup-node@v7
+           with:
+             node-version-file: .node-version
+             registry-url: https://npm.pkg.github.com
+             scope: '@sonsu-lee'
+         - uses: pnpm/action-setup@v6
+         - run: pnpm install --frozen-lockfile
+           env:
+             NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   ```
+
+Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
 ### Oxlint
 
@@ -125,6 +158,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run verify:consumer  # Pack, install and exercise a temporary consumer
 pnpm run verify           # All of the above checks
+pnpm run verify:consumer -- --published 0.1.0  # Install a published version from GitHub Packages (needs NODE_AUTH_TOKEN)
 ```
 
 `pnpm run format` formats maintained files. Research evidence and regression fixtures are excluded. The consumer check needs registry access, uses a temporary pnpm store, and removes its own temporary directory; pass `pnpm run verify:consumer -- --keep` to inspect it.
@@ -144,3 +178,7 @@ docs/                    Design, rule decisions, verification and raw evidence
 ```
 
 Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verification.md`. Research documents, source and tests are excluded from the tarball.
+
+### Release
+
+Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to GitHub Packages, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release. A push whose version is already published only runs verification. Published versions are never overwritten; fix a bad release with a new patch version.

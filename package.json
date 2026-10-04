@@ -1,12 +1,12 @@
 {
   "name": "@sonsu-lee/oxc-config",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "description": "Composable personal Oxlint and Oxfmt configurations",
   "homepage": "https://sonsu.dev",
   "bugs": {
     "url": "https://github.com/sonsu-lee/oxc-config/issues"
   },
+  "license": "MIT",
   "author": {
     "name": "sonsu-lee",
     "url": "https://sonsu.dev"
@@ -32,6 +32,9 @@
       "import": "./dist/oxfmt/index.js",
       "default": "./dist/oxfmt/index.js"
     }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
