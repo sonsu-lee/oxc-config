@@ -75,6 +75,27 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 - Trusted publisher: `npm trust github`로 `sonsu-lee/oxc-config`의 `ci.yml`을 등록했다(`publish`, `stage publish`). `npm trust list`로 등록을 확인했다.
 - 설치 검증: `NODE_AUTH_TOKEN` 없이 `pnpm run verify:consumer -- --published 0.1.0`을 실행했다. npm에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다.
 
+## Next·Nest 통합과 npm 0.1.1 배포
+
+2026-10-05 npm의 `0.1.0`을 실제 앱에 넣어 시험했다. 대상은 create-next-app 16.3.8(App Router, TypeScript 5.9.3)과 Nest CLI 12.0.8(Vitest, TypeScript 6, `declaration: true`)이고, 두 scaffold는 pnpm 10.33.2를 쓴다. 두 앱 모두 scaffold 코드에서 lint 진단이 0건이었고, 일부러 넣은 위반은 의도한 규칙과 severity로 검출됐다. format 적용 후 `next build`, `nest build`, Nest unit·e2e 테스트가 통과했고, 빌드 결과를 실행해 `GET /`가 200을 반환했다. 다만 다음 문제가 나왔다.
+
+- `defineConfig(shared)`를 직접 호출하면 TS2345가 났다. 공개 `OxfmtConfig`가 interface여서 생긴 문제로 [#11](https://github.com/sonsu-lee/oxc-config/pull/11)에서 type 별칭으로 고쳤다.
+- `declaration: true`인 Nest에서 `oxlint.config.ts`가 TS2883을 냈다. `OxlintConfig`를 다시 내보내지 않아 생긴 문제로 [#13](https://github.com/sonsu-lee/oxc-config/pull/13)에서 고쳤다.
+- `"type": "module"`이 없는 Next에서는 `.ts` 설정마다 Node 경고가 나왔다. [#12](https://github.com/sonsu-lee/oxc-config/pull/12)에서 `.mts` 사용을 README에 안내했다.
+- pnpm 버전에 따라 설치 명령이 범위 버전을 저장했다. [#10](https://github.com/sonsu-lee/oxc-config/pull/10)에서 `--save-exact`로 바꿨다.
+
+두 타입 문제는 소비자 검증의 `defineConfig(shared)` 직접 호출과 별도 `tsc --declaration` 검사로 회귀를 막는다. 게시 직후 npm CDN이 새 버전을 늦게 제공할 수 있어서 [#14](https://github.com/sonsu-lee/oxc-config/pull/14)에서 registry 검증 전 대기 단계를 추가했다.
+
+`0.1.1`은 CI가 npm trusted publishing으로 게시한 첫 버전이다.
+
+- 게시: [#15](https://github.com/sonsu-lee/oxc-config/pull/15) squash 병합 커밋 `4a2ceeea23d00aedecef8a554ba5c27c936db055`의 [CI run](https://github.com/sonsu-lee/oxc-config/actions/runs/37224593135)에서 실행했다. `pnpm publish --no-git-checks --provenance`가 OIDC로 `Signed provenance statement with source and build information`과 `✅ Published package @sonsu-lee/oxc-config@0.1.1`을 출력했다. 저장소에 npm secret은 없다.
+- 대기: 새 버전이 3번째 재시도(약 90초) 뒤 두 metadata 문서에 모두 보였다. 이어서 `Verified published @sonsu-lee/oxc-config@0.1.1 factory baseline, ...`가 출력됐고 Release [`v0.1.1`](https://github.com/sonsu-lee/oxc-config/releases/tag/v0.1.1)이 병합 커밋에 생성됐다.
+- Registry: `versions`는 `["0.1.0","0.1.1"]`, `latest`는 `0.1.1`이다. provenance의 `predicateType`은 `https://slsa.dev/provenance/v1`이다. 게시된 `dist.integrity`는 병합 커밋에서 로컬로 다시 만든 `pnpm pack` tarball과 일치한다.
+- 로컬: 빈 사용자 npm 설정으로 `pnpm run verify:consumer -- --published 0.1.1`이 통과했다.
+- 재시험: 같은 두 scaffold에 README 명령으로 `0.1.1`을 설치했다. 두 앱 모두 `--save-exact`로 세 패키지가 정확한 버전으로 저장됐다.
+  - Next: `.mts` 설정으로 경고 없이 lint·format·`next build`가 통과했다. `npm audit signatures`에서 `@sonsu-lee/oxc-config@0.1.1`의 attestation이 검증됐다.
+  - Nest: `defineConfig(shared)`와 factory 설정을 포함한 `tsc --noEmit -p tsconfig.json`이 통과했다. type-aware lint, format, build, unit·e2e 테스트도 통과했다.
+
 ## Severity 재검토 결과
 
 기본 `lint`를 `oxlint .`로 바꾸고 42 error / 32 warn을 적용했다. 변경 전에는 새 계약 검사가 imports의 기존 error에서 실패했고, severity 반영 뒤에는 기존 `--deny-warnings` 기본 명령에서 실패했다. 설치 소비자도 기존 imports의 error/exit 1을 검출해 실패했다. 이를 고친 뒤 설치 소비자 재실행에서 74개 규칙의 정상·위반 입력, CLI 종료 정책과 추가 정상 패턴 검사가 통과했다. 전체 검증은 `pnpm run verify`로 재현한다.
@@ -99,9 +120,8 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 
 ## 남은 범위
 
-- 새 tarball을 실제 Next/Nest/Hono 앱에 넣은 전체 build·test·runtime 통합: `not_run`. 이번 소비자는 package/config API와 대표 진단·formatter 동작을 확인한다.
+- 새 tarball을 Hono 앱에 넣은 통합과 Next·Nest 앱의 실제 기능 개발 흐름: `not_run`. Next·Nest는 scaffold 기준의 lint·format·build·test·실행만 확인했다.
 - 다른 Node·OS·TypeScript·Oxc 버전과 editor: `not_run`. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
-- CI가 npm trusted publishing(OIDC)으로 게시하는 경로: 다음 version PR이 병합될 때까지 `not_run`. npm의 `0.1.0`은 trusted publisher를 등록하기 위해 로컬에서 게시했다.
 - 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
