@@ -504,10 +504,15 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
     'oxfmt.config.mts',
     "import { defineConfig } from 'oxfmt'\nimport { shared } from '@sonsu-lee/oxc-config/oxfmt'\nexport default defineConfig({ ...shared, ignorePatterns: [...shared.ignorePatterns, '.wrangler/', 'vendor/'], overrides: [{ files: ['format/special.ts'], options: { singleQuote: false } }] })\n",
   );
+  writeFile(
+    'oxfmt-direct.mts',
+    "import { defineConfig } from 'oxfmt'\nimport { shared } from '@sonsu-lee/oxc-config/oxfmt'\nexport default defineConfig(shared)\n",
+  );
 
   const typeConfigs = [
     'oxlint.config.mts',
     'oxfmt.config.mts',
+    'oxfmt-direct.mts',
     'factory-types.mts',
     ...readdirSync(consumerDirectory).filter(
       (file) => file.startsWith('oxlint-') && file.endsWith('.config.mts'),
