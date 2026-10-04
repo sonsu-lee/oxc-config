@@ -1,6 +1,6 @@
 {
   "name": "@sonsu-lee/oxc-config",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Composable personal Oxlint and Oxfmt configurations",
   "homepage": "https://sonsu.dev",
   "bugs": {
