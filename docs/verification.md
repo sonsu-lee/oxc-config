@@ -65,6 +65,16 @@ pnpm run verify
 - Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. 조회 시 이미 `public`이므로 추가 visibility 전환은 필요하지 않았다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. 이 제약 때문에 배포 registry를 npm으로 옮겼다.
 - 로컬: 2026-10-05 최신 main(macOS arm64, Node 24.21.0, pnpm 12.6.0)에서 `NODE_AUTH_TOKEN="$(gh auth token)" pnpm run verify:consumer -- --published 0.1.0`을 실행했다. registry에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다. 토큰은 `read:packages` scope를 가진 `gh` OAuth 토큰이다.
 
+## npm 0.1.0 배포
+
+GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 registry를 npm으로 옮겼다. npm trusted publisher는 이미 존재하는 패키지에만 등록할 수 있으므로 첫 버전은 로컬에서 게시했다.
+
+- 게시: 2026-10-05 [#9](https://github.com/sonsu-lee/oxc-config/pull/9)의 리뷰 완료 head `cc68a11d9ae16b5d16df028653c3b1d6aabc51d8`에서 `pnpm publish --no-git-checks`를 실행했다. 계정 2FA를 브라우저에서 승인한 뒤 `✅ Published package @sonsu-lee/oxc-config@0.1.0`이 출력됐다. 사용자 `~/.npmrc`의 `@sonsu-lee` → GitHub Packages 라우팅은 게시 전에 제거했다.
+- Registry: `versions`는 `["0.1.0"]`, `latest`는 `0.1.0`, maintainer는 `sonsu-lee`다. 토큰 없는 metadata 요청이 200을 받는다.
+- 산출물: 게시된 `dist.integrity`(sha512, 25개 파일)가 같은 커밋에서 다시 만든 `pnpm pack` tarball과 일치한다. 로컬 게시라 provenance는 없다. 이후 버전은 CI가 `--provenance`로 게시한다.
+- Trusted publisher: `npm trust github`로 `sonsu-lee/oxc-config`의 `ci.yml`을 등록했다(`publish`, `stage publish`). `npm trust list`로 등록을 확인했다.
+- 설치 검증: `NODE_AUTH_TOKEN` 없이 `pnpm run verify:consumer -- --published 0.1.0`을 실행했다. npm에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다.
+
 ## Severity 재검토 결과
 
 기본 `lint`를 `oxlint .`로 바꾸고 42 error / 32 warn을 적용했다. 변경 전에는 새 계약 검사가 imports의 기존 error에서 실패했고, severity 반영 뒤에는 기존 `--deny-warnings` 기본 명령에서 실패했다. 설치 소비자도 기존 imports의 error/exit 1을 검출해 실패했다. 이를 고친 뒤 설치 소비자 재실행에서 74개 규칙의 정상·위반 입력, CLI 종료 정책과 추가 정상 패턴 검사가 통과했다. 전체 검증은 `pnpm run verify`로 재현한다.
