@@ -5,6 +5,7 @@ export type RuleOption = string | number | boolean | null | object;
 export type RuleValue = RuleSeverity | [RuleSeverity, ...RuleOption[]];
 export type OxlintOverride = PublicOxlintOverride;
 export type OxlintConfigFragment = OxlintConfig;
+export type { OxlintConfig } from 'oxlint';
 
 export type { FilesPresetOptions } from './scoped.ts';
 

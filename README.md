@@ -97,7 +97,7 @@ export default defineConfig({
 });
 ```
 
-Use the exported `SonsuOptions` type for reusable factory options. The `FilesPresetOptions` and existing fragment types remain available.
+Use the exported `SonsuOptions` type for reusable factory options. `OxlintConfig` is re-exported from Oxlint, so projects that emit declarations can name the factory's result without importing `oxlint` directly. The `FilesPresetOptions` and existing fragment types remain available.
 
 ### Oxfmt
 
