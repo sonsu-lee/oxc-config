@@ -56,6 +56,15 @@ pnpm run verify
 
 변경 후 `pnpm run verify`가 통과했다. 새 이름의 tarball을 임시 프로젝트에 설치해 `/oxlint` factory·개별 조각, `/oxfmt`, 타입 선언, 74개 규칙의 실제 CLI 동작을 확인했다. 버전 `0.0.0`과 `private: true`를 유지하며 registry publish는 실행하지 않았다.
 
+## GitHub Packages 0.1.0 배포
+
+2026-10-04(UTC) [#7](https://github.com/sonsu-lee/oxc-config/pull/7)의 squash 병합 커밋 `6d552304a525b03e5b5edfca2cc3c27a6d0e3c24`에서 [CI run](https://github.com/sonsu-lee/oxc-config/actions/runs/37212020152)이 `0.1.0`을 게시했다. 부모 커밋의 `0.0.0`과 버전이 달라 게시 단계가 실행됐다.
+
+- `Verify`: ubuntu-24.04에서 `pnpm run verify`가 통과했다. 이 저장소의 첫 Linux·원격 CI 실행이다.
+- `Publish`: `pnpm publish`가 `📦 @sonsu-lee/oxc-config@0.1.0 → https://npm.pkg.github.com/`를 출력했다. 이어서 registry 재설치 검증이 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났고, Release [`v0.1.0`](https://github.com/sonsu-lee/oxc-config/releases/tag/v0.1.0)이 생성됐다. Release의 `targetCommitish`는 병합 커밋과 같다.
+- Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. visibility를 따로 바꾸지 않았는데 첫 게시 후 이미 `public`이었다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. README가 설치에 토큰을 요구하는 이유다.
+- 로컬: 2026-10-05 최신 main(macOS arm64, Node 24.21.0, pnpm 12.6.0)에서 `NODE_AUTH_TOKEN="$(gh auth token)" pnpm run verify:consumer -- --published 0.1.0`을 실행했다. registry에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다. 토큰은 `read:packages` scope를 가진 `gh` OAuth 토큰이다.
+
 ## Severity 재검토 결과
 
 기본 `lint`를 `oxlint .`로 바꾸고 42 error / 32 warn을 적용했다. 변경 전에는 새 계약 검사가 imports의 기존 error에서 실패했고, severity 반영 뒤에는 기존 `--deny-warnings` 기본 명령에서 실패했다. 설치 소비자도 기존 imports의 error/exit 1을 검출해 실패했다. 이를 고친 뒤 설치 소비자 재실행에서 74개 규칙의 정상·위반 입력, CLI 종료 정책과 추가 정상 패턴 검사가 통과했다. 전체 검증은 `pnpm run verify`로 재현한다.
@@ -81,8 +90,8 @@ pnpm run verify
 ## 남은 범위
 
 - 새 tarball을 실제 Next/Nest/Hono 앱에 넣은 전체 build·test·runtime 통합: `not_run`. 이번 소비자는 package/config API와 대표 진단·formatter 동작을 확인한다.
-- 다른 Node·OS·TypeScript·Oxc 버전, editor와 원격 CI: `not_run`.
-- registry 이름 소유권·publish·release 작업: `not_run`. 패키지는 `private: true`다.
+- 다른 Node·OS·TypeScript·Oxc 버전과 editor: `not_run`. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
+- 다른 저장소의 GitHub Actions에서 README 예제로 설치하는 경로: `not_run`. registry 설치는 이 저장소의 `Publish` job과 로컬에서만 확인했다.
 - 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
