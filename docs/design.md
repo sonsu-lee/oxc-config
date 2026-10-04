@@ -33,6 +33,7 @@ dist/**/*.js + dist/**/*.d.ts
 - `files`에는 `dist`와 README만 지정하고, npm·pnpm이 `LICENSE`를 자동으로 포함한다. `dist`, `node_modules`, 로컬 작업 기록은 Git에서 제외한다.
 - 배포는 `package.json`의 `version`을 올린 PR의 병합으로 시작한다. main push의 `Verify`가 통과하면 `Publish` job이 `pnpm publish`로 npm에 게시하고, `verify:consumer --published`로 registry에서 다시 설치해 확인한 뒤 그 커밋에 `vX.Y.Z` Release를 만든다. `Verify`가 검사한 `pnpm pack` 결과와 같은 도구로 tarball을 만들기 위해 npm CLI 대신 pnpm을 쓴다. 인증은 npm trusted publishing(OIDC)이다. job의 `id-token: write`로 받은 단기 토큰만 쓰므로 저장소에 npm secret을 두지 않고, provenance도 함께 게시한다. `publishConfig`에 registry를 명시해 사용자 설정의 scope 라우팅과 무관하게 npm으로 게시한다.
 - 게시·검증·Release는 부모 커밋과 `version`이 다른 커밋의 run에서만 실행한다. 그래서 나중의 main push가 이미 게시된 버전을 다른 커밋에 tag하거나 다시 검증하지 않는다. 실패하면 그 커밋의 run을 다시 실행한다. 이미 게시된 버전과 이미 있는 Release는 건너뛰므로 재실행해도 재게시하지 않는다.
+- npm은 package metadata를 CDN으로 제공하므로 방금 게시한 버전이 몇 분간 보이지 않을 수 있다. 그래서 게시 직후 `pnpm view`로 새 버전이 보일 때까지 30초 간격으로 최대 10분 기다린 뒤 registry 설치 검증을 한다. 그래도 보이지 않으면 job을 실패시키고, 나중에 다시 실행하면 게시는 건너뛰고 검증과 Release만 이어서 한다.
 
 Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e/src)의 영역별 구성을 참고했다. [Factory 설계 #4](https://github.com/sonsu-lee/oxc-config/issues/4)는 기본 사용을 한 번의 호출로 줄이되, 설치된 의존성이나 폴더로 프레임워크를 자동 감지하지 않는다. 합성은 Oxlint의 native `extends`에 맡기고 별도 deep merge 엔진이나 설치 wizard를 만들지 않는다.
 
