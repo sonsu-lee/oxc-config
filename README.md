@@ -1,54 +1,18 @@
 # @sonsu-lee/oxc-config
 
-Composable Oxlint and Oxfmt configurations, authored in TypeScript and built as ESM with generated type declarations. Published to GitHub Packages; installation requires a GitHub token even though the package is public.
+Composable Oxlint and Oxfmt configurations, authored in TypeScript and built as ESM with generated type declarations. Published to npm.
 
 Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://sonsu.dev).
 
 ## Use in a project
 
-Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once.
+Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Install the package with the Oxc tools you use:
 
-1. Route the `@sonsu-lee` scope to GitHub Packages in the consumer's `.npmrc`. The file holds no secret, so commit it:
+```sh
+pnpm add -D @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+```
 
-   ```ini
-   @sonsu-lee:registry=https://npm.pkg.github.com
-   ```
-
-2. Once per machine, store a personal access token (classic) with the `read:packages` scope in your user-level pnpm config:
-
-   ```sh
-   pnpm config set //npm.pkg.github.com/:_authToken <TOKEN>
-   ```
-
-   Never commit the token. pnpm 11.5.3 and later ignore `${...}` token placeholders in a project `.npmrc`, so the token must live in user-level config or the environment.
-
-3. Install the package with the Oxc tools you use:
-
-   ```sh
-   pnpm add -D @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
-   ```
-
-4. To install it in GitHub Actions of another repository, add that repository with the Read role under the package's **Package settings → Manage Actions access**, then pass the workflow token to the install step:
-
-   ```yaml
-   jobs:
-     verify:
-       runs-on: ubuntu-24.04
-       permissions:
-         contents: read
-         packages: read
-       steps:
-         - uses: actions/checkout@v6
-         - uses: actions/setup-node@v7
-           with:
-             node-version-file: .node-version
-             registry-url: https://npm.pkg.github.com
-             scope: '@sonsu-lee'
-         - uses: pnpm/action-setup@v6
-         - run: pnpm install --frozen-lockfile
-           env:
-             NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   ```
+No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
 Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
@@ -158,7 +122,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run verify:consumer  # Pack, install and exercise a temporary consumer
 pnpm run verify           # All of the above checks
-pnpm run verify:consumer -- --published 0.1.0  # Install a published version from GitHub Packages (needs NODE_AUTH_TOKEN)
+pnpm run verify:consumer -- --published 0.1.0  # Install a published version from npm and run the same checks
 ```
 
 `pnpm run format` formats maintained files. Research evidence and regression fixtures are excluded. The consumer check needs registry access, uses a temporary pnpm store, and removes its own temporary directory; pass `pnpm run verify:consumer -- --keep` to inspect it.
@@ -181,4 +145,4 @@ Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verifica
 
 ### Release
 
-Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to GitHub Packages, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
+Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.

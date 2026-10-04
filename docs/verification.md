@@ -20,7 +20,7 @@ pnpm run verify
 
 소비자 verifier는 시스템 임시 폴더에 별도 package와 pnpm store를 만든다. 완료 또는 실패 후 자기 임시 폴더를 제거한다. 보존하려면 `pnpm run verify:consumer -- --keep`을 사용한다.
 
-`pnpm run verify:consumer -- --published <version>`은 pack 대신 GitHub Packages에서 정확한 버전을 설치하고 같은 소비자 검사를 실행한다. `read:packages` 권한의 `NODE_AUTH_TOKEN`이 필요하며, 소비자 `.npmrc`는 `@sonsu-lee` scope만 registry로 보내고 토큰은 URL 범위의 `pnpm_config_` 환경 변수로 전달한다. 설치된 `package.json`의 버전이 요청 버전과 같은지 단언한다. 버전 형식이나 토큰이 없으면 임시 폴더를 만들기 전에 실패한다.
+`pnpm run verify:consumer -- --published <version>`은 pack 대신 npm에서 정확한 버전을 설치하고 같은 소비자 검사를 실행한다. 토큰은 필요하지 않다. 소비자 `.npmrc`가 `@sonsu-lee` scope를 `https://registry.npmjs.org/`로 고정하므로, 사용자 설정이 scope를 GitHub Packages로 보내더라도 npm의 패키지를 설치한다. 설치된 `package.json`의 버전이 요청 버전과 같은지 단언한다. 버전 형식이 잘못되면 임시 폴더를 만들기 전에 실패한다.
 
 ## 이번 변경에서 확인하는 범위
 
