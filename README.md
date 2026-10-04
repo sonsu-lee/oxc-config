@@ -181,4 +181,4 @@ Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verifica
 
 ### Release
 
-Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to GitHub Packages, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release. A push whose version is already published only runs verification. Published versions are never overwritten; fix a bad release with a new patch version.
+Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to GitHub Packages, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
