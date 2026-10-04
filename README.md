@@ -25,6 +25,8 @@ import sonsu from '@sonsu-lee/oxc-config/oxlint';
 export default sonsu();
 ```
 
+In a package without `"type": "module"` (for example a default Next.js app), name the files `oxlint.config.mts` and `oxfmt.config.mts` with the same contents; both tools find them, and Node no longer prints a `MODULE_TYPELESS_PACKAGE_JSON` warning on every run.
+
 `sonsu()` combines `javascript`, `imports` and `typescript`. Framework and test rules are opt-in; choose the options your project uses and supply its actual paths:
 
 ```ts
