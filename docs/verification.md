@@ -60,9 +60,9 @@ pnpm run verify
 
 2026-10-04(UTC) [#7](https://github.com/sonsu-lee/oxc-config/pull/7)의 squash 병합 커밋 `6d552304a525b03e5b5edfca2cc3c27a6d0e3c24`에서 [CI run](https://github.com/sonsu-lee/oxc-config/actions/runs/37212020152)이 `0.1.0`을 게시했다. 부모 커밋의 `0.0.0`과 버전이 달라 게시 단계가 실행됐다.
 
-- `Verify`: ubuntu-24.04에서 `pnpm run verify`가 통과했다. 이 저장소의 첫 Linux·원격 CI 실행이다.
+- `Verify`: ubuntu-24.04에서 `pnpm run verify`가 통과했다. 첫 Linux·원격 CI 실행은 앞선 [PR #7의 Verify run](https://github.com/sonsu-lee/oxc-config/actions/runs/37210182148)에서 통과했다.
 - `Publish`: `pnpm publish`가 `📦 @sonsu-lee/oxc-config@0.1.0 → https://npm.pkg.github.com/`를 출력했다. 이어서 registry 재설치 검증이 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났고, Release [`v0.1.0`](https://github.com/sonsu-lee/oxc-config/releases/tag/v0.1.0)이 생성됐다. Release의 `targetCommitish`는 병합 커밋과 같다.
-- Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. visibility를 따로 바꾸지 않았는데 첫 게시 후 이미 `public`이었다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. README가 설치에 토큰을 요구하는 이유다.
+- Registry: GitHub Packages API 조회 결과 이름은 `oxc-config`, visibility는 `public`, 연결 저장소는 `sonsu-lee/oxc-config`, 버전은 `["0.1.0"]`이다. 조회 시 이미 `public`이므로 추가 visibility 전환은 필요하지 않았다. 공개 패키지여도 토큰 없는 metadata 요청은 401을 받는다. README가 설치에 토큰을 요구하는 이유다.
 - 로컬: 2026-10-05 최신 main(macOS arm64, Node 24.21.0, pnpm 12.6.0)에서 `NODE_AUTH_TOKEN="$(gh auth token)" pnpm run verify:consumer -- --published 0.1.0`을 실행했다. registry에서 설치한 패키지로 74개 규칙의 개별·README 조합 검사와 나머지 소비자 검사가 통과했고, 출력은 `Verified published @sonsu-lee/oxc-config@0.1.0 factory baseline, ...`로 끝났다. 토큰은 `read:packages` scope를 가진 `gh` OAuth 토큰이다.
 
 ## Severity 재검토 결과
