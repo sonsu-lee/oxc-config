@@ -15,10 +15,6 @@ if (publishedFlagIndex !== -1) {
     /^\d+\.\d+\.\d+$/,
     '--published requires an exact version such as 0.1.0',
   );
-  assert.ok(
-    process.env.NODE_AUTH_TOKEN,
-    '--published requires NODE_AUTH_TOKEN with read:packages access to https://npm.pkg.github.com',
-  );
 }
 const temporaryRoot = mkdtempSync(join(tmpdir(), 'oxc-config-consumer-'));
 const packageDirectory = join(temporaryRoot, 'package');
@@ -138,16 +134,11 @@ try {
   );
 
   let packageSpec;
-  let installEnv;
   if (publishedVersion) {
-    // pnpm ignores ${...} credentials in a project .npmrc, so the token travels as a
-    // URL-scoped pnpm_config_ variable and the project file only routes the scope.
-    writeFile('.npmrc', `${name.split('/')[0]}:registry=https://npm.pkg.github.com/\n`);
+    // Pin the scope to npmjs so a user-level route (for example to GitHub Packages)
+    // cannot substitute another registry's copy of the package.
+    writeFile('.npmrc', `${name.split('/')[0]}:registry=https://registry.npmjs.org/\n`);
     packageSpec = `${name}@${publishedVersion}`;
-    installEnv = {
-      ...process.env,
-      'pnpm_config_//npm.pkg.github.com/:_authToken': process.env.NODE_AUTH_TOKEN,
-    };
   } else {
     const packed = run('pnpm', ['pack', '--json', '--pack-destination', packageDirectory], {
       cwd: repositoryRoot,
@@ -188,7 +179,7 @@ try {
       packageSpec,
       ...toolVersions,
     ],
-    { cwd: consumerDirectory, env: installEnv },
+    { cwd: consumerDirectory },
   );
   if (publishedVersion) {
     const installed = JSON.parse(
