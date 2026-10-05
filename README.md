@@ -9,14 +9,14 @@ Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://s
 Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Install the package with the Oxc tools you use:
 
 ```sh
-pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D --save-exact @sonsu-lee/oxc-config@latest oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
+`@latest` makes the same command upgrade a project that already pins an older exact version of this package; without it, pnpm reuses the existing version. `--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
 
 ```sh
-pnpm pkg delete dependencies.oxlint dependencies.oxfmt devDependencies.oxlint devDependencies.oxfmt
-pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+pnpm pkg delete dependencies.oxlint dependencies.oxfmt devDependencies.oxlint devDependencies.oxfmt optionalDependencies.oxlint optionalDependencies.oxfmt
+pnpm add -D --save-exact @sonsu-lee/oxc-config@latest oxlint@1.85.0 oxfmt@0.70.0
 ```
 
 Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
