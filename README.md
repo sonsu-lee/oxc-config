@@ -134,7 +134,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run verify:consumer  # Pack, install and exercise a temporary consumer
 pnpm run verify           # All of the above checks
-pnpm run verify:consumer -- --published 0.1.0  # Install a published version from npm and run the same checks
+pnpm run verify:consumer -- --published 0.1.1  # Install a published version from npm and run the same checks
 ```
 
 `pnpm run format` formats maintained files. Research evidence and regression fixtures are excluded. The consumer check needs registry access, uses a temporary pnpm store, and removes its own temporary directory; pass `pnpm run verify:consumer -- --keep` to inspect it.
