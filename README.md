@@ -12,17 +12,15 @@ Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`pac
 pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. `--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing entries first; `npm pkg delete` changes only the named fields, leaves `peerDependencies` alone and also succeeds for entries that are not declared:
+The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. It does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`: `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0`, and pnpm 12 also reuses a range from `peerDependencies`. If the project already declares any of the three packages, edit `package.json` instead: remove them from `dependencies` and `optionalDependencies`, keep `peerDependencies` as it is, set them in `devDependencies` as below, and run `pnpm install`.
 
-```sh
-npm pkg delete \
-  dependencies.oxlint dependencies.oxfmt dependencies.@sonsu-lee/oxc-config \
-  devDependencies.oxlint devDependencies.oxfmt devDependencies.@sonsu-lee/oxc-config \
-  optionalDependencies.oxlint optionalDependencies.oxfmt optionalDependencies.@sonsu-lee/oxc-config
-pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
+```json
+"devDependencies": {
+  "@sonsu-lee/oxc-config": "0.1.1",
+  "oxfmt": "0.70.0",
+  "oxlint": "1.85.0"
+}
 ```
-
-A package that also lists them in `peerDependencies` keeps those peer ranges, but pnpm 12 then saves the dev entries with the peer range. There, set the dev versions directly with `npm pkg set devDependencies.@sonsu-lee/oxc-config=0.1.1 devDependencies.oxlint=1.85.0 devDependencies.oxfmt=0.70.0` and run `pnpm install --no-frozen-lockfile`.
 
 Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
@@ -159,4 +157,4 @@ Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verifica
 
 ### Release
 
-Releases are pull requests that bump `version` in `package.json` and the matching `@sonsu-lee/oxc-config@X.Y.Z` in this README's install commands, and nothing else. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
+Releases are pull requests that bump `version` in `package.json` and every version of this package named in the install section of this README (the `pnpm add` command and the `devDependencies` example), and nothing else. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
