@@ -9,10 +9,20 @@ Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://s
 Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Install the package with the Oxc tools you use:
 
 ```sh
-pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`--save-exact` keeps all three versions fixed: Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
+The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. It does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`: `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0`, and pnpm 12 also reuses a range from `peerDependencies`. If the project already declares any of the three packages, edit `package.json` instead: remove them from `dependencies` and `optionalDependencies`, keep `peerDependencies` as it is, set them in `devDependencies` as below, and run `pnpm install`.
+
+```json
+"devDependencies": {
+  "@sonsu-lee/oxc-config": "0.1.1",
+  "oxfmt": "0.70.0",
+  "oxlint": "1.85.0"
+}
+```
+
+Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
 Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
@@ -147,4 +157,4 @@ Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verifica
 
 ### Release
 
-Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
+Releases are pull requests that bump `version` in `package.json` and every version of this package named in the install section of this README (the `pnpm add` command and the `devDependencies` example), and nothing else. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
