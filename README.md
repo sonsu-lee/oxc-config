@@ -12,7 +12,14 @@ Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`pac
 pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`--save-exact` keeps all three versions fixed: Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
+`--save-exact` does not override an existing `^` or `~` range prefix, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
+
+```sh
+pnpm pkg delete dependencies.oxlint dependencies.oxfmt devDependencies.oxlint devDependencies.oxfmt
+pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
+```
+
+Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
 Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
 
