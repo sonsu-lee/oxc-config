@@ -94,7 +94,7 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 - 로컬: 빈 사용자 npm 설정으로 `pnpm run verify:consumer -- --published 0.1.1`이 통과했다.
 - 재시험: 같은 버전으로 새로 만든 두 scaffold에 README 명령(`pnpm add -D --save-exact …`)으로 `0.1.1`을 설치했다.
   - Next: 세 패키지가 정확한 버전으로 저장됐다. `.mts` 설정으로 경고 없이 lint·format·`next build`가 통과했다. `npm audit signatures`에서 `@sonsu-lee/oxc-config@0.1.1`의 attestation이 검증됐다.
-  - Nest: scaffold가 `"oxlint": "^1.58.0"`을 미리 선언해서 `--save-exact`로도 `oxlint`는 범위로 남는다. 같은 manifest로 pnpm 10.33.2와 12.6.0에서 재현했고 둘 다 `^1.85.0`을 저장했다. pnpm 12.6.0에서는 1.86.0이 설치된 채 peer 경고가 났다. 기존 항목을 먼저 지우는 방법은 [#16](https://github.com/sonsu-lee/oxc-config/pull/16)에서 README에 안내했다. 이 실행에서 설치된 oxlint 1.85.0으로 `defineConfig(shared)`와 factory 설정을 포함한 `tsc --noEmit -p tsconfig.json`이 통과했다. `pnpm run lint`(`oxlint --type-aware .`), format, build, unit·e2e 테스트도 통과했다. 이 패키지는 typed 규칙을 켜지 않으며, type-aware로 동작한 규칙은 앱 설정에서 추가한 `typescript/no-floating-promises`뿐이다.
+  - Nest: scaffold가 `"oxlint": "^1.58.0"`을 미리 선언해서 `--save-exact`로도 `oxlint`는 범위로 남는다. 같은 manifest로 pnpm 10.33.2와 12.6.0에서 재현했고 둘 다 `^1.85.0`을 저장했다. pnpm 12.6.0에서는 1.86.0이 설치된 채 peer 경고가 났다. 기존 항목을 먼저 지우는 방법은 [#16](https://github.com/sonsu-lee/oxc-config/pull/16)에서 README에 안내했다. 이 실행에서 설치된 oxlint 1.85.0으로 `defineConfig(shared)`와 factory 설정을 포함한 `tsc --noEmit -p tsconfig.json`이 통과했다. 템플릿의 lint script(`oxlint --type-aware src/ test/`)는 루트 설정 파일도 검사하도록 `oxlint --type-aware .`로 바꿨고, 이 `pnpm run lint`와 format, build, unit·e2e 테스트가 통과했다. 이 패키지는 typed 규칙을 켜지 않으며, type-aware로 동작한 규칙은 앱 설정에서 추가한 `typescript/no-floating-promises`뿐이다.
 
 ## Severity 재검토 결과
 
@@ -121,7 +121,7 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 ## 남은 범위
 
 - 새 tarball을 Hono 앱에 넣은 통합과 Next·Nest 앱의 실제 기능 개발 흐름: `not_run`. scaffold 기준으로 Next는 lint·format·build·실행, Nest는 lint·format·build·test·실행만 확인했다.
-- 다른 Node·OS·Oxc 버전과 editor: `not_run`. TypeScript 5.9.3과 pnpm 10.33.2는 위 Next·Nest scaffold에서만 확인했다. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
+- 다른 Node·OS·TypeScript·Oxc 버전과 editor: `not_run`. TypeScript 5.9.3과 pnpm 10.33.2는 위 Next·Nest scaffold에서만 확인했다. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
 - 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
