@@ -12,7 +12,7 @@ Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`pac
 pnpm add -D --save-exact @sonsu-lee/oxc-config oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`--save-exact` does not override an existing `^` or `~` range prefix, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
+`--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
 
 ```sh
 pnpm pkg delete dependencies.oxlint dependencies.oxfmt devDependencies.oxlint devDependencies.oxfmt
