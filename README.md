@@ -9,15 +9,20 @@ Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://s
 Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Install the package with the Oxc tools you use:
 
 ```sh
-pnpm add -D --save-exact @sonsu-lee/oxc-config@latest oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
 ```
 
-`@latest` makes the same command upgrade a project that already pins an older exact version of this package; without it, pnpm reuses the existing version. `--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing tool entries first (`pnpm pkg delete` also succeeds for entries that are not declared), and if `@sonsu-lee/oxc-config` itself is already declared with such a range, run `pnpm remove @sonsu-lee/oxc-config` first as well:
+The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. `--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`, so `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0` instead of `1.85.0`. In that case delete the existing entries first; `npm pkg delete` changes only the named fields, leaves `peerDependencies` alone and also succeeds for entries that are not declared:
 
 ```sh
-pnpm pkg delete dependencies.oxlint dependencies.oxfmt devDependencies.oxlint devDependencies.oxfmt optionalDependencies.oxlint optionalDependencies.oxfmt
-pnpm add -D --save-exact @sonsu-lee/oxc-config@latest oxlint@1.85.0 oxfmt@0.70.0
+npm pkg delete \
+  dependencies.oxlint dependencies.oxfmt dependencies.@sonsu-lee/oxc-config \
+  devDependencies.oxlint devDependencies.oxfmt devDependencies.@sonsu-lee/oxc-config \
+  optionalDependencies.oxlint optionalDependencies.oxfmt optionalDependencies.@sonsu-lee/oxc-config
+pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
 ```
+
+A package that also lists them in `peerDependencies` keeps those peer ranges, but pnpm 12 then saves the dev entries with the peer range. There, set the dev versions directly with `npm pkg set devDependencies.@sonsu-lee/oxc-config=0.1.1 devDependencies.oxlint=1.85.0 devDependencies.oxfmt=0.70.0` and run `pnpm install --no-frozen-lockfile`.
 
 Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
@@ -154,4 +159,4 @@ Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verifica
 
 ### Release
 
-Releases are pull requests that only bump `version` in `package.json`. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
+Releases are pull requests that bump `version` in `package.json` and the matching `@sonsu-lee/oxc-config@X.Y.Z` in this README's install commands, and nothing else. After such a PR merges, CI verifies the merge commit, publishes the version to npm through trusted publishing with provenance, reinstalls it with `verify:consumer --published`, and creates the `vX.Y.Z` GitHub Release on that commit. Only the commit that changes `version` publishes or releases; other pushes only run verification. If a release run fails, re-run that commit's workflow run; finished steps are skipped. Published versions are never overwritten; fix a bad release with a new patch version.
