@@ -1,7 +1,8 @@
 import type { OxlintConfig } from 'oxlint';
 
 export const typescript: OxlintConfig = {
-  categories: { correctness: 'off' },
+  plugins: ['typescript'],
+  categories: { correctness: 'error' },
   overrides: [
     {
       files: ['**/*.{ts,tsx,mts}'],

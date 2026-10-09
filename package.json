@@ -43,6 +43,7 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "prepack": "node scripts/build.mjs",
+    "rules:update": "pnpm run build && node scripts/effective-rules.mjs --write",
     "test": "pnpm run build && node --test test/*.test.mjs",
     "verify": "pnpm test && pnpm run lint && pnpm run format:check && pnpm run verify:consumer",
     "verify:consumer": "node scripts/verify-consumer.mjs"

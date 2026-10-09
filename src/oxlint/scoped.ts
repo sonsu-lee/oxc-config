@@ -27,7 +27,6 @@ export function scopedPreset(
   options: FilesPresetOptions,
 ): OxlintConfig {
   return {
-    categories: { correctness: 'off' },
     overrides: [
       {
         files: filePatterns(name, options),

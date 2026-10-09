@@ -26,11 +26,12 @@ pnpm run verify
 
 - 배포 경로를 `dist`로 바꾼 기존 검사부터 실행해, 이전 패키지가 `tarball is missing dist/oxlint/index.js`로 실패함을 확인했다.
 - 빌드는 TS 소스에서 JS와 `.d.ts`를 함께 생성한다. 기존 수동 선언 파일은 제거했다. 상대 `.ts` import를 배포 `.js`로 변환하므로 저장소의 TS config도 소스를 직접 읽을 수 있다.
-- 계약 테스트는 현재 74개 ID·옵션의 누락/중복, 규칙별 error/warn 계약, correctness off, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. Factory의 잘못된 opt-in 입력과 기본 세트·선택 preset의 호출 간 변경 격리도 검사한다. Export 이름 목록 자체는 고정하지 않는다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자에서 `lint` script를 실제로 실행해 확인한다.
+- 계약 테스트는 설치된 Oxlint의 rule 목록으로 계산한 실효 규칙 표가 `test/fixtures/effective-rules.json`과 같은지, 기본 조각의 `correctness: 'error'`와 영역 builder의 override 전용 구조, files 검증·복사, 호출별 규칙·중첩 옵션의 변경 격리, Oxfmt 옵션을 생성 JS에서 검사한다. Factory의 잘못된 opt-in 입력과 기본 세트·선택 preset의 호출 간 변경 격리도 검사한다. Export 이름 목록 자체는 고정하지 않는다. 기본 lint의 경고 허용은 script 문자열이 아니라 아래 설치 소비자에서 `lint` script를 실제로 실행해 확인한다.
 - tarball에는 package.json·README·LICENSE·dist만 허용하고 두 subpath의 JS·타입 선언 존재를 검사한다. 소비자 `tsc`는 `skipLibCheck` 없이 생성 선언을 확인하고, Oxfmt 설정은 spread 형식과 `defineConfig(shared)` 직접 호출을 모두 검사한다. `oxlint`를 직접 import하지 않는 factory 설정과 조각 export를 별도 `tsc --declaration`으로 검사해, 반환 타입을 패키지가 다시 export하는 `OxlintConfig`로 이름 붙일 수 있는지(TS2883 없음) 확인한다.
-- Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다. error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
-- 74개 전부의 정상·위반 소스를 설치된 tarball의 개별 규칙 값으로 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.
-- 같은 74개 입력을 README의 전체 factory 설정(`sonsu`와 README 경로 glob)으로 다시 실행한다. 일반 규칙은 `src/`, Vitest는 `tests/`에 두고, Next 6개는 App(`src/app/page.tsx`, `src/app/about/page.tsx`)과 Pages(`src/pages/index.tsx`, `src/pages/about.tsx`) 배치로 각각 실행한다(일반 68×2 + Next 6×2×2 = 160 case). 위반은 정확한 대상 규칙 ID와 severity, 정상은 대상 ID 없음을 단언한다. 다른 조각의 진단은 허용하고, 전체 진단의 error 유무로 exit 0/1을 확인한다. 같은 조합 config는 소비자 root의 `oxlint-composed.config.mts`로도 생성되어 소비자 `tsc` 검사에 포함된다. Next 앱 build·router runtime은 확인하지 않는다.
+- Oxlint 7개 영역을 각각 정상·위반 파일에 적용한다(영역 builder는 `javascript`와 함께 조합). error/warn, 범위 밖 파일, `.cts` 제외, 전체 조합, 뒤쪽 override, root React settings, 잘못된 glob의 로더 오류를 검사한다.
+- 설치된 tarball과 소비자 Oxlint로 계산한 실효 규칙 표가 fixture와 같은지 단언한다. 저장된 정상·위반 입력이 있는 활성 규칙 93개는 표의 값만 켠 설정으로 각각 실행하여 severity와 종료 코드를 확인한다. 입력은 과거 base/rule/followup evidence를 재사용한다. 과거 `valid-describe-callback`의 async "invalid" 입력은 실제로 정상 허용되어, 정상 회귀 사례로 보존하고 callback 인자를 받는 잘못된 사례를 위반 입력으로 쓴다.
+- 같은 입력과, `off`로 조정한 규칙 중 저장된 위반 입력이 있는 16개, 모두 109개를 README의 전체 factory 설정(`sonsu`와 README 경로 glob)으로 다시 실행한다. 일반 규칙은 `src/`, Vitest는 `tests/`에 둔다. 두 라우터에 공통인 Next 6개는 App(`src/app/page.tsx`, `src/app/about/page.tsx`)과 Pages(`src/pages/index.tsx`, `src/pages/about.tsx`) 배치로 각각 실행하고, 라우터 전용 Next 입력(`pages/_document`, Pages data fetching, `app/layout`)은 저장된 경로로 실행한다. 위반은 정확한 대상 규칙 ID와 severity, 정상과 `off` 규칙의 위반은 대상 ID 없음을 단언한다. 다른 조각의 진단은 허용하고, 전체 진단의 error 유무로 exit 0/1을 확인한다. 나머지 115개(type-aware 15개와 입력 없는 상속 규칙)는 표 계산으로만 확인한다. 같은 조합 config는 소비자 root의 `oxlint-composed.config.mts`로도 생성되어 소비자 `tsc` 검사에 포함된다. Next 앱 build·router runtime은 확인하지 않는다.
+- 기본 세트가 소스에 없는 상속 규칙(`no-dupe-keys`)을 error로 보고하고, 상속 React 규칙(`no-find-dom-node`)이 React 영역 밖 파일에서는 보고되지 않음을 확인한다.
 - 진단 판정은 Oxlint의 `plugin(rule)` code를 공개 규칙 ID로 정규화한 뒤 정확히 비교한다(`eslint` 접두사 제거, `react-hooks`→`react`, `next`→`nextjs`). 인식하지 못한 code는 실패로 처리한다.
 - warning만 있으면 exit 0, 같은 warning에 `--deny-warnings`를 붙이면 severity는 warning인 채 exit 1, error는 옵션과 무관하게 exit 1, `off` override는 옵션을 붙여도 진단 없이 exit 0임을 설치 소비자로 확인한다. 결합 설정에서도 error와 warn이 각각 유지된다.
 - 저장소 manifest의 `lint` script를 설치 소비자 안의 별도 project에서 `pnpm run lint`로 실행한다. warning만 있으면 warning을 출력하고 exit 0, error 파일을 더하면 exit 1이어야 한다. script에 `--deny-warnings`나 `--quiet`를 붙이거나 대상 경로를 바꾸면 이 검사가 실패한다.
@@ -116,13 +117,13 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 | [Vitest와 추가 후보](evidence/followup-probes.json) · [OSS](evidence/oss-logic-probes.json)                                                    | runner와 fix 반례, 실제 소스 정적 검사                                                |
 | [Antfu 소비자](evidence/antfu-consumer-probes.json) · [Oxfmt 순서 반례](evidence/oxfmt-import-order.md)                                        | 자동 감지·override·조건부 exports 및 import 평가 순서                                 |
 
-과거 77개·75개·backend·Nest 후보 JSON은 `docs/evidence/selected-*-prototype.json`과 `selected-next-config-oss-revised.json`에 남긴다. 현재 ID·옵션 회귀 기준은 [test fixture](../test/fixtures/selected-rules.json)로 옮겼다. 이번 재검토부터 이 test JSON은 기대 severity도 고정한다. 과거 severity 원본은 evidence JSON들에 남는다.
+과거 77개·75개·backend·Nest 후보 JSON은 `docs/evidence/selected-*-prototype.json`과 `selected-next-config-oss-revised.json`에 남긴다. 0.1.x의 74개 ID·옵션·severity 기준(`test/fixtures/selected-rules.json`)은 preset 전환에서 [실효 규칙 표](../test/fixtures/effective-rules.json)로 대체했다. 74개의 값은 새 표에서도 같다.
 
 ## 남은 범위
 
 - 새 tarball을 Hono 앱에 넣은 통합과 Next·Nest 앱의 실제 기능 개발 흐름: `not_run`. scaffold 기준으로 Next는 lint·format·build·실행, Nest는 lint·format·build·test·실행만 확인했다.
 - 다른 Node·OS·TypeScript·Oxc 버전과 editor: `not_run`. TypeScript 5.9.3과 pnpm 10.33.2는 위 Next·Nest scaffold에서만 확인했다. 원격 CI는 ubuntu-24.04·Node 24.21.0·pnpm 12.6.0의 `Verify`만 실행한다.
-- 74개 채택 규칙의 개별 정상·위반 입력과 README 조합(Next는 App/Pages 배치)은 재실행했다. 제외 규칙을 포함한 전체 연구 fixture, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
+- 저장된 입력이 있는 109개 규칙의 개별 정상·위반 입력과 README 조합(Next 공통 규칙은 App/Pages 배치)은 재실행했다. 입력이 없는 상속 규칙 100개의 정상·위반 사례, README 외의 glob·옵션·사용자 정의 component 조합: `not_run`.
 - typed lint, React Compiler 전체, 브라우저 접근성·스크린리더, 실제 DB·원격 Workers 배포: 이번 범위 밖이다.
 
 빌드 성공은 설정 패키지의 출력과 타입을 확인한다. 소비 앱의 제품 동작은 해당 앱의 타입·테스트·빌드·런타임 검사로 확인한다.

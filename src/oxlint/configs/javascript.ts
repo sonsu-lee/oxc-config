@@ -1,14 +1,10 @@
 import type { OxlintConfig } from 'oxlint';
 
+// Oxlint's correctness category is the inherited preset; only differences are listed.
 export const javascript: OxlintConfig = {
-  categories: { correctness: 'off' },
+  plugins: ['oxc', 'unicorn'],
+  categories: { correctness: 'error' },
   rules: {
-    'no-debugger': 'error',
-    'no-eval': 'error',
-    'no-unreachable': 'error',
-    'no-const-assign': 'error',
-    'no-duplicate-case': 'error',
-    'no-async-promise-executor': 'error',
     eqeqeq: ['error', 'smart'],
   },
 };
