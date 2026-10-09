@@ -3,7 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+import { effectiveRules, fixtureUrl } from './effective-rules.mjs';
 
 const repositoryRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const publishedFlagIndex = process.argv.indexOf('--published');
@@ -246,26 +248,39 @@ try {
     "import { it, expect } from 'vitest'\nit('works', () => { expect(1).toBe(1) })\n",
   );
 
+  // Area builders hold only adjustments, so each is paired with the javascript base
+  // fragment that carries the correctness preset.
   const areaExpressions = {
     javascript: 'javascript',
     imports: 'imports',
     typescript: 'typescript',
-    react: "react({ files: ['src/**/*.{ts,tsx,js,jsx}'] })",
-    jsxA11y: "jsxA11y({ files: ['src/**/*.{tsx,jsx}'] })",
-    nextjs: "nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] })",
-    vitest: "vitest({ files: ['tests/**/*.test.ts', 'tests/**/*.e2e-spec.ts'] })",
+    react: "javascript, react({ files: ['src/**/*.{ts,tsx,js,jsx}'] })",
+    jsxA11y: "javascript, jsxA11y({ files: ['src/**/*.{tsx,jsx}'] })",
+    nextjs: "javascript, nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] })",
+    vitest: "javascript, vitest({ files: ['tests/**/*.test.ts', 'tests/**/*.e2e-spec.ts'] })",
   };
 
   for (const [name, expression] of Object.entries(areaExpressions)) {
-    const imports = name;
+    const imports = expression.startsWith('javascript, ') ? `javascript, ${name}` : name;
     writeFile(
       `oxlint-${name}.config.mts`,
       configFor(imports).replace(`[${imports}]`, `[${expression}]`),
     );
   }
 
-  // Reuse the saved input sources; expected levels come from the reviewed contract,
-  // while each isolated rule value is imported from the installed tarball.
+  // The installed tarball must resolve to the reviewed effective rule table.
+  const reviewed = JSON.parse(readFileSync(fixtureUrl, 'utf8'));
+  const installedOxlint = await import(
+    pathToFileURL(join(consumerDirectory, 'node_modules', name, 'dist/oxlint/index.js')).href
+  );
+  assert.deepEqual(
+    effectiveRules(installedOxlint, oxlintPath),
+    reviewed,
+    'installed package and Oxlint must resolve to test/fixtures/effective-rules.json',
+  );
+
+  // Reuse the saved input sources for every effective rule that has them; expected
+  // values come from the reviewed table, including rules adjusted to off.
   const readEvidence = (name) =>
     JSON.parse(readFileSync(join(repositoryRoot, 'docs/evidence', name), 'utf8'));
   const historicalFiles = readEvidence('rule-fixtures.json').rules;
@@ -277,14 +292,6 @@ try {
   // Vitest permits async suites; use callback arguments for a real violation.
   standaloneCases.find((entry) => entry.rule === 'vitest/valid-describe-callback').invalidSource =
     "import { describe } from 'vitest'; describe('suite', (unexpected) => { void unexpected });";
-  const expectedConfig = JSON.parse(
-    readFileSync(join(repositoryRoot, 'test/fixtures/selected-rules.json'), 'utf8'),
-  );
-  const expectedRules = Object.assign(
-    {},
-    expectedConfig.rules,
-    ...expectedConfig.overrides.map((entry) => entry.rules),
-  );
   const areaOf = (id) =>
     id.startsWith('jsx-a11y/')
       ? 'jsxA11y'
@@ -298,8 +305,7 @@ try {
     let inputs;
     if (standalone) {
       inputs = { 'input.test.tsx': standalone[`${kind}Source`] };
-    } else {
-      assert.ok(historicalFiles[id], `missing historical inputs for ${id}`);
+    } else if (historicalFiles[id]) {
       inputs = Object.fromEntries(
         Object.entries(historicalFiles[id].files)
           .filter(
@@ -312,18 +318,26 @@ try {
           )
           .map(([path, source]) => [path.replace(new RegExp(`^${kind}/`), ''), source]),
       );
+    } else {
+      return undefined;
     }
     assert.ok(Object.keys(inputs).length, `${id} ${kind} must have a source`);
     return inputs;
   };
+  const severityOfValue = (value) => (Array.isArray(value) ? value[0] : value);
+  const probedRules = Object.entries(reviewed.rules).filter(
+    ([id, rule]) => !rule.typeAware && ruleInputs(id, 'invalid'),
+  );
+  const activeProbes = probedRules.filter(([, rule]) => severityOfValue(rule.value) !== 'off');
   const ruleFailures = [];
-  for (const [id, expectedValue] of Object.entries(expectedRules)) {
+  for (const [id, { value }] of activeProbes) {
     try {
-      const name = areaOf(id);
-      const expression = ['react', 'jsxA11y', 'nextjs', 'vitest'].includes(name)
-        ? `${name}({ files: ['**/*'] })`
-        : name;
-      const severity = Array.isArray(expectedValue) ? expectedValue[0] : expectedValue;
+      const severity = severityOfValue(value);
+      const isolated = {
+        categories: { correctness: 'off' },
+        plugins: id.includes('/') ? [id.split('/')[0]] : [],
+        rules: { [id]: value },
+      };
       for (const kind of ['invalid', 'valid']) {
         const directory = `rule-cases/${id.replace('/', '-')}/${kind}`;
         const inputs = ruleInputs(id, kind);
@@ -331,7 +345,7 @@ try {
           writeFile(`${directory}/${path}`, source);
         writeFile(
           `${directory}/oxlint.config.mts`,
-          `import { defineConfig } from 'oxlint'\nimport { ${name} } from '@sonsu-lee/oxc-config/oxlint'\nconst fragment = ${expression}\nconst area = fragment.rules ? fragment : fragment.overrides[0]\nexport default defineConfig({ categories: { correctness: 'off' }, plugins: area.plugins, rules: { ${JSON.stringify(id)}: area.rules[${JSON.stringify(id)}] } })\n`,
+          `import { defineConfig } from 'oxlint'\nexport default defineConfig(${JSON.stringify(isolated)})\n`,
         );
         const result = run(
           oxlintPath,
@@ -356,7 +370,7 @@ try {
   }
   assert.deepEqual(ruleFailures, [], 'per-rule installed-consumer regressions');
   console.log(
-    `Verified normal/violation inputs and exit status for all ${Object.keys(expectedRules).length} selected rules.`,
+    `Verified normal/violation inputs and exit status for ${activeProbes.length} enabled rules with saved inputs.`,
   );
 
   // Run the same inputs through the README factory with consumer path globs.
@@ -380,19 +394,32 @@ try {
       'src/pages/about.tsx': 'src/pages/about.tsx',
     },
   };
+  // These Next rules apply under both routers; the other saved Next inputs are
+  // router-specific (pages/_document, Pages data-fetching names, app/layout).
+  const routerNeutralNextRules = new Set([
+    'nextjs/inline-script-id',
+    'nextjs/no-assign-module-variable',
+    'nextjs/no-async-client-component',
+    'nextjs/no-html-link-for-pages',
+    'nextjs/no-sync-scripts',
+    'nextjs/no-unwanted-polyfillio',
+  ]);
   const composedFailures = [];
-  for (const [id, expectedValue] of Object.entries(expectedRules)) {
+  for (const [id, { value }] of probedRules) {
     const area = areaOf(id);
-    const severity = Array.isArray(expectedValue) ? expectedValue[0] : expectedValue;
+    const severity = severityOfValue(value);
     for (const kind of ['invalid', 'valid']) {
-      for (const router of area === 'nextjs' ? ['app', 'pages'] : [undefined]) {
+      const inputs = ruleInputs(id, kind);
+      const routers = routerNeutralNextRules.has(id) ? ['app', 'pages'] : [undefined];
+      for (const router of routers) {
         try {
           const directory = `composed-cases/${id.replace('/', '-')}/${router ? `${kind}-${router}` : kind}`;
-          const placedPaths = Object.entries(ruleInputs(id, kind)).map(([path, source]) => {
+          const placedPaths = Object.entries(inputs).map(([path, source]) => {
             const placed = router
               ? nextRouterPaths[router][path]
-              : `${area === 'vitest' ? 'tests' : 'src'}/${path}`;
-            assert.ok(placed, `no ${router} router placement for ${path}`);
+              : area === 'nextjs'
+                ? path
+                : `${area === 'vitest' ? 'tests' : 'src'}/${path}`;
             writeFile(`${directory}/${placed}`, source);
             return placed;
           });
@@ -404,7 +431,7 @@ try {
           );
           const diagnostics = diagnosticsFrom(stdout);
           const targets = diagnostics.filter((diagnostic) => ruleIdOf(diagnostic) === id);
-          if (kind === 'invalid') {
+          if (kind === 'invalid' && severity !== 'off') {
             assert.ok(targets.length > 0, `${id} not reported: ${JSON.stringify(diagnostics)}`);
             for (const diagnostic of targets)
               assert.equal(severityOf(diagnostic), severity, JSON.stringify(diagnostic));
@@ -422,8 +449,9 @@ try {
     }
   }
   assert.deepEqual(composedFailures, [], 'composed installed-consumer regressions');
+  const disabledProbes = probedRules.length - activeProbes.length;
   console.log(
-    `Verified all ${Object.keys(expectedRules).length} selected rules through the README composition, including nextjs rules under src/app and src/pages.`,
+    `Verified ${probedRules.length} effective rules with saved inputs (${disabledProbes} adjusted to off) through the README composition; the other ${Object.keys(reviewed.rules).length - probedRules.length} come from the reviewed table only (type-aware or no saved input).`,
   );
 
   writeFile('oxlint-baseline.config.mts', factoryConfig());
@@ -807,6 +835,23 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
     lint(oxlintPath, reactConfig, ['outside/react-invalid.tsx'], 0),
     'react/rules-of-hooks',
   );
+  // The baseline inherits Oxlint's correctness category at error without listing it.
+  writeFile('src/dupe-keys.js', 'export const value = { a: 1, a: 2 }\n');
+  assertDiagnostic(
+    lint(oxlintPath, 'oxlint-baseline.config.mts', ['src/dupe-keys.js'], 1),
+    'no-dupe-keys',
+    'error',
+  );
+  // Preset-inherited plugin rules stay inside the area's files, like adjusted ones.
+  const [legacySource] = Object.values(ruleInputs('react/no-find-dom-node', 'invalid'));
+  writeFile('src/react-legacy.tsx', legacySource);
+  writeFile('outside/react-legacy.tsx', legacySource);
+  assert.deepEqual(
+    lint(oxlintPath, 'oxlint.config.mts', ['src/react-legacy.tsx', 'outside/react-legacy.tsx'], 1)
+      .filter((diagnostic) => ruleIdOf(diagnostic) === 'react/no-find-dom-node')
+      .map((diagnostic) => diagnostic.filename),
+    ['src/react-legacy.tsx'],
+  );
   const vitestConfig = 'oxlint-vitest.config.mts';
   assertNoDiagnostic(
     lint(oxlintPath, vitestConfig, ['outside/focused.test.ts'], 0),
@@ -848,7 +893,8 @@ sonsu({ vitest: { files: ['tests/**/*.ts'], autodetect: true } })
   assert.ok(printConfig.includes('react/rules-of-hooks'));
   assert.match(printConfig, /jsx[_-]a11y\/alt-text/);
   const effectiveConfig = JSON.parse(printConfig);
-  assert.deepEqual(effectiveConfig.categories, {});
+  // Oxlint expands the inherited category into root rules instead of printing it.
+  assert.equal(effectiveConfig.rules['no-dupe-keys'], 'deny');
   assert.equal(effectiveConfig.settings.react.version, '19.0.0');
 
   const formatPath = writeFile(

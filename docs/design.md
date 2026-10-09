@@ -1,6 +1,6 @@
 # 패키지 설계
 
-현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 74개 규칙 ID·옵션·파일 범위와 severity는 바꾸지 않는다. 패키지 scope와 작성자 표기는 `sonsu-lee`, 홈페이지는 [sonsu.dev](https://sonsu.dev)로 통일한다. MIT 라이선스로 npm에 공개 배포한다. 토큰 없이 설치할 수 있게 하려고 처음 게시한 GitHub Packages에서 옮겼다([#1](https://github.com/sonsu-lee/oxc-config/issues/1)).
+현재 기본 사용법은 `/oxlint`의 default export인 `sonsu()`다. JavaScript·import·TypeScript 기본 세트를 제공하고 React·접근성·Next.js·Vitest는 실제 파일 경로를 지정해 선택한다. 기본 세트 없이 일부 영역만 조합하는 소비자를 위해 기존 7개 named export도 공개 API로 유지한다. 규칙은 Oxlint `correctness` category를 preset으로 상속하고, 이 패키지는 그 위의 차이(옵션·`warn`·`off`·category 밖 규칙)만 둔다. 실효 규칙은 [실효 규칙 표](../test/fixtures/effective-rules.json)에 고정한다. Oxfmt는 `shared` 객체를 그대로 제공한다. 패키지 scope와 작성자 표기는 `sonsu-lee`, 홈페이지는 [sonsu.dev](https://sonsu.dev)로 통일한다. MIT 라이선스로 npm에 공개 배포한다. 토큰 없이 설치할 수 있게 하려고 처음 게시한 GitHub Packages에서 옮겼다([#1](https://github.com/sonsu-lee/oxc-config/issues/1)).
 
 ## 소스와 배포 구조
 
@@ -23,10 +23,11 @@ dist/**/*.js + dist/**/*.d.ts
 @sonsu-lee/oxc-config/oxlint · @sonsu-lee/oxc-config/oxfmt
 ```
 
-- 각 영역 모듈은 자신의 규칙·plugin·적용 범위를 함께 가진다. 규칙을 바꿀 때 한 영역 파일에서 판단할 수 있다.
+- 기본 조각(`javascript`, `imports`, `typescript`)은 `categories.correctness: 'error'`와 자기 plugin을 선언하고 차이만 가진다. 영역 모듈은 자신의 plugin·차이·적용 범위를 함께 가진다. 규칙을 바꿀 때 한 영역 파일에서 판단할 수 있다.
 - `scoped.ts`는 네 builder의 `files` 검사와 동일한 override 구조만 공유한다. 경로 추론과 glob 해석은 하지 않는다.
 - `index.ts`는 공개 export와 기존 type alias를 유지한다. 내부 모듈은 package exports로 열지 않는다.
-- `factory.ts`는 기본 세트와 선택한 조각을 모으고 native 설정 필드는 root에 둔다. 규칙 데이터의 정본은 기존 `configs/` 모듈이다.
+- `factory.ts`는 기본 세트와 선택한 조각을 모으고 native 설정 필드는 root에 둔다. 차이의 정본은 `configs/` 모듈이고, 상속 규칙의 정본은 설치된 Oxlint의 category 목록이다.
+- `scripts/effective-rules.mjs`는 `oxlint --rules`의 category 목록, 활성 plugin, 조정을 합쳐 실효 규칙 표를 계산한다. 조정이 설치된 Oxlint에 없는 규칙 ID를 가리키면 실패한다.
 - `tsc`의 strict 검사와 Oxc 공식 설정 타입으로 소스와 옵션을 확인한다. 선언 파일은 같은 소스에서 생성한다.
 - `scripts/build.mjs`는 지정된 `dist/`를 비우고 로컬 TypeScript compiler를 실행한다. 소스 이동 후 오래된 파일이 tarball에 남지 않는다.
 - ESM과 타입 선언만 필요하므로 번들러 없이 `tsc`를 사용한다. type-only import는 JS 출력에서 사라진다. 소스의 상대 `.ts` import는 `rewriteRelativeImportExtensions`로 배포 JS에서 `.js`로 변환한다.
@@ -43,7 +44,7 @@ Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고�
 
 호출별 기본 조각은 복사하여 반환된 설정을 수정해도 다음 호출이나 공개 원본 조각으로 전파되지 않게 한다. 사용자 제공 설정에 별도의 deep clone이나 병합 규칙을 추가하지 않는다.
 
-`javascript`, `imports`, `typescript`는 설정 객체다. `react`, `jsxA11y`, `nextjs`, `vitest`는 `{ files: readonly string[] }`를 받아 설정을 반환한다. 각 조각은 단독 사용에서도 `categories.correctness: 'off'`로 암묵 규칙을 끈다. [초기 합성 반례](evidence/oxlint-module-composition.md)에서 이를 생략하면 선택하지 않은 규칙이 함께 활성화됐다.
+`javascript`, `imports`, `typescript`는 설정 객체이고 각각 `categories.correctness: 'error'`와 자기 plugin(`oxc`·`unicorn`, `import`, `typescript`)을 선언한다. category는 root 설정이라 활성 plugin 전체에 적용된다. override에서 켠 영역 plugin(`react` 등)의 correctness 규칙은 그 override의 파일에서만 켜진다. `react`, `jsxA11y`, `nextjs`, `vitest`는 `{ files: readonly string[] }`를 받아 `overrides` 하나만 반환하고 category를 두지 않는다. 뒤쪽 `extends`의 category가 앞의 값을 덮어쓰므로, 영역 builder에 category를 두면 기본 조각의 preset을 바꾼다. 기본 조각 없이 영역 builder만 쓰면 Oxlint 기본값(correctness `warn`)이 상속 규칙에 적용된다. 0.1.x는 반대로 모든 조각에 `correctness: 'off'`를 두고 74개를 직접 나열했다([초기 합성 반례](evidence/oxlint-module-composition.md)). 전환 근거는 [규칙 결정](rule-ledger.md)에 있다.
 
 `files`는 누락·빈 배열·sparse 배열·비문자열·빈 문자열·앞뒤 공백을 거부하고 유효한 배열은 복사한다. `src/[` 같은 glob 문법 오류는 Oxlint 로더가 판단한다. 각 호출의 규칙 데이터와 중첩 옵션도 복사하여 한 결과의 수정이 다음 결과에 전파되지 않게 한다. 소비자는 `src/`, `app/`, `components/`, workspace 및 실제 Vitest 경로를 명시한다. Nest의 `*.e2e-spec.ts`나 접미사 없는 테스트도 runner 대상에 맞춰 추가한다.
 
@@ -53,15 +54,15 @@ Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고�
 
 ## 강제 수준
 
-현재 74개 규칙은 **error 42개 / warn 32개**다. 언어·렌더링·프레임워크·테스트의 명확한 오류와 native 접근성 계약 위반은 차단한다. 문맥 의존 검사, 작성 방식·성능 권고는 경고로 보고한다. warning도 실제 버그를 찾을 수 있으므로 무시하라는 뜻은 아니다. 영역별 일괄 강제 수준 대신 [규칙 결정](rule-ledger.md)에 규칙별 이유를 기록한다.
+Oxlint 1.85.0에서 모든 영역을 켜면 **error 151개 / warn 41개**이고 17개를 `off`로 조정한다. type-aware correctness 15개는 소비자가 `options.typeAware`를 켤 때만 실행된다. 언어·렌더링·프레임워크·테스트의 명확한 오류와 native 접근성 계약 위반은 차단한다. 문맥 의존 검사, 작성 방식·성능 권고는 경고로 보고한다. warning도 실제 버그를 찾을 수 있으므로 무시하라는 뜻은 아니다. 영역별 일괄 강제 수준 대신 [규칙 결정](rule-ledger.md)에 조정마다 이유를 기록한다.
 
 예외는 `nextjs/no-unwanted-polyfillio`다. 하나의 규칙 ID가 unsafe URL과 안전한 CDN의 중복 polyfill을 함께 보고한다. 공통값에서는 unsafe URL 차단을 우선하여 성능 문제인 중복 polyfill도 error로 처리한다. 두 진단에 서로 다른 severity를 줄 수 없으므로, 소비자가 이 규칙을 warn으로 재정의하면 unsafe URL 진단도 비차단이 된다. 이 선택과 URL 탐지 한계는 [규칙 결정](rule-ledger.md)에 기록한다.
 
-TS 소스는 배포 설정의 정본이고 [회귀 기준](../test/fixtures/selected-rules.json)은 기대 ID·옵션·severity를 고정한 테스트 계약이다. 과거 후보 설정은 `docs/evidence/`에 따로 보존한다. 74개라는 숫자는 현재 기준이며 영구 API 숫자가 아니다.
+차이는 TS 소스가 정본이다. [실효 규칙 표](../test/fixtures/effective-rules.json)는 규칙마다 값과 출처(`preset`·`adjusted`), type-aware 여부를 담는 테스트 계약이다. 계약 테스트와 설치 소비자 검사는 실제 계산이 표와 같아야 통과한다. 이 계산은 Oxlint의 category 해석을 다시 구현한 것이므로, 저장된 입력이 있는 규칙은 설치 소비자에서 실제 진단으로 대조한다. Oxlint를 올릴 때는 `pnpm run rules:update`가 출력하는 추가·제거·변경을 검토하고 표를 함께 커밋한다. 과거 후보 설정은 `docs/evidence/`에 따로 보존한다. 규칙 수는 Oxlint 버전에 따른 현재 값이며 영구 API 숫자가 아니다.
 
-기본 `lint`와 `verify`는 경고만으로 실패하지 않는다. `--deny-warnings`는 진단 severity를 바꾸지 않고 경고가 남으면 종료 코드를 비정상으로 만드는 별도의 zero-warning CI 정책이다([Oxlint CLI](https://oxc.rs/docs/guide/usage/linter/cli#handle-warnings)). 이 패키지에서는 기본 명령에 붙이지 않는다. 소비자는 필요한 규칙만 `error`로 override하거나 모든 경고 해결을 요구할 때 명시적으로 선택한다. `off`는 규칙 진단을 끄며, 적용 근거가 부족해 제외한 규칙은 계속 기본값에 포함하지 않는다.
+기본 `lint`와 `verify`는 경고만으로 실패하지 않는다. `--deny-warnings`는 진단 severity를 바꾸지 않고 경고가 남으면 종료 코드를 비정상으로 만드는 별도의 zero-warning CI 정책이다([Oxlint CLI](https://oxc.rs/docs/guide/usage/linter/cli#handle-warnings)). 이 패키지에서는 기본 명령에 붙이지 않는다. 소비자는 필요한 규칙만 `error`로 override하거나 모든 경고 해결을 요구할 때 명시적으로 선택한다. `off`는 규칙 진단을 끈다. 정상 코드를 막거나 실제 위반을 놓친 것으로 관찰된 상속 규칙은 `off`로 조정한다.
 
-규칙을 추가하거나 warning을 error로 올릴 때는 목표 위반, 정상 제품 패턴, 파일 범위와 override를 확인한다. severity 변경은 fixer 동작을 바꾸지 않으며 이번에 자동 fix를 실행하지 않았다. 정상 코드를 반복해서 차단하거나 실제 경로를 놓치면 옵션·범위 또는 채택 자체를 재검토한다.
+조정을 추가·변경하거나 Oxlint 업그레이드로 상속 규칙이 바뀔 때는 목표 위반, 정상 제품 패턴, 파일 범위와 override를 확인한다. severity 변경은 fixer 동작을 바꾸지 않으며 이번에 자동 fix를 실행하지 않았다. 정상 코드를 반복해서 차단하거나 실제 경로를 놓치면 옵션·범위를 조정하거나 `off`로 둔다.
 
 ## 의존성과 책임
 

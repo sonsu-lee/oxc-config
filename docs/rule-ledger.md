@@ -1,10 +1,10 @@
 # 규칙 결정
 
-현재 ID·옵션·severity는 [영역별 TS 소스](../src/oxlint/configs/)가 정본이다. [회귀 기준 JSON](../test/fixtures/selected-rules.json)은 현재 74개 규칙의 기대 ID·옵션·severity를 고정한다. fixture와 소비자 검사가 통과해도 모든 정상 제품 패턴의 무오탐이나 출시 적합성이 증명되지는 않는다.
+상속 규칙은 설치된 Oxlint의 `correctness` category이고, 차이(옵션·`warn`·`off`·category 밖 규칙)는 [영역별 TS 소스](../src/oxlint/configs/)가 정본이다. [실효 규칙 표](../test/fixtures/effective-rules.json)는 둘을 합친 규칙별 값과 출처를 고정한다. fixture와 소비자 검사가 통과해도 모든 정상 제품 패턴의 무오탐이나 출시 적합성이 증명되지는 않는다.
 
-## 현재 채택과 강제 수준
+## 개별 검증한 규칙과 강제 수준
 
-2026-09-29 재검토 결과는 **42 error / 32 warn**이다. `error`는 공통으로 차단할 근거가 있는 계약 위반, `warn`은 진단을 보고 소비자가 문맥에 따라 판단할 항목이다. warning의 중요도가 항상 낮다는 뜻은 아니다. 기본 lint에서는 `--deny-warnings`를 제거하여 이 차이가 종료 코드에도 반영되게 했다.
+아래 74개는 0.1.x에서 직접 나열해 개별 검증한 규칙이다. 2026-09-29 재검토 값(**42 error / 32 warn**)을 preset 전환 뒤에도 그대로 유지한다. 상속 값(`error`)과 같은 규칙은 소스에서 빠졌고, `warn`·옵션·category 밖 규칙만 조정으로 남았다. `error`는 공통으로 차단할 근거가 있는 계약 위반, `warn`은 진단을 보고 소비자가 문맥에 따라 판단할 항목이다. warning의 중요도가 항상 낮다는 뜻은 아니다. 기본 lint에서는 `--deny-warnings`를 제거하여 이 차이가 종료 코드에도 반영되게 했다.
 
 다음 표의 규칙명에는 해당 영역의 접두사가 붙는다(JavaScript와 `sort-imports` 제외).
 
@@ -43,48 +43,66 @@ Oxlint 1.85.0의 [polyfill 구현](https://github.com/oxc-project/oxc/blob/oxlin
 
 React `jsx-key`는 `checkFragmentShorthand`, `checkKeyMustBeforeSpread`, `warnOnDuplicates`를 모두 명시한다. Oxlint 1.85.0의 기본 문자열 설정은 이 세 위반을 놓쳤다. `additionalHooks`와 광역 custom component mapping은 공통값으로 추정하지 않는다.
 
-JavaScript/import 선택의 9개 위반·정상·fix 관찰은 [base probes](evidence/base-rule-probes.json), 원본 104개 규칙의 소스·설정은 [rule fixtures](evidence/rule-fixtures.json)에 있다. 원본 선언 목록과 옵션은 [templates inventory](evidence/templates-inventory.json)로 조회한다. 원본 `correctness:error`가 더 켜는 146개 ID는 [effective configs](evidence/effective-configs.json)의 관찰이며 개별 검증 없이 승계하지 않는다.
+JavaScript/import 선택의 9개 위반·정상·fix 관찰은 [base probes](evidence/base-rule-probes.json), 원본 104개 규칙의 소스·설정은 [rule fixtures](evidence/rule-fixtures.json)에 있다. 원본 선언 목록과 옵션은 [templates inventory](evidence/templates-inventory.json)로 조회한다.
 
-## 공통값에서 제외한 규칙과 정책
+## preset 상속 전환과 템플릿 대조
 
-| 규칙·정책                                                                         | 결정 근거                                                                                                                                   |
-| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| React `set-state-in-effect`                                                       | Commerce의 경로 변경 메뉴 닫기·cart modal 열기까지 차단했다. 공통 error에서 제외하고 프로젝트 성능 정책에서 선택한다.                       |
-| React `incompatible-library`, `unsupported-syntax`, `preserve-manual-memoization` | Compiler 맥락이 필요하다. 정상 TanStack Table을 막거나 공식 invalid 예제도 놓친 사례가 있다.                                                |
-| React class lifecycle·legacy API·`forward-ref-uses-ref`                           | React 19 신규 코드의 공통 범위에 넣지 않는다. `forward-ref-uses-ref`는 받은 ref의 실제 전달 누락도 보장하지 않는다.                         |
-| React `no-did-mount-set-state`, `no-did-update-set-state`                         | 정상 DOM 측정과 조건부 state reset도 차단한다.                                                                                              |
-| Next `no-before-interactive-script-outside-document`                              | App page와 중첩 layout의 오배치를 놓친다. Next build도 해당 반례를 놓쳤다. 임시 별도 검사도 간접 사용을 놓쳐 공통 패키지에 포함하지 않았다. |
-| Next `no-head-element`, Pages `_document` 계열                                    | Pages용 fixture를 App Router 보장으로 옮기지 않는다.                                                                                        |
-| Next font·GA·image 최적화 규칙                                                    | 실제 기술 사용과 배포 방식에 따라 선택한다. `no-img-element`는 정상 SVG도 차단한다.                                                         |
-| `jsx-a11y/autocomplete-valid`                                                     | 정상 `username webauthn` 오탐.                                                                                                              |
-| `jsx-a11y/no-noninteractive-element-to-interactive-role`, `prefer-tag-over-role`  | 정상 ARIA widget 패턴과 충돌하여 공통 후보에서 제외.                                                                                        |
-| typed TypeScript 규칙                                                             | tsgolint와 TS 호환을 별도 확인해야 한다. 현재 일반 `typescript` 조각에서 켜지 않는다.                                                       |
-| `typescript/consistent-type-imports` 일괄 fix                                     | Nest decorator metadata와 DI 런타임 영향을 확인해야 하므로 공통값에서 제외.                                                                 |
-| `node/no-sync`, `unicorn/no-process-exit`                                         | 정상 시작 단계·CLI 종료까지 막는다. 필요한 요청 경로나 앱 정책에서 선택한다.                                                                |
-| 전역 `node:*` 금지                                                                | Workers `nodejs_compat`의 정상 사용을 막을 수 있다. 환경별 API 계약이 필요하다.                                                             |
-| `no-restricted-imports`, filename·folder 규칙                                     | alias·실제 경로를 소비자가 안다. filename 규칙은 폴더 존재나 구조를 보장하지 않는다.                                                        |
+2026-10-09에 직접 나열 방식을 Oxlint `correctness` category 상속으로 바꿨다. 기준은 `sonsu-lee/templates`의 5개 `.oxlintrc.json`이다. 현재 템플릿 파일은 [templates inventory](evidence/templates-inventory.json)의 기록과 같다. 템플릿은 `plugins: [typescript, oxc, unicorn, import, node]`, `categories.correctness: error`를 두고 그 위에 규칙을 추가한다. 이 패키지도 같은 구조를 따르며, 업그레이드 때 상속 변화는 [실효 규칙 표](../test/fixtures/effective-rules.json)의 diff로 검토한다. 0.1.x의 "146개 ID는 개별 검증 없이 승계하지 않는다"는 결정을 이 방식으로 대체했다. `node` plugin은 correctness 규칙이 없어 선언하지 않는다.
+
+Oxlint 1.85.0 기준 결과는 다음과 같다(템플릿 관찰은 [effective configs](evidence/effective-configs.json)의 Oxlint 1.82.0).
+
+- 기본 세트가 상속하는 type-aware가 아닌 correctness 92개는 모두 템플릿에서 이미 `error`로 켜져 있던 규칙이다(`no-unused-vars`, `no-dupe-keys`, `valid-typeof`, `oxc/*`, `unicorn/*`, `import/default`·`import/namespace` 등).
+- React는 템플릿이 `error`로 쓰던 legacy API 7개(`no-direct-mutation-state`, `no-find-dom-node`, `no-is-mounted`, `no-render-return-value`, `no-string-refs`, `no-unsafe`, `no-will-update-set-state`)를 상속한다. React 19 코드에 해당 API가 없으면 진단하지 않는다.
+- Next는 템플릿이 쓰던 13개 중 12개를 상속하고 `no-img-element`는 `off`로 둔다. 값은 템플릿을 따른다. font·GA·CSS·custom font·`_document` styled-jsx·title·`no-typos` 8개는 `warn`, `_document`/head 계열 4개는 `error`다.
+- Vitest는 템플릿에 없던 8개를 상속한다. `warn-todo`는 의도된 `it.todo`를 `error`로 보고해 `warn`으로, `require-mock-type-parameters`는 타입 인자 없는 `vi.fn()`(JS 테스트 포함)을 `error`로 보고해 `off`로 조정했다. 나머지 6개(`hoisted-apis-on-top`, `no-conditional-tests`, `prefer-snapshot-hint`, `require-local-test-context-for-concurrent-snapshots`, `require-to-throw-message`, `valid-expect-in-promise`)는 [followup probes](evidence/followup-probes.json)의 정상 패턴 13개와 `vi.mock`·`describe.each`·`skipIf`·`resolves`·`toThrow('x')`·inline snapshot·`it.concurrent` 정상 사용에서 진단이 없어 상속 `error`로 둔다.
+- type-aware correctness 15개(`await-thenable`, `no-floating-promises` 등)는 상속되지만 소비자가 `options.typeAware`를 켤 때만 실행된다.
+- 템플릿과 값이 다른 29개는 위 표의 0.1.x 재검토 값을 유지한다. 템플릿은 React·접근성 규칙과 `sort-imports`·`typescript/no-require-imports`를 모두 `error`로 두었고, Next `no-async-client-component`·`no-unwanted-polyfillio`는 `warn`이었다.
+- 템플릿에서 켜져 있지만 여기서 켜지 않는 23개는 아래 표의 제외 규칙, 경로 정책(`no-restricted-imports`, `import/no-nodejs-modules`, `node/no-sync`, `unicorn/no-process-exit`), typed 규칙이다.
+
+## off 조정과 켜지 않는 정책
+
+상속 규칙 중 아래 근거가 있는 것은 영역 모듈에서 `off`로 조정한다. category 밖 규칙은 켜지 않는다.
+
+| 규칙·정책                                                                                 | 결정 근거                                                                                                                                   |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| React `set-state-in-effect` (`off`)                                                       | Commerce의 경로 변경 메뉴 닫기·cart modal 열기까지 차단했다. 공통 error에서 제외하고 프로젝트 성능 정책에서 선택한다.                       |
+| React `incompatible-library`, `unsupported-syntax`, `preserve-manual-memoization` (`off`) | Compiler 맥락이 필요하다. 정상 TanStack Table을 막거나 공식 invalid 예제도 놓친 사례가 있다.                                                |
+| React `forward-ref-uses-ref` (`off`)                                                      | 받은 ref의 실제 전달 누락을 보장하지 않는다. React 19 신규 코드의 공통 범위에 넣지 않는다.                                                  |
+| React `no-did-mount-set-state`, `no-did-update-set-state` (`off`)                         | 정상 DOM 측정과 조건부 state reset도 차단한다.                                                                                              |
+| Next `no-before-interactive-script-outside-document` (`off`)                              | App page와 중첩 layout의 오배치를 놓친다. Next build도 해당 반례를 놓쳤다. 임시 별도 검사도 간접 사용을 놓쳐 공통 패키지에 포함하지 않았다. |
+| Next `no-head-element` (`off`)                                                            | Pages용 fixture를 App Router 보장으로 옮기지 않는다.                                                                                        |
+| Next `no-img-element` (`off`)                                                             | 정상 SVG도 차단한다.                                                                                                                        |
+| `jsx-a11y/autocomplete-valid` (`off`)                                                     | 정상 `username webauthn` 오탐.                                                                                                              |
+| `jsx-a11y/no-noninteractive-element-to-interactive-role`, `prefer-tag-over-role` (`off`)  | 정상 ARIA widget 패턴과 충돌한다.                                                                                                           |
+| typed TypeScript 규칙                                                                     | tsgolint와 TS 호환을 별도 확인해야 한다. `options.typeAware`를 켜지 않는다.                                                                 |
+| `typescript/consistent-type-imports` 일괄 fix                                             | Nest decorator metadata와 DI 런타임 영향을 확인해야 하므로 켜지 않는다.                                                                     |
+| `node/no-sync`, `unicorn/no-process-exit`                                                 | 정상 시작 단계·CLI 종료까지 막는다. 필요한 요청 경로나 앱 정책에서 선택한다.                                                                |
+| 전역 `node:*` 금지                                                                        | Workers `nodejs_compat`의 정상 사용을 막을 수 있다. 환경별 API 계약이 필요하다.                                                             |
+| `no-restricted-imports`, filename·folder 규칙                                             | alias·실제 경로를 소비자가 안다. filename 규칙은 폴더 존재나 구조를 보장하지 않는다.                                                        |
 
 직접 관찰은 [OSS probes](evidence/oss-logic-probes.json), [경계 probes](evidence/restricted-import-probes.json), [후속 실행](evidence/followup-2026-09-28.md)에 보존했다. Commerce는 실제 `app/`, `components/`, `lib/`에 적용하면 5진단, 잘못된 `src/**` 대조는 0진단이었다. 따라서 builder가 프레임워크 경로를 고정하지 않는다. 이 OSS들의 앱 자체 test/build는 실행하지 않았다.
 
 ## Vitest 결정
 
-7개 채택 ID는 [Vitest 모듈](../src/oxlint/configs/vitest.ts)에 있다. `no-focused-tests`, `valid-expect`, `require-awaited-expect-poll`은 error이고 나머지 4개는 warn이다. 정상 `it.each`, `skipIf`, `expect.poll` 4개 실행은 Vitest 5.0.2에서 통과했고 같은 파일의 채택 규칙 진단은 0이었다. `.only`는 runner가 1 passed·1 skipped로 성공 종료해도 lint는 error로 검출했다. 상세 입력·결과는 [followup probes](evidence/followup-probes.json)에 있다.
+Vitest 조각에서 개별 검증한 7개 중 `no-focused-tests`, `valid-expect`, `require-awaited-expect-poll`은 상속 `error`이고, 나머지 4개는 `warn` 조정이다. 정상 `it.each`, `skipIf`, `expect.poll` 4개 실행은 Vitest 5.0.2에서 통과했고 같은 파일의 채택 규칙 진단은 0이었다. `.only`는 runner가 1 passed·1 skipped로 성공 종료해도 lint는 error로 검출했다. 상세 입력·결과는 [followup probes](evidence/followup-probes.json)에 있다.
 
-| 후보                     | 결정                                                                               |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| `consistent-test-it`     | 제외. fix가 호출을 `it()`으로 바꾸고 `import {test}`를 남겨 `ReferenceError` 발생. |
-| `prefer-lowercase-title` | 제외. 정상 약어·제품 용어도 수정.                                                  |
-| `no-disabled-tests`      | 보류. 의도한 skip을 공통 차단할 근거 부족.                                         |
-| `prefer-hooks-in-order`  | 보류. 런타임 hook 순서가 아닌 선언 정렬 정책.                                      |
-| `expect-expect`          | 보류. 정상 assertion helper를 오탐; 프로젝트 설정 필요.                            |
-| `no-conditional-expect`  | 보류. 플랫폼별 정상 assertion 분기도 차단.                                         |
-| `no-import-node-test`    | Vitest 전용 경로가 확정된 프로젝트에서만 선택.                                     |
+| 후보                           | 결정                                                                                                 |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `consistent-test-it`           | 켜지 않음(category 밖). fix가 호출을 `it()`으로 바꾸고 `import {test}`를 남겨 `ReferenceError` 발생. |
+| `prefer-lowercase-title`       | 켜지 않음(category 밖). 정상 약어·제품 용어도 수정.                                                  |
+| `no-disabled-tests`            | `off`. 의도한 skip을 공통 차단할 근거 부족.                                                          |
+| `prefer-hooks-in-order`        | 켜지 않음(category 밖). 런타임 hook 순서가 아닌 선언 정렬 정책.                                      |
+| `expect-expect`                | `off`. 정상 assertion helper를 오탐; 프로젝트 설정 필요.                                             |
+| `no-conditional-expect`        | `off`. 플랫폼별 정상 assertion 분기도 차단.                                                          |
+| `no-import-node-test`          | 켜지 않음(category 밖). Vitest 전용 경로가 확정된 프로젝트에서만 선택.                               |
+| `warn-todo`                    | `warn`. 의도된 `it.todo`를 차단하지 않고 표시만 한다.                                                |
+| `require-mock-type-parameters` | `off`. 타입 인자 없는 `vi.fn()`을 차단하며 JS 테스트는 이를 지킬 수 없다.                            |
 
 이 패키지 자체 검사는 Node 내장 test runner를 사용한다. Vitest 조각이 Jest·Playwright·Node test까지 지원한다는 뜻은 아니다.
 
 ## Antfu에서 참고한 점
 
-[Antfu 고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e)에서 TS 기반 모듈화, 명시적인 예외, 마지막 사용자 override를 참고했다. 설치 상태에 따른 자동 감지, plugin prefix 변경, editor별 severity, 모든 추천 preset 승계는 가져오지 않았다.
+[Antfu 고정 소스](https://github.com/antfu/eslint-config/tree/df4d896ed9b493ca0562fdf2c8c0fcd92fd16f6e)에서 TS 기반 모듈화, 명시적인 예외, 마지막 사용자 override를 참고했다. Antfu도 TypeScript·React·Next 등은 plugin 추천 preset을 펼친 뒤 덮어쓴다. 이 패키지는 그 대신 Oxlint category를 상속한다. 설치 상태에 따른 자동 감지, plugin prefix 변경, editor별 severity는 가져오지 않았다.
 
 게시 Antfu 9.5.1 소비자에서는 TS6.0.3과 ESLint10.11.0 조합의 lint를 실행했다. TS만 7.0.2로 바꾼 설치에서는 `ts-api-utils`에서 설정 import가 실패했다. 이 특정 설치 관찰을 모든 Antfu 버전의 지원 선언으로 확대하지 않는다. [실행 원본](evidence/antfu-consumer-probes.json).
 
@@ -96,4 +114,4 @@ Antfu의 조건부 `exports` 키 정렬은 Node가 고르는 실제 import 대�
 
 ## 변경 시 기준
 
-추가·severity 승격마다 위반과 정상 반례, 실제 파일 범위, 소비자 override를 확인한다. fixer를 도입하거나 변경할 때는 fix 후 타입·test/build 영향도 확인한다. 이름이나 다른 preset의 채택 여부만으로 기본값에 넣지 않는다. 현재 재현 명령과 남은 범위는 [검증 기록](verification.md)에 있다.
+조정을 추가·변경할 때와 Oxlint 업그레이드로 상속 규칙이 바뀔 때마다 위반과 정상 반례, 실제 파일 범위, 소비자 override를 확인한다. 업그레이드는 `pnpm run rules:update`의 변경 목록을 이 문서에 기록한다. fixer를 도입하거나 변경할 때는 fix 후 타입·test/build 영향도 확인한다. 현재 재현 명령과 남은 범위는 [검증 기록](verification.md)에 있다.

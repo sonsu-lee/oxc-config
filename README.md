@@ -37,7 +37,7 @@ import sonsu from '@sonsu-lee/oxc-config/oxlint';
 export default sonsu();
 ```
 
-`sonsu()` combines `javascript`, `imports` and `typescript`. Framework and test rules are opt-in; choose the options your project uses and supply its actual paths:
+`sonsu()` combines `javascript`, `imports` and `typescript`. These base fragments inherit Oxlint's `correctness` category at `error` for every enabled plugin (core, `oxc`, `unicorn`, `import`, `typescript`, plus the framework plugins below) and list only their differences: options, `warn`, `off`, and rules outside that category. Framework and test rules are opt-in; choose the options your project uses and supply its actual paths:
 
 ```ts
 // oxlint.config.ts
@@ -53,17 +53,19 @@ export default sonsu({
 
 Each option requires a non-empty array of non-empty, unpadded strings. Missing, sparse or invalid entries throw `TypeError`. Omit an option to disable it; booleans are not supported. Accepted arrays and built-in rule data are copied, including nested options, so modifying one result does not change another. Oxlint validates glob syntax. There is no framework, directory or test-runner detection.
 
-| Area                 | Current rules | error / warn | Scope                     |
-| -------------------- | ------------: | -----------: | ------------------------- |
-| `javascript`         |             7 |        7 / 0 | Linted files              |
-| `imports`            |             2 |        0 / 2 | Linted files              |
-| `typescript`         |             1 |        0 / 1 | `**/*.{ts,tsx,mts}`       |
-| `react({ files })`   |            19 |       11 / 8 | Consumer paths            |
-| `jsxA11y({ files })` |            32 |      17 / 15 | Consumer paths            |
-| `nextjs({ files })`  |             6 |        4 / 2 | Consumer App Router paths |
-| `vitest({ files })`  |             7 |        3 / 4 | Consumer Vitest paths     |
+| Area                 | Enabled rules | error / warn | Turned off | Scope                                                  |
+| -------------------- | ------------: | -----------: | ---------: | ------------------------------------------------------ |
+| `javascript`         |            85 |       85 / 0 |          0 | Linted files                                           |
+| `imports`            |             4 |        2 / 2 |          0 | Linted files                                           |
+| `typescript`         |            13 |       12 / 1 |          0 | Linted files; `no-require-imports` on `ts`/`tsx`/`mts` |
+| `react({ files })`   |            26 |       18 / 8 |          7 | Consumer paths                                         |
+| `jsxA11y({ files })` |            32 |      17 / 15 |          3 | Consumer paths                                         |
+| `nextjs({ files })`  |            18 |       8 / 10 |          3 | Consumer Next paths                                    |
+| `vitest({ files })`  |            14 |        9 / 5 |          4 | Consumer Vitest paths                                  |
 
-With all areas enabled, the current baseline is **42 errors and 32 warnings**. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each fragment disables implicit `correctness` rules. `typescript` is syntax-only, excludes `.cts`, and does not enable typed lint.
+With all areas enabled and Oxlint 1.85.0, the result is **151 errors and 41 warnings**; [`test/fixtures/effective-rules.json`](test/fixtures/effective-rules.json) lists every rule, its value and whether it comes from the preset or an adjustment. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each rule turned off is recorded in `docs/rule-ledger.md` with the observed reason, such as false positives on normal product code or missed real cases. `typescript` also inherits 15 type-aware correctness rules that run only when a project enables Oxlint's `options.typeAware`; this package does not enable it. `.cts` files are excluded from `no-require-imports`.
+
+Because the preset is Oxlint's category, an Oxlint upgrade can add, remove or recategorize inherited rules. Each release pins the Oxlint version it checked, and the reviewed table above changes only with an upgrade or an adjustment.
 
 One explicit exception is `nextjs/no-unwanted-polyfillio`: Oxlint reports unsafe URLs and safe-CDN duplicate polyfills under the same rule ID. The shared preset prioritizes blocking the unsafe URLs, so **both findings are errors**, including performance-only duplicates. A consumer that needs the duplicate polyfill can override the rule to `warn`, but then unsafe-URL reports also become nonblocking. This rule is not comprehensive URL security enforcement.
 
@@ -72,7 +74,7 @@ The default `pnpm run lint` runs `oxlint .`: warnings remain visible and exit su
 Pass native Oxlint fields such as `rules`, `settings`, `ignorePatterns`, `extends` and `overrides` to `sonsu()`. The factory uses Oxlint's native merge behavior rather than a custom deep merge:
 
 - Built-in configs come first in `extends`, followed by your additional `extends` entries in order. Root rules take precedence over extended root rules.
-- Matching file overrides apply after root rules. To change a scoped preset rule, add a matching entry to `overrides`; changing root `rules` alone does not override a scoped rule.
+- Matching file overrides apply after root rules. An area's adjustments live in that area's override, so changing root `rules` alone does not change them; add a matching entry to `overrides` to change any rule of an area.
 - Your `overrides` follow the presets' overrides, and later matching entries win. Include the plugin when changing a plugin rule.
 - `ignorePatterns` is a root list you supply; the factory adds no default ignores. Other native fields keep Oxlint's own semantics.
 
@@ -96,7 +98,7 @@ export default sonsu({
 
 #### Composing individual fragments
 
-Named exports remain available when you want only selected areas rather than the factory's baseline:
+Named exports remain available when you want only selected areas rather than the factory's baseline. Area builders contain only adjustments, so include at least one base fragment (`javascript`, `imports` or `typescript`) to apply the correctness preset at `error`; without one, Oxlint's own default severity (`warn`) applies to the inherited rules:
 
 ```ts
 import { defineConfig } from 'oxlint';
@@ -134,6 +136,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run verify:consumer  # Pack, install and exercise a temporary consumer
 pnpm run verify           # All of the above checks
+pnpm run rules:update     # Rebuild and rewrite the effective rule table, printing every change
 pnpm run verify:consumer -- --published 0.1.1  # Install a published version from npm and run the same checks
 ```
 
@@ -147,13 +150,17 @@ src/
     scoped.ts            Shared files validation and override construction
     configs/             One module per rule area
   oxfmt/index.ts         Shared formatter options
-scripts/                 Build and installed-consumer verification
+scripts/                 Build, effective rule table and installed-consumer verification
 test/                    Public contract tests and fixtures
 dist/                    Generated JS and declarations (ignored)
 docs/                    Design, rule decisions, verification and raw evidence
 ```
 
 Workspace documentation: `docs/design.md`, `docs/rule-ledger.md`, `docs/verification.md`. Research documents, source and tests are excluded from the tarball.
+
+### Upgrading Oxlint
+
+Change `oxlint` in `devDependencies`, `peerDependencies` and this README's install section together, then run `pnpm run rules:update`. It prints every rule the new version adds to, removes from or recategorizes within the inherited preset, and rewrites `test/fixtures/effective-rules.json`. Review each change: keep it, adjust it in the area module under `src/oxlint/configs/`, and record the decision in `docs/rule-ledger.md`. `pnpm test` fails until the table matches the installed Oxlint, and an adjustment naming a rule the new version no longer has fails the update itself. Commit the table with the upgrade so the pull request diff shows the inherited changes.
 
 ### Release
 

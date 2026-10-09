@@ -1,35 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import sonsu, * as oxlint from '../dist/oxlint/index.js';
 import * as oxfmt from '../dist/oxfmt/index.js';
+import { effectiveRules, fixtureUrl } from '../scripts/effective-rules.mjs';
 
-const evidence = JSON.parse(
-  readFileSync(new URL('./fixtures/selected-rules.json', import.meta.url), 'utf8'),
-);
-
-const candidateRules = {
-  javascript: Object.fromEntries(
-    Object.entries(evidence.rules).filter(
-      ([id]) => !id.startsWith('import/') && id !== 'sort-imports',
-    ),
-  ),
-  imports: Object.fromEntries(
-    Object.entries(evidence.rules).filter(
-      ([id]) => id.startsWith('import/') || id === 'sort-imports',
-    ),
-  ),
-  typescript: evidence.overrides[0].rules,
-  jsxA11y: Object.fromEntries(
-    Object.entries(evidence.overrides[1].rules).filter(([id]) => id.startsWith('jsx-a11y/')),
-  ),
-  react: Object.fromEntries(
-    Object.entries(evidence.overrides[1].rules).filter(([id]) => id.startsWith('react/')),
-  ),
-  nextjs: evidence.overrides[2].rules,
-  vitest: evidence.overrides[3].rules,
-};
+const oxlintBin = fileURLToPath(new URL('../node_modules/.bin/oxlint', import.meta.url));
 
 const pathPresets = {
   react: oxlint.react,
@@ -38,73 +16,30 @@ const pathPresets = {
   vitest: oxlint.vitest,
 };
 
-function rulesIn(config) {
-  const rules = { ...config.rules };
-  for (const override of config.overrides ?? []) {
-    Object.assign(rules, override.rules);
-  }
-  return rules;
-}
+// A one-slot array with no element, built without the linted `new Array(n)` form.
+const sparseFiles = [];
+sparseFiles.length = 1;
 
-function optionsIn(rules) {
-  return Object.fromEntries(
-    Object.entries(rules).map(([id, value]) => [id, Array.isArray(value) ? value.slice(1) : []]),
+test('matches the reviewed effective rule snapshot for the installed Oxlint', () => {
+  const reviewed = JSON.parse(readFileSync(fixtureUrl, 'utf8'));
+  assert.deepEqual(
+    effectiveRules(oxlint, oxlintBin),
+    reviewed,
+    'Effective rules drifted. Run `pnpm run rules:update`, review the printed changes, and record decisions in docs/rule-ledger.md.',
   );
-}
-
-function severityOf(value) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-test('preserves the current 74-rule regression baseline and options', () => {
-  const fragments = {
-    javascript: oxlint.javascript,
-    imports: oxlint.imports,
-    typescript: oxlint.typescript,
-    react: oxlint.react({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    jsxA11y: oxlint.jsxA11y({ files: ['src/**/*.{tsx,jsx}'] }),
-    nextjs: oxlint.nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    vitest: oxlint.vitest({ files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] }),
-  };
-
-  for (const [name, fragment] of Object.entries(fragments)) {
-    assert.deepEqual(
-      optionsIn(rulesIn(fragment)),
-      optionsIn(candidateRules[name]),
-      `${name} rule IDs/options drifted`,
-    );
-  }
-
-  const actualIds = Object.values(fragments).flatMap((fragment) => Object.keys(rulesIn(fragment)));
-  const expectedIds = Object.values(candidateRules).flatMap((rules) => Object.keys(rules));
-  assert.equal(actualIds.length, 74);
-  assert.equal(new Set(actualIds).size, 74);
-  assert.deepEqual([...actualIds].sort(), [...expectedIds].sort());
 });
 
-test('preserves per-rule severity and disables implicit correctness rules', () => {
-  const fragments = {
+test('inherits the correctness preset from base fragments only', () => {
+  for (const [name, fragment] of Object.entries({
     javascript: oxlint.javascript,
     imports: oxlint.imports,
     typescript: oxlint.typescript,
-    react: oxlint.react({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    jsxA11y: oxlint.jsxA11y({ files: ['src/**/*.{tsx,jsx}'] }),
-    nextjs: oxlint.nextjs({ files: ['src/**/*.{ts,tsx,js,jsx}'] }),
-    vitest: oxlint.vitest({ files: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'] }),
-  };
-
-  for (const [name, fragment] of Object.entries(fragments)) {
-    assert.equal(
-      fragment.categories?.correctness,
-      'off',
-      `${name} must suppress implicit correctness rules`,
-    );
+  })) {
+    assert.deepEqual(fragment.categories, { correctness: 'error' }, name);
   }
-
-  for (const [name, fragment] of Object.entries(fragments)) {
-    const severities = (rules) =>
-      Object.fromEntries(Object.entries(rules).map(([id, value]) => [id, severityOf(value)]));
-    assert.deepEqual(severities(rulesIn(fragment)), severities(candidateRules[name]), name);
+  // A scoped category would apply to every file, so area builders only add overrides.
+  for (const [name, build] of Object.entries(pathPresets)) {
+    assert.deepEqual(Object.keys(build({ files: ['app/**'] })), ['overrides'], name);
   }
 });
 
@@ -113,7 +48,7 @@ test('requires explicit non-empty file patterns and copies them for every builde
     assert.throws(() => build(), TypeError, `${name} must require options`);
     assert.throws(() => build({ files: [] }), TypeError, `${name} must reject empty files`);
     assert.throws(
-      () => build({ files: new Array(1) }),
+      () => build({ files: sparseFiles }),
       TypeError,
       `${name} must reject sparse files`,
     );
@@ -159,7 +94,7 @@ test('rejects invalid scoped options through the factory rather than silently di
     null,
     {},
     { files: [] },
-    { files: new Array(1) },
+    { files: sparseFiles },
     { files: [''] },
     { files: [' src/**'] },
     { files: ['src/**', 42] },
