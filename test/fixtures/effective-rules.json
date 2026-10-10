@@ -1,5 +1,5 @@
 {
-  "oxlint": "1.85.0",
+  "oxlint": "1.87.0",
   "categories": {"correctness":"error"},
   "rules": {
     "constructor-super": {"value":"error","source":"preset"},

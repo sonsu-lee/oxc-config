@@ -54,7 +54,7 @@ Antfu도 TypeScript 소스에서 배포 JS와 선언 파일을 만든다. [고�
 
 ## 강제 수준
 
-Oxlint 1.85.0에서 모든 영역을 켜면 **error 151개 / warn 41개**이고 17개를 `off`로 조정한다. type-aware correctness 15개는 소비자가 `options.typeAware`를 켤 때만 실행된다. 언어·렌더링·프레임워크·테스트의 명확한 오류와 native 접근성 계약 위반은 차단한다. 문맥 의존 검사, 작성 방식·성능 권고는 경고로 보고한다. warning도 실제 버그를 찾을 수 있으므로 무시하라는 뜻은 아니다. 영역별 일괄 강제 수준 대신 [규칙 결정](rule-ledger.md)에 조정마다 이유를 기록한다.
+Oxlint 1.87.0에서 모든 영역을 켜면 **error 151개 / warn 41개**이고 17개를 `off`로 조정한다. type-aware correctness 15개는 소비자가 `options.typeAware`를 켤 때만 실행된다. 언어·렌더링·프레임워크·테스트의 명확한 오류와 native 접근성 계약 위반은 차단한다. 문맥 의존 검사, 작성 방식·성능 권고는 경고로 보고한다. warning도 실제 버그를 찾을 수 있으므로 무시하라는 뜻은 아니다. 영역별 일괄 강제 수준 대신 [규칙 결정](rule-ledger.md)에 조정마다 이유를 기록한다.
 
 예외는 `nextjs/no-unwanted-polyfillio`다. 하나의 규칙 ID가 unsafe URL과 안전한 CDN의 중복 polyfill을 함께 보고한다. 공통값에서는 unsafe URL 차단을 우선하여 성능 문제인 중복 polyfill도 error로 처리한다. 두 진단에 서로 다른 severity를 줄 수 없으므로, 소비자가 이 규칙을 warn으로 재정의하면 unsafe URL 진단도 비차단이 된다. 이 선택과 URL 탐지 한계는 [규칙 결정](rule-ledger.md)에 기록한다.
 
@@ -66,7 +66,7 @@ Oxlint 1.85.0에서 모든 영역을 켜면 **error 151개 / warn 41개**이고 
 
 ## 의존성과 책임
 
-Oxlint 1.85.0, Oxfmt 0.70.0, TypeScript 6.0.3을 개발 의존성으로 고정하고 `pnpm-lock.yaml`을 보관한다. `packageManager`는 pnpm 12.6.0, `.node-version`은 확인한 Node 24 LTS의 24.21.0을 고정한다. Oxlint와 Oxfmt는 검사한 정확한 버전의 optional peer다. 사용하는 subpath에 맞는 도구를 소비자가 설치한다. 이 패키지의 런타임 의존성은 없다.
+Oxlint 1.87.0, Oxfmt 0.72.0, TypeScript 6.0.3을 개발 의존성으로 고정하고 `pnpm-lock.yaml`을 보관한다. `packageManager`는 pnpm 12.6.0, `.node-version`은 확인한 Node 24 LTS의 24.21.0을 고정한다. Oxlint와 Oxfmt는 검사한 정확한 버전의 optional peer다. 사용하는 subpath에 맞는 도구를 소비자가 설치한다. 이 패키지의 런타임 의존성은 없다.
 
 | 책임                                              | 소유 위치                       |
 | ------------------------------------------------- | ------------------------------- |
