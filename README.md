@@ -9,22 +9,22 @@ Maintained by [sonsu-lee](https://github.com/sonsu-lee) · [sonsu.dev](https://s
 Use Node 24 LTS (`.node-version` pins the checked release) and pnpm 12.6.0 (`packageManager` pins the CLI). With Corepack, run `corepack enable pnpm` once. Install the package with the Oxc tools you use:
 
 ```sh
-pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.87.0 oxfmt@0.72.0
 ```
 
-The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. It does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`: `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0`, and pnpm 12 also reuses a range from `peerDependencies`. If the project already declares any of the three packages, edit `package.json` instead: remove them from `dependencies` and `optionalDependencies`, keep `peerDependencies` as it is, set them in `devDependencies` as below, and run `pnpm install`.
+The command names this README's release so the three versions belong together, and it also upgrades a project that pins an older exact version. It does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`: `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.87.0`, and pnpm 12 also reuses a range from `peerDependencies`. If the project already declares any of the three packages, edit `package.json` instead: remove them from `dependencies` and `optionalDependencies`, keep `peerDependencies` as it is, set them in `devDependencies` as below, and run `pnpm install`.
 
 ```json
 "devDependencies": {
   "@sonsu-lee/oxc-config": "0.1.1",
-  "oxfmt": "0.70.0",
-  "oxlint": "1.85.0"
+  "oxfmt": "0.72.0",
+  "oxlint": "1.87.0"
 }
 ```
 
 Oxlint and Oxfmt are exact peers, and each release of this package names the tool versions it was checked with, so upgrade the package and the tools together. No token or `.npmrc` entry is needed. Versions up to `0.1.0` were also published to GitHub Packages; if a user or project `.npmrc` routes `@sonsu-lee` to `https://npm.pkg.github.com`, remove that line so the scope resolves from npm.
 
-Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
+Install the Oxc tool for each subpath you use; both are optional peers so an Oxlint-only project need not install Oxfmt. The package exports an Oxlint config factory, individual fragments and Oxfmt settings, with no runtime dependencies. The checked environment is Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.87.0, Oxfmt 0.72.0 and TypeScript 6.0.3. Other versions are unverified.
 
 The examples below name the config files `oxlint.config.ts` and `oxfmt.config.ts`. In a package without `"type": "module"` (for example a default Next.js app), name them `oxlint.config.mts` and `oxfmt.config.mts` with the same contents; both tools find them, and Node no longer prints a `MODULE_TYPELESS_PACKAGE_JSON` warning on every run.
 
@@ -63,7 +63,7 @@ Each option requires a non-empty array of non-empty, unpadded strings. Missing, 
 | `nextjs({ files })`  |            18 |       8 / 10 |          3 | Consumer Next paths                                    |
 | `vitest({ files })`  |            14 |        9 / 5 |          4 | Consumer Vitest paths                                  |
 
-With all areas enabled and Oxlint 1.85.0, the result is **151 errors and 41 warnings**; [`test/fixtures/effective-rules.json`](test/fixtures/effective-rules.json) lists every rule, its value and whether it comes from the preset or an adjustment. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each rule turned off is recorded in `docs/rule-ledger.md` with the observed reason, such as false positives on normal product code or missed real cases. `typescript` also inherits 15 type-aware correctness rules that run only when a project enables Oxlint's `options.typeAware`; this package does not enable it. `.cts` files are excluded from `no-require-imports`.
+With all areas enabled and Oxlint 1.87.0, the result is **151 errors and 41 warnings**; [`test/fixtures/effective-rules.json`](test/fixtures/effective-rules.json) lists every rule, its value and whether it comes from the preset or an adjustment. Errors block lint for definite correctness and selected native accessibility contracts. Warnings report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs. Each rule turned off is recorded in `docs/rule-ledger.md` with the observed reason, such as false positives on normal product code or missed real cases. `typescript` also inherits 15 type-aware correctness rules that run only when a project enables Oxlint's `options.typeAware`; this package does not enable it. `.cts` files are excluded from `no-require-imports`.
 
 Because the preset is Oxlint's category, an Oxlint upgrade can add, remove or recategorize inherited rules. Each release pins the Oxlint version it checked, and the reviewed table above changes only with an upgrade or an adjustment.
 
