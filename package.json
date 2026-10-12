@@ -49,13 +49,13 @@
     "verify:consumer": "node scripts/verify-consumer.mjs"
   },
   "devDependencies": {
-    "oxfmt": "0.70.0",
-    "oxlint": "1.85.0",
+    "oxfmt": "0.72.0",
+    "oxlint": "1.87.0",
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "oxfmt": "0.70.0",
-    "oxlint": "1.85.0"
+    "oxfmt": "0.72.0",
+    "oxlint": "1.87.0"
   },
   "peerDependenciesMeta": {
     "oxlint": {

@@ -1,6 +1,6 @@
 # 패키지 검증
 
-이 문서는 현재 TS 소스·빌드 산출물·tarball 소비자를 확인하는 명령과 관찰 범위를 기록한다. 2026-10-03 factory 검증 환경은 macOS arm64, Node 24.21.0 LTS, pnpm 12.6.0, TypeScript 6.0.3, Oxlint 1.85.0, Oxfmt 0.70.0이다. 버전은 개발 의존성과 lockfile에 고정하며 소비자 verifier도 manifest의 값을 읽는다.
+이 문서는 현재 TS 소스·빌드 산출물·tarball 소비자를 확인하는 명령과 관찰 범위를 기록한다. 2026-10-10 검증 환경은 macOS arm64, Node 24.21.0 LTS, pnpm 12.6.0, TypeScript 6.0.3, Oxlint 1.87.0, Oxfmt 0.72.0이다. 버전은 개발 의존성과 lockfile에 고정하며 소비자 verifier도 manifest의 값을 읽는다.
 
 ## 재현
 
@@ -102,6 +102,10 @@ GitHub Packages는 public 패키지도 설치에 토큰을 요구해서, 배포 
 기본 `lint`를 `oxlint .`로 바꾸고 42 error / 32 warn을 적용했다. 변경 전에는 새 계약 검사가 imports의 기존 error에서 실패했고, severity 반영 뒤에는 기존 `--deny-warnings` 기본 명령에서 실패했다. 설치 소비자도 기존 imports의 error/exit 1을 검출해 실패했다. 이를 고친 뒤 설치 소비자 재실행에서 74개 규칙의 정상·위반 입력, CLI 종료 정책과 추가 정상 패턴 검사가 통과했다. 전체 검증은 `pnpm run verify`로 재현한다.
 
 규칙 ID·옵션과 파일 범위는 유지했다. fix는 실행하지 않았다. 일부 원본 fixture는 검출력 실험을 위해 "invalid"로 명명되어 있어 이름과 실제 저장된 진단을 대조했다. `valid-describe-callback` async 입력은 예전에도 진단이 없었으며, 이번에 도구 동작이 바뀐 것으로 해석하지 않는다.
+
+## Oxlint 1.87.0·Oxfmt 0.72.0 업그레이드
+
+2026-10-10 Oxlint를 1.85.0에서 1.87.0으로, Oxfmt를 0.70.0에서 0.72.0으로 올렸다. `pnpm run rules:update`의 실효 규칙 변경은 0건이고, 규칙 목록의 변화는 [규칙 결정](rule-ledger.md#oxlint-업그레이드-기록)에 기록했다. `pnpm run verify`가 통과했다. 설치 소비자 검사는 manifest의 새 버전(oxlint 1.87.0, oxfmt 0.72.0)을 설치해 저장된 입력이 있는 규칙 93개의 개별 실행, 109개의 README 조합 실행, Oxfmt의 quote·JSX attribute·scripts 정렬·import 순서·override·ignore 동작을 확인했다. Oxfmt 0.72.0이 Markdown formatter를 바꿨지만 저장소의 Markdown 파일은 형식 검사를 그대로 통과했다.
 
 ## 과거 실험 자료
 

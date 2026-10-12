@@ -115,3 +115,7 @@ Antfu의 조건부 `exports` 키 정렬은 Node가 고르는 실제 import 대�
 ## 변경 시 기준
 
 조정을 추가·변경할 때와 Oxlint 업그레이드로 상속 규칙이 바뀔 때마다 위반과 정상 반례, 실제 파일 범위, 소비자 override를 확인한다. 업그레이드는 `pnpm run rules:update`의 변경 목록을 이 문서에 기록한다. fixer를 도입하거나 변경할 때는 fix 후 타입·test/build 영향도 확인한다. 현재 재현 명령과 남은 범위는 [검증 기록](verification.md)에 있다.
+
+## Oxlint 업그레이드 기록
+
+- 2026-10-10, 1.85.0 → 1.87.0: `pnpm run rules:update`의 실효 규칙 변경은 0건이다. 전체 규칙 목록에서는 `typescript/no-generated-empty-object-type`(suspicious, type-aware)이 추가됐고 `node/no-exports-assign`이 style에서 suspicious로 재분류됐다. 앞의 규칙은 correctness 밖이라 상속되지 않고, node 플러그인은 켜지 않았으므로 둘 다 이 패키지의 결과에 영향이 없다.

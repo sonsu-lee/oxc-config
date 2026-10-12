@@ -56,7 +56,7 @@ The TypeScript module layout, explicit exceptions and final user override follow
 ## Install
 
 ```sh
-pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.85.0 oxfmt@0.70.0
+pnpm add -D --save-exact @sonsu-lee/oxc-config@0.1.1 oxlint@1.87.0 oxfmt@0.72.0
 ```
 
 The command names this README's release, so the three versions belong together; it also upgrades a project that pins an older exact version.
@@ -65,22 +65,22 @@ The command names this README's release, so the three versions belong together; 
 
 Oxlint and Oxfmt are exact, optional peer dependencies that you install yourself. Install only the tool for each subpath you use, so an Oxlint-only project can skip Oxfmt. The package has no runtime dependencies.
 
-Checked with Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.85.0, Oxfmt 0.70.0 and TypeScript 6.0.3. Other versions are unverified.
+Checked with Node 24.21.0 LTS, pnpm 12.6.0, Oxlint 1.87.0, Oxfmt 0.72.0 and TypeScript 6.0.3. Other versions are unverified.
 
 <details>
 <summary>Your project already declares <code>oxlint</code>, <code>oxfmt</code> or this package</summary>
 
 <br>
 
-`--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`. For example, `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.85.0`, and pnpm 12 also reuses a range from `peerDependencies`.
+`--save-exact` does not pin a package the project already declares with a range such as `^1.58.0`, `~1.58.0`, `1.x` or `*`. For example, `"oxlint": "^1.58.0"` from the NestJS 12 template becomes `^1.87.0`, and pnpm 12 also reuses a range from `peerDependencies`.
 
 Edit `package.json` instead: remove the three packages from `dependencies` and `optionalDependencies`, keep `peerDependencies` as it is, set them in `devDependencies` as below, and run `pnpm install`.
 
 ```json
 "devDependencies": {
   "@sonsu-lee/oxc-config": "0.1.1",
-  "oxfmt": "0.70.0",
-  "oxlint": "1.85.0"
+  "oxfmt": "0.72.0",
+  "oxlint": "1.87.0"
 }
 ```
 
@@ -225,7 +225,7 @@ export default defineConfig({
 | `nextjs({ files })`  |            18 |       8 / 10 |          3 | Consumer Next paths                                    |
 | `vitest({ files })`  |            14 |        9 / 5 |          4 | Consumer Vitest paths                                  |
 
-With all areas enabled and Oxlint 1.85.0, the result is **151 errors and 41 warnings**. [`test/fixtures/effective-rules.json`](test/fixtures/effective-rules.json) lists every rule, its value and whether it comes from the preset or an adjustment.
+With all areas enabled and Oxlint 1.87.0, the result is **151 errors and 41 warnings**. [`test/fixtures/effective-rules.json`](test/fixtures/effective-rules.json) lists every rule, its value and whether it comes from the preset or an adjustment.
 
 - **Errors** block lint for definite correctness and selected native accessibility contracts.
 - **Warnings** report contextual checks, authoring preferences and performance advice without blocking. They can still identify real bugs.
