@@ -1,0 +1,15 @@
+# npm dependencies are not listed: Dependabot supports pnpm up to v10, and this
+# repository uses pnpm 12. Oxlint, Oxfmt and TypeScript move through the scheduled
+# upgrade workflow instead (#39).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci
+      include: scope
