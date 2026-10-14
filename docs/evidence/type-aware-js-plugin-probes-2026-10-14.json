@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-14",
+  "purpose": "Checks behind docs/structure-lint-package.md §4 and §5: type-aware delivery and opt-out, where typeAware applies, TS 7 tsconfig compatibility, and jsPlugins paths in extends fragments.",
+  "environment": {
+    "node": "v24.21.0",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2004 (absent in project no-tsgolint)",
+    "typescript": "6.0.3",
+    "command": "oxlint src",
+    "configFile": "oxlint.config.ts"
+  },
+  "source": {
+    "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x' as unknown as number;\n"
+  },
+  "defaultTsconfig": {
+    "compilerOptions": {
+      "target": "es2022",
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "strict": true,
+      "noEmit": true
+    },
+    "include": [
+      "src"
+    ]
+  },
+  "probes": [
+    {
+      "label": "typeAware without oxlint-tsgolint",
+      "project": "no-tsgolint",
+      "config": "export default { options: { typeAware: true, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "Failed to find tsgolint executable. You may need to add the `oxlint-tsgolint` package to your project?"
+    },
+    {
+      "label": "typeCheck with typeAware false",
+      "project": "tsgolint",
+      "config": "export default { options: { typeAware: false, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "The `--type-check` option requires type-aware linting.\nUse `--type-aware --type-check` or enable `options.typeAware` in your config."
+    },
+    {
+      "label": "TS 7-compatible tsconfig with TypeScript 6.0.3 installed",
+      "project": "tsgolint",
+      "config": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x' as unknown as number;\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 763ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "typeAware set in an extends fragment",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x' as unknown as number;\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 85ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "baseUrl with ignoreDeprecations 6.0",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "tsconfig": {
+        "compilerOptions": {
+          "target": "es2022",
+          "module": "nodenext",
+          "moduleResolution": "nodenext",
+          "strict": true,
+          "noEmit": true,
+          "baseUrl": ".",
+          "ignoreDeprecations": "6.0"
+        },
+        "include": [
+          "src"
+        ]
+      },
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(tsconfig-error): Invalid tsconfig\n   ,-[tsconfig.json:8:5]\n 7 |     \"noEmit\": true,\n 8 |     \"baseUrl\": \".\",\n   :     ^^^^^^^^^\n 9 |     \"ignoreDeprecations\": \"6.0\"\n   `----\n  help: Option 'baseUrl' has been removed. Please remove it from your configuration.\n        See https://github.com/oxc-project/tsgolint/issues/351 for more information.\n\nFound 0 warnings and 1 error.\nFinished in 178ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "moduleResolution node with ignoreDeprecations 6.0",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "tsconfig": {
+        "compilerOptions": {
+          "target": "es2022",
+          "module": "commonjs",
+          "moduleResolution": "node",
+          "strict": true,
+          "noEmit": true,
+          "ignoreDeprecations": "6.0"
+        },
+        "include": [
+          "src"
+        ]
+      },
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(tsconfig-error): Invalid tsconfig\n   ,-[tsconfig.json:5:25]\n 4 |     \"module\": \"commonjs\",\n 5 |     \"moduleResolution\": \"node\",\n   :                         ^^^^^^\n 6 |     \"strict\": true,\n   `----\n  help: Option 'moduleResolution=node10' has been removed. Please remove it from your configuration.\n        See https://github.com/oxc-project/tsgolint/issues/351 for more information.\n\nFound 0 warnings and 1 error.\nFinished in 91ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "relative jsPlugins path in an extends fragment",
+      "project": "no-tsgolint",
+      "config": "export default { extends: [{ jsPlugins: ['./plugin.mjs'], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "Failed to parse oxlint configuration file.\n\n  x Relative JS plugin specifiers are not supported in configs provided via `extends` in `oxlint.config.ts`.\n  | \n  | Found: \"./plugin.mjs\"\n  | \n  | Use a package name (e.g. \"eslint-plugin-foo\") or an absolute path instead."
+    },
+    {
+      "label": "absolute jsPlugins path in an extends fragment, unwrapped createOnce plugin",
+      "project": "no-tsgolint",
+      "config": "import { fileURLToPath } from 'node:url';\nexport default { extends: [{ jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "! eslint(no-debugger): `debugger` statement is not allowed\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n  help: Remove the debugger statement\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n\nFound 1 warning and 1 error.\nFinished in 61ms on 2 files with 97 rules using 8 threads."
+    },
+    {
+      "label": "import.meta.resolve file URL in an extends fragment",
+      "project": "no-tsgolint",
+      "config": "export default { extends: [{ jsPlugins: [import.meta.resolve('./plugin.mjs')], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "! eslint(no-debugger): `debugger` statement is not allowed\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n  help: Remove the debugger statement\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n\nFound 1 warning and 1 error.\nFinished in 58ms on 2 files with 97 rules using 8 threads."
+    }
+  ]
+}
