@@ -1,0 +1,495 @@
+{
+  "date": "2026-10-14",
+  "purpose": "Checks behind docs/structure-lint-package.md §4 and §5: type-aware delivery, opt-out and option merging, TS 7 tsconfig conditions, jsPlugins paths, and disable-comment enforcement.",
+  "environment": {
+    "node": "v24.21.0",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2004 (absent in project no-tsgolint)",
+    "typescript": "6.0.3",
+    "command": "oxlint src",
+    "configFile": "oxlint.config.ts",
+    "@types/node": "24 (project tsgolint, added for the file-outside-tsconfig probe)"
+  },
+  "source": {
+    "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x' as unknown as number;\n"
+  },
+  "defaultTsconfig": {
+    "compilerOptions": {
+      "target": "es2022",
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "strict": true,
+      "noEmit": true
+    },
+    "include": [
+      "src"
+    ]
+  },
+  "probes": [
+    {
+      "label": "typeAware without oxlint-tsgolint",
+      "project": "no-tsgolint",
+      "config": "export default { options: { typeAware: true, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "Failed to find tsgolint executable. You may need to add the `oxlint-tsgolint` package to your project?"
+    },
+    {
+      "label": "typeCheck with typeAware false",
+      "project": "tsgolint",
+      "config": "export default { options: { typeAware: false, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "The `--type-check` option requires type-aware linting.\nUse `--type-aware --type-check` or enable `options.typeAware` in your config."
+    },
+    {
+      "label": "TS 7-compatible tsconfig with TypeScript 6.0.3 installed",
+      "project": "tsgolint",
+      "config": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x' as unknown as number;\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 763ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "typeAware set in an extends fragment",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x' as unknown as number;\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 85ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "baseUrl with ignoreDeprecations 6.0",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "tsconfig": {
+        "compilerOptions": {
+          "target": "es2022",
+          "module": "nodenext",
+          "moduleResolution": "nodenext",
+          "strict": true,
+          "noEmit": true,
+          "baseUrl": ".",
+          "ignoreDeprecations": "6.0"
+        },
+        "include": [
+          "src"
+        ]
+      },
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(tsconfig-error): Invalid tsconfig\n   ,-[tsconfig.json:8:5]\n 7 |     \"noEmit\": true,\n 8 |     \"baseUrl\": \".\",\n   :     ^^^^^^^^^\n 9 |     \"ignoreDeprecations\": \"6.0\"\n   `----\n  help: Option 'baseUrl' has been removed. Please remove it from your configuration.\n        See https://github.com/oxc-project/tsgolint/issues/351 for more information.\n\nFound 0 warnings and 1 error.\nFinished in 178ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "moduleResolution node with ignoreDeprecations 6.0",
+      "project": "tsgolint",
+      "config": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+      "tsconfig": {
+        "compilerOptions": {
+          "target": "es2022",
+          "module": "commonjs",
+          "moduleResolution": "node",
+          "strict": true,
+          "noEmit": true,
+          "ignoreDeprecations": "6.0"
+        },
+        "include": [
+          "src"
+        ]
+      },
+      "extraFiles": {},
+      "exit": 1,
+      "output": "x typescript(tsconfig-error): Invalid tsconfig\n   ,-[tsconfig.json:5:25]\n 4 |     \"module\": \"commonjs\",\n 5 |     \"moduleResolution\": \"node\",\n   :                         ^^^^^^\n 6 |     \"strict\": true,\n   `----\n  help: Option 'moduleResolution=node10' has been removed. Please remove it from your configuration.\n        See https://github.com/oxc-project/tsgolint/issues/351 for more information.\n\nFound 0 warnings and 1 error.\nFinished in 91ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "relative jsPlugins path in an extends fragment",
+      "project": "no-tsgolint",
+      "config": "export default { extends: [{ jsPlugins: ['./plugin.mjs'], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "Failed to parse oxlint configuration file.\n\n  x Relative JS plugin specifiers are not supported in configs provided via `extends` in `oxlint.config.ts`.\n  | \n  | Found: \"./plugin.mjs\"\n  | \n  | Use a package name (e.g. \"eslint-plugin-foo\") or an absolute path instead."
+    },
+    {
+      "label": "absolute jsPlugins path in an extends fragment, unwrapped createOnce plugin",
+      "project": "no-tsgolint",
+      "config": "import { fileURLToPath } from 'node:url';\nexport default { extends: [{ jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "! eslint(no-debugger): `debugger` statement is not allowed\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n  help: Remove the debugger statement\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n\nFound 1 warning and 1 error.\nFinished in 61ms on 2 files with 97 rules using 8 threads."
+    },
+    {
+      "label": "import.meta.resolve file URL in an extends fragment",
+      "project": "no-tsgolint",
+      "config": "export default { extends: [{ jsPlugins: [import.meta.resolve('./plugin.mjs')], rules: { 'sonsu/no-dbg': 'error' } }] };\n",
+      "extraFiles": {
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } } } };\n",
+        "src/b.ts": "debugger;\n"
+      },
+      "exit": 1,
+      "output": "! eslint(no-debugger): `debugger` statement is not allowed\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n  help: Remove the debugger statement\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/b.ts:1:1]\n 1 | debugger;\n   : ^^^^^^^^^\n   `----\n\nFound 1 warning and 1 error.\nFinished in 58ms on 2 files with 97 rules using 8 threads."
+    },
+    {
+      "label": "typeCheck set in an extends fragment",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, options: { typeAware: true, typeCheck: true } }] };\n",
+        "src/a.ts": "export const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(TS2322): Type 'string' is not assignable to type 'number'.\n   ,-[src/a.ts:1:14]\n 1 | export const n: number = 'x';\n   :              ^\n   `----\n\nFound 0 warnings and 1 error.\nFinished in 160ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "root-level options in a nested config",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default {};\n",
+        "src/sub/oxlint.config.ts": "export default { options: { typeAware: false, typeCheck: false } };\n",
+        "src/sub/a.ts": "async function f(): Promise<void> {}\nf();\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "Failed to parse oxlint configuration file.\n\n  x The `options.typeAware` option is only supported in the root config, but it was found in /private/tmp/oxc-probe-2026-10-14/tsgolint/src/sub/oxlint.config.ts.\n  help: Move `options.typeAware` to the root configuration file."
+    },
+    {
+      "label": "options in extends fragments of both the root and a nested config",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }] };\n",
+        "src/sub/oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }] };\n",
+        "src/sub/a.ts": "async function f(): Promise<void> {}\nf();\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/sub/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 105ms on 2 files using 8 threads."
+    },
+    {
+      "label": "options only in a nested config's extends fragment",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default {};\n",
+        "src/sub/oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }] };\n",
+        "src/sub/a.ts": "async function f(): Promise<void> {}\nf();\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 0,
+      "output": "Found 0 warnings and 0 errors.\nFinished in 26ms on 2 files using 8 threads."
+    },
+    {
+      "label": "root options override an extends fragment",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } }], options: { typeAware: false } };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 0,
+      "output": "Found 0 warnings and 0 errors.\nFinished in 24ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "fragment typeCheck with root typeAware false",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeCheck: true } }], options: { typeAware: false } };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "The `--type-check` option requires type-aware linting.\nUse `--type-aware --type-check` or enable `options.typeAware` in your config."
+    },
+    {
+      "label": "strict false with no-useless-default-assignment",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-useless-default-assignment': 'error' }, options: { typeAware: true } };\n",
+        "src/x.ts": "export const x = 1;\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": false,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(no-useless-default-assignment): This rule requires the `strictNullChecks` compiler option to be turned on to function correctly.\n   ,-[src/x.ts:1:1]\n 1 | export const x = 1;\n   : ^\n   `----\n\nFound 0 warnings and 1 error.\nFinished in 121ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "unresolved import under typeCheck",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, options: { typeAware: true, typeCheck: true } };\n",
+        "src/a.ts": "import { helper } from '@scope/unbuilt';\nexport const h = helper;\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(TS2307): Cannot find module '@scope/unbuilt' or its corresponding type declarations.\n   ,-[src/a.ts:1:24]\n 1 | import { helper } from '@scope/unbuilt';\n   :                        ^^^^^^^^^^^^^^^^\n 2 | export const h = helper;\n   `----\n\nFound 0 warnings and 1 error.\nFinished in 103ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "file outside every tsconfig under typeCheck",
+      "project": "tsgolint",
+      "command": "oxlint src scripts",
+      "files": {
+        "oxlint.config.ts": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, options: { typeAware: true, typeCheck: true } };\n",
+        "src/a.ts": "export const a = process.argv.length;\n",
+        "scripts/x.ts": "export const b = process.argv.length;\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true,\n    \"types\": [\n      \"node\"\n    ]\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(TS2591): Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.\n   ,-[scripts/x.ts:1:18]\n 1 | export const b = process.argv.length;\n   :                  ^^^^^^^\n   `----\n\nFound 0 warnings and 1 error.\nFinished in 109ms on 2 files with 0 rules using 8 threads."
+    },
+    {
+      "label": "JavaScript project without tsconfig",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true } };\n",
+        "src/a.js": "async function f() {}\nf();\n"
+      },
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.js:2:1]\n 1 | async function f() {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 90ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "disable comments with and without a reason or rule name",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error', 'sonsu/no-dbg': 'error', 'unicorn/no-abusive-eslint-disable': 'error', 'no-debugger': 'error' } };\n",
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } }, 'reason': { createOnce(context) { return { Program() { for (const c of context.sourceCode.getAllComments()) { if (/oxlint-disable/.test(c.value) && !c.value.includes(' -- ')) context.report({ loc: c.loc, message: 'disable without reason' }); } } }; } } } };\n",
+        "src/a.ts": "// oxlint-disable-next-line no-debugger -- kept for a reproduction\ndebugger;\n// oxlint-disable-next-line no-debugger\ndebugger;\n",
+        "src/b.ts": "/* oxlint-disable */\ndebugger;\n"
+      },
+      "exit": 1,
+      "output": "x sonsu(reason): disable without reason\n   ,-[src/a.ts:3:1]\n 2 | debugger;\n 3 | // oxlint-disable-next-line no-debugger\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 4 | debugger;\n   `----\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/a.ts:2:1]\n 1 | // oxlint-disable-next-line no-debugger -- kept for a reproduction\n 2 | debugger;\n   : ^^^^^^^^^\n 3 | // oxlint-disable-next-line no-debugger\n   `----\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/a.ts:4:1]\n 3 | // oxlint-disable-next-line no-debugger\n 4 | debugger;\n   : ^^^^^^^^^\n   `----\n\n  x unicorn(no-abusive-eslint-disable): Unexpected `oxlint-disable` comment that does not specify any rules to disable.\n   ,-[src/b.ts:1:3]\n 1 | /* oxlint-disable */\n   :   ^^^^^^^^^^^^^^^^\n 2 | debugger;\n   `----\n  help: Specify the rules you want to disable.\n\nFound 0 warnings and 4 errors.\nFinished in 75ms on 2 files with 99 rules using 8 threads."
+    },
+    {
+      "label": "JS plugin rules in the rule list",
+      "project": "no-tsgolint",
+      "command": "oxlint --rules --format json (counted entries and entries in scope sonsu)",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error', 'sonsu/no-dbg': 'error', 'unicorn/no-abusive-eslint-disable': 'error', 'no-debugger': 'error' } };\n",
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { 'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } }, 'reason': { createOnce(context) { return { Program() { for (const c of context.sourceCode.getAllComments()) { if (/oxlint-disable/.test(c.value) && !c.value.includes(' -- ')) context.report({ loc: c.loc, message: 'disable without reason' }); } } }; } } } };\n"
+      },
+      "exit": 0,
+      "output": "rules 871 sonsu 0"
+    },
+    {
+      "label": "disable comments that target the reason rule itself",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { plugins: ['typescript', 'unicorn'], categories: { correctness: 'off' }, jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error', 'sonsu/no-dbg': 'error', 'unicorn/no-abusive-eslint-disable': 'error', 'typescript/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description', 'ts-ignore': true }] } };\n",
+        "plugin.mjs": "const DIRECTIVE = /^\\s*(?:oxlint|eslint)-(?:disable|enable)(?:-next-line|-line)?\\b/;\nexport default { meta: { name: 'sonsu' }, rules: {\n  'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } },\n  'reason': { createOnce(context) { return { Program() {\n    for (const c of context.sourceCode.getAllComments()) {\n      if (DIRECTIVE.test(c.value) && !/ -- \\S/.test(c.value)) context.report({ loc: c.loc, message: 'disable without reason' });\n    } } }; } } } };\n",
+        "src/1-self-block.ts": "/* oxlint-disable sonsu/reason, sonsu/no-dbg */\ndebugger;\n",
+        "src/2-self-next-line.ts": "// oxlint-disable-next-line sonsu/reason\ndebugger; // oxlint-disable-line sonsu/no-dbg\n",
+        "src/3-disable-unicorn-then-blanket.ts": "/* oxlint-disable sonsu/reason, unicorn/no-abusive-eslint-disable */\n/* oxlint-disable */\ndebugger;\n",
+        "src/4-eslint-prefix.ts": "// eslint-disable-next-line sonsu/no-dbg\ndebugger;\n",
+        "src/5-eslint-blanket.ts": "/* eslint-disable */\ndebugger;\n",
+        "src/6-ts-expect-error.ts": "// @ts-expect-error\nexport const a: number = 'x';\n",
+        "src/7-ts-expect-error-self.ts": "// oxlint-disable-next-line typescript/ban-ts-comment -- testing\n// @ts-expect-error\nexport const b: number = 'x';\n",
+        "src/8-with-reason.ts": "// oxlint-disable-next-line sonsu/no-dbg -- kept for a reproduction\ndebugger;\n"
+      },
+      "exit": 1,
+      "output": "x sonsu(reason): disable without reason\n   ,-[src/4-eslint-prefix.ts:1:1]\n 1 | // eslint-disable-next-line sonsu/no-dbg\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | debugger;\n   `----\n\n  x unicorn(no-abusive-eslint-disable): Unexpected `eslint-disable` comment that does not specify any rules to disable.\n   ,-[src/5-eslint-blanket.ts:1:3]\n 1 | /* eslint-disable */\n   :   ^^^^^^^^^^^^^^^^\n 2 | debugger;\n   `----\n  help: Specify the rules you want to disable.\n\n  x sonsu(reason): disable without reason\n   ,-[src/2-self-next-line.ts:1:1]\n 1 | // oxlint-disable-next-line sonsu/reason\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | debugger; // oxlint-disable-line sonsu/no-dbg\n   `----\n\n  x typescript(ban-ts-comment): Include a description after the @ts-expect-error directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.\n   ,-[src/6-ts-expect-error.ts:1:3]\n 1 | // @ts-expect-error\n   :   ^^^^^^^^^^^^^^^^^\n 2 | export const a: number = 'x';\n   `----\n  help: Add a description after @ts-expect-error that is at least 3 characters long, explaining why the directive is necessary. For example: `// @ts-expect-error: TS2345 - This is a known limitation with third-party types`\n  note: Requiring descriptions ensures that developers document why they're suppressing TypeScript errors, making it easier for future maintainers to understand the context and decide if the suppression is still necessary.\n\nFound 0 warnings and 4 errors.\nFinished in 101ms on 8 files with 4 rules using 8 threads."
+    },
+    {
+      "label": "respectEslintDisableDirectives false",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { plugins: ['typescript', 'unicorn'], categories: { correctness: 'off' }, jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error', 'sonsu/no-dbg': 'error', 'unicorn/no-abusive-eslint-disable': 'error', 'typescript/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description', 'ts-ignore': true }] }, options: { respectEslintDisableDirectives: false } };\n",
+        "plugin.mjs": "const DIRECTIVE = /^\\s*(?:oxlint|eslint)-(?:disable|enable)(?:-next-line|-line)?\\b/;\nexport default { meta: { name: 'sonsu' }, rules: {\n  'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } },\n  'reason': { createOnce(context) { return { Program() {\n    for (const c of context.sourceCode.getAllComments()) {\n      if (DIRECTIVE.test(c.value) && !/ -- \\S/.test(c.value)) context.report({ loc: c.loc, message: 'disable without reason' });\n    } } }; } } } };\n",
+        "src/4-eslint-prefix.ts": "// eslint-disable-next-line sonsu/no-dbg\ndebugger;\n",
+        "src/5-eslint-blanket.ts": "/* eslint-disable */\ndebugger;\n"
+      },
+      "exit": 1,
+      "output": "x sonsu(reason): disable without reason\n   ,-[src/5-eslint-blanket.ts:1:1]\n 1 | /* eslint-disable */\n   : ^^^^^^^^^^^^^^^^^^^^\n 2 | debugger;\n   `----\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/5-eslint-blanket.ts:2:1]\n 1 | /* eslint-disable */\n 2 | debugger;\n   : ^^^^^^^^^\n   `----\n\n  x sonsu(reason): disable without reason\n   ,-[src/4-eslint-prefix.ts:1:1]\n 1 | // eslint-disable-next-line sonsu/no-dbg\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | debugger;\n   `----\n\n  x sonsu(no-dbg): no debugger\n   ,-[src/4-eslint-prefix.ts:2:1]\n 1 | // eslint-disable-next-line sonsu/no-dbg\n 2 | debugger;\n   : ^^^^^^^^^\n   `----\n\nFound 0 warnings and 4 errors.\nFinished in 66ms on 2 files with 4 rules using 8 threads."
+    },
+    {
+      "label": "reportUnusedDisableDirectives error",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { plugins: ['typescript', 'unicorn'], categories: { correctness: 'off' }, jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error', 'sonsu/no-dbg': 'error', 'unicorn/no-abusive-eslint-disable': 'error', 'typescript/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description', 'ts-ignore': true }] }, options: { reportUnusedDisableDirectives: 'error' } };\n",
+        "plugin.mjs": "const DIRECTIVE = /^\\s*(?:oxlint|eslint)-(?:disable|enable)(?:-next-line|-line)?\\b/;\nexport default { meta: { name: 'sonsu' }, rules: {\n  'no-dbg': { createOnce(context) { return { DebuggerStatement(node) { context.report({ node, message: 'no debugger' }); } }; } },\n  'reason': { createOnce(context) { return { Program() {\n    for (const c of context.sourceCode.getAllComments()) {\n      if (DIRECTIVE.test(c.value) && !/ -- \\S/.test(c.value)) context.report({ loc: c.loc, message: 'disable without reason' });\n    } } }; } } } };\n",
+        "src/1-self-block.ts": "/* oxlint-disable sonsu/reason, sonsu/no-dbg */\ndebugger;\n",
+        "src/9-unused.ts": "// oxlint-disable-next-line sonsu/reason\nexport const c = 1;\n"
+      },
+      "exit": 1,
+      "output": "x sonsu(reason): disable without reason\n   ,-[src/9-unused.ts:1:1]\n 1 | // oxlint-disable-next-line sonsu/reason\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | export const c = 1;\n   `----\n\n  x Unused oxlint-disable directive (no problems were reported).\n   ,-[src/9-unused.ts:1:1]\n 1 | // oxlint-disable-next-line sonsu/reason\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | export const c = 1;\n   `----\n\nFound 0 warnings and 2 errors.\nFinished in 60ms on 2 files with 4 rules using 8 threads."
+    },
+    {
+      "label": "report locations escaping a self-naming disable",
+      "observation": "A report at the directive comment is suppressed by that directive. column -1 throws 'Line/column pair translates to an out of range offset'. A zero-width report at the end of the previous line, or at offset 0 on line 1, was reported for block, line-comment, disable-line (lines 1 and 2), next-line and eslint- prefixed directives.",
+      "run": {
+        "label": "report at the end of the previous line, or offset 0 on line 1",
+        "project": "no-tsgolint",
+        "command": "oxlint src",
+        "files": {
+          "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { categories: { correctness: 'off' }, jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error' } };\n",
+          "plugin.mjs": "const DIRECTIVE = /^\\s*(?:oxlint|eslint)-(?:disable|enable)(?:-next-line|-line)?\\b/;\nexport default { meta: { name: 'sonsu' }, rules: { reason: { createOnce(context) { return { Program() {\n  const sc = context.sourceCode;\n  for (const c of sc.getAllComments()) {\n    if (!DIRECTIVE.test(c.value) || / -- \\S/.test(c.value)) continue;\n    const lineStart = sc.getIndexFromLoc({ line: c.loc.start.line, column: 0 });\n    const at = Math.max(0, lineStart - 1);\n    const loc = sc.getLocFromIndex(at);\n    context.report({ loc: { start: loc, end: loc }, message: `disable without reason (comment at ${c.loc.start.line}:${c.loc.start.column})` });\n  } } }; } } } };\n",
+          "src/a-top-block.ts": "/* oxlint-disable sonsu/reason */\nexport const a = 1;\n",
+          "src/b-mid-block.ts": "export const b = 1;\n/* oxlint-disable sonsu/reason */\nexport const c = 1;\n",
+          "src/c-line1-line.ts": "export const d = 1; // oxlint-disable-line sonsu/reason\n",
+          "src/d-line2-line.ts": "export const e = 1;\nexport const f = 1; // oxlint-disable-line sonsu/reason\n",
+          "src/e-next-line.ts": "// oxlint-disable-next-line sonsu/reason\nexport const g = 1; // oxlint-disable-line no-debugger\n",
+          "src/f-top-line-comment.ts": "// oxlint-disable sonsu/reason\nexport const h = 1;\n",
+          "src/g-eslint-top.ts": "/* eslint-disable sonsu/reason */\nexport const i = 1;\n"
+        },
+        "exit": 1,
+        "output": "x sonsu(reason): disable without reason (comment at 1:20)\n   ,-[src/c-line1-line.ts:1:1]\n 1 | export const d = 1; // oxlint-disable-line sonsu/reason\n   : ^\n   `----\n\n  x sonsu(reason): disable without reason (comment at 1:0)\n   ,-[src/a-top-block.ts:1:1]\n 1 | /* oxlint-disable sonsu/reason */\n   : ^\n 2 | export const a = 1;\n   `----\n\n  x sonsu(reason): disable without reason (comment at 2:20)\n   ,-[src/d-line2-line.ts:1:20]\n 1 | export const e = 1;\n   :                    ^\n 2 | export const f = 1; // oxlint-disable-line sonsu/reason\n   `----\n\n  x sonsu(reason): disable without reason (comment at 1:0)\n   ,-[src/f-top-line-comment.ts:1:1]\n 1 | // oxlint-disable sonsu/reason\n   : ^\n 2 | export const h = 1;\n   `----\n\n  x sonsu(reason): disable without reason (comment at 2:0)\n   ,-[src/b-mid-block.ts:1:20]\n 1 | export const b = 1;\n   :                    ^\n 2 | /* oxlint-disable sonsu/reason */\n   `----\n\n  x sonsu(reason): disable without reason (comment at 1:0)\n   ,-[src/e-next-line.ts:1:1]\n 1 | // oxlint-disable-next-line sonsu/reason\n   : ^\n 2 | export const g = 1; // oxlint-disable-line no-debugger\n   `----\n\n  x sonsu(reason): disable without reason (comment at 2:20)\n   ,-[src/e-next-line.ts:1:41]\n 1 | // oxlint-disable-next-line sonsu/reason\n   :                                         ^\n 2 | export const g = 1; // oxlint-disable-line no-debugger\n   `----\n\n  x sonsu(reason): disable without reason (comment at 1:0)\n   ,-[src/g-eslint-top.ts:1:1]\n 1 | /* eslint-disable sonsu/reason */\n   : ^\n 2 | export const i = 1;\n   `----\n\nFound 0 warnings and 8 errors.\nFinished in 154ms on 7 files with 1 rules using 8 threads."
+      }
+    },
+    {
+      "label": "getDisableDirectives with a zero-width report before the directive line",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "import { fileURLToPath } from 'node:url';\nexport default { categories: { correctness: 'off' }, jsPlugins: [fileURLToPath(new URL('./plugin.mjs', import.meta.url))], rules: { 'sonsu/reason': 'error' } };\n",
+        "plugin.mjs": "export default { meta: { name: 'sonsu' }, rules: { reason: { createOnce(context) { return { Program() {\n  const sc = context.sourceCode;\n  const { directives, problems } = sc.getDisableDirectives();\n  for (const d of directives) {\n    if (d.justification) continue;\n    const c = d.node; const line = c.loc.start.line;\n    const at = Math.max(0, sc.getIndexFromLoc({ line, column: 0 }) - 1);\n    const loc = sc.getLocFromIndex(at);\n    context.report({ loc: { start: loc, end: loc }, message: `${d.type} at ${line}:${c.loc.start.column} has no reason (rules: ${JSON.stringify(d.value)})` });\n  }\n  if (problems.length) context.report({ loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } }, message: 'problems: ' + JSON.stringify(problems.map(p => p.message)) });\n} }; } } } };\n",
+        "src/a-top-block.ts": "/* oxlint-disable sonsu/reason */\nexport const a = 1;\n",
+        "src/c-line1-line.ts": "export const d = 1; // oxlint-disable-line sonsu/reason\n",
+        "src/e-next-line.ts": "// oxlint-disable-next-line sonsu/reason\nexport const g = 1; // oxlint-disable-line no-debugger\n",
+        "src/g-eslint-top.ts": "/* eslint-disable sonsu/reason */\nexport const i = 1;\n",
+        "src/h-with-reason.ts": "// oxlint-disable-next-line no-debugger -- kept for a reproduction\ndebugger;\n",
+        "src/i-enable.ts": "/* oxlint-disable no-debugger -- legacy block */\ndebugger;\n/* oxlint-enable no-debugger */\n"
+      },
+      "exit": 1,
+      "output": "x sonsu(reason): disable-line at 1:20 has no reason (rules: \"sonsu/reason\")\n   ,-[src/c-line1-line.ts:1:1]\n 1 | export const d = 1; // oxlint-disable-line sonsu/reason\n   : ^\n   `----\n\n  x sonsu(reason): disable-next-line at 1:0 has no reason (rules: \"sonsu/reason\")\n   ,-[src/e-next-line.ts:1:1]\n 1 | // oxlint-disable-next-line sonsu/reason\n   : ^\n 2 | export const g = 1; // oxlint-disable-line no-debugger\n   `----\n\n  x sonsu(reason): disable-line at 2:20 has no reason (rules: \"no-debugger\")\n   ,-[src/e-next-line.ts:1:41]\n 1 | // oxlint-disable-next-line sonsu/reason\n   :                                         ^\n 2 | export const g = 1; // oxlint-disable-line no-debugger\n   `----\n\n  x sonsu(reason): enable at 3:0 has no reason (rules: \"no-debugger\")\n   ,-[src/i-enable.ts:2:10]\n 1 | /* oxlint-disable no-debugger -- legacy block */\n 2 | debugger;\n   :          ^\n 3 | /* oxlint-enable no-debugger */\n   `----\n\n  x sonsu(reason): disable at 1:0 has no reason (rules: \"sonsu/reason\")\n   ,-[src/a-top-block.ts:1:1]\n 1 | /* oxlint-disable sonsu/reason */\n   : ^\n 2 | export const a = 1;\n   `----\n\n  x sonsu(reason): disable at 1:0 has no reason (rules: \"sonsu/reason\")\n   ,-[src/g-eslint-top.ts:1:1]\n 1 | /* eslint-disable sonsu/reason */\n   : ^\n 2 | export const i = 1;\n   `----\n\nFound 0 warnings and 6 errors.\nFinished in 121ms on 6 files with 1 rules using 8 threads."
+    },
+    {
+      "label": "reportUnusedDisableDirectives in an extends fragment",
+      "project": "no-tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ categories: { correctness: 'off' }, options: { reportUnusedDisableDirectives: 'error' } }] };\n",
+        "src/a.ts": "// oxlint-disable-next-line no-debugger -- stale\nexport const a = 1;\n"
+      },
+      "exit": 1,
+      "output": "x Unused oxlint-disable directive (no problems were reported).\n   ,-[src/a.ts:1:1]\n 1 | // oxlint-disable-next-line no-debugger -- stale\n   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 2 | export const a = 1;\n   `----\n\nFound 0 warnings and 1 error.\nFinished in 39ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "factory first, consumer fragment typeAware false",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }, { options: { typeAware: false } }] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "The `--type-check` option requires type-aware linting.\nUse `--type-aware --type-check` or enable `options.typeAware` in your config."
+    },
+    {
+      "label": "factory first, consumer fragment both false",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }, { options: { typeAware: false, typeCheck: false } }] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 0,
+      "output": "Found 0 warnings and 0 errors.\nFinished in 30ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "factory first, consumer fragment typeCheck false",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }, { options: { typeCheck: false } }] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x';\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 1 error.\nFinished in 201ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "consumer fragment typeAware false, factory last",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ options: { typeAware: false } }, { plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "x typescript(TS2322): Type 'string' is not assignable to type 'number'.\n   ,-[src/a.ts:3:14]\n 2 | f();\n 3 | export const n: number = 'x';\n   :              ^\n   `----\n\n  x typescript(no-floating-promises): Promises must be awaited, add void operator to ignore.\n   ,-[src/a.ts:2:1]\n 1 | async function f(): Promise<void> {}\n 2 | f();\n   : ^|^^\n   :  `-- This unhandled promise-like value has type `Promise<void>`.\n 3 | export const n: number = 'x';\n   `----\n  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.\n\nFound 0 warnings and 2 errors.\nFinished in 158ms on 1 file with 1 rules using 8 threads."
+    },
+    {
+      "label": "string path in extends of oxlint.config.ts",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }, './team.json'] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "team.json": "{\"options\": {\"typeAware\": false}}",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "Failed to parse oxlint configuration file.\n\n  x Failed to load config: /private/tmp/oxc-probe-2026-10-14/tsgolint/oxlint.config.ts\n  | \n  | Error: `extends[1]` must be a config object (strings/paths are not supported).\n  |     at visit (file:///private/tmp/oxc-probe-2026-10-14/tsgolint/node_modules/oxlint/dist/js_config.js:108:32)\n  |     at validateConfigExtends (file:///private/tmp/oxc-probe-2026-10-14/tsgolint/node_modules/oxlint/dist/js_config.js:119:2)\n  |     at resolveJsConfig (file:///private/tmp/oxc-probe-2026-10-14/tsgolint/node_modules/oxlint/dist/js_config.js:127:9)\n  |     at async Promise.allSettled (index 0)\n  |     at async loadConfigs (file:///private/tmp/oxc-probe-2026-10-14/tsgolint/node_modules/oxlint/dist/js_config.js:151:17)"
+    },
+    {
+      "label": "factory first, consumer fragment with nested extends typeAware false",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: true, typeCheck: true } }, { extends: [{ options: { typeAware: false, typeCheck: false } }] }] };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 0,
+      "output": "Found 0 warnings and 0 errors.\nFinished in 26ms on 1 file with 0 rules using 8 threads."
+    },
+    {
+      "label": "root typeAware false beats consumer fragment true",
+      "project": "tsgolint",
+      "command": "oxlint src",
+      "files": {
+        "oxlint.config.ts": "export default { extends: [{ plugins: ['typescript'], categories: { correctness: 'off' }, rules: { 'typescript/no-floating-promises': 'error' }, options: { typeAware: false, typeCheck: false } }, { options: { typeAware: true, typeCheck: true } }], options: { typeAware: false } };\n",
+        "src/a.ts": "async function f(): Promise<void> {}\nf();\nexport const n: number = 'x';\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"module\": \"nodenext\",\n    \"moduleResolution\": \"nodenext\",\n    \"strict\": true,\n    \"noEmit\": true\n  },\n  \"include\": [\n    \"src\"\n  ]\n}"
+      },
+      "exit": 1,
+      "output": "The `--type-check` option requires type-aware linting.\nUse `--type-aware --type-check` or enable `options.typeAware` in your config."
+    },
+    {
+      "label": "ESLint comparison: eslint-comments/require-description on a self-naming disable",
+      "project": "eslint",
+      "environment": {
+        "eslint": "9.39.5",
+        "@eslint-community/eslint-plugin-eslint-comments": "4.8.1"
+      },
+      "files": {
+        "src/1.js": "/* eslint-disable @eslint-community/eslint-comments/require-description, no-debugger */\ndebugger;\n",
+        "src/3.js": "/* eslint-disable @eslint-community/eslint-comments/require-description, @eslint-community/eslint-comments/no-restricted-disable, no-debugger */\ndebugger;\n"
+      },
+      "command": "eslint src",
+      "observation": "require-description still reported both files at 1:0 because it reports at column -1 (lib/internal/utils.js toForceLocation). no-restricted-disable reported 1.js at 1:19 but was suppressed in 3.js, where the comment names it."
+    },
+    {
+      "label": "Biome comparison: suppression without an explanation",
+      "project": "biome",
+      "environment": {
+        "@biomejs/biome": "2.5.15"
+      },
+      "files": {
+        "src/a.js": "// biome-ignore lint/suspicious/noDebugger\ndebugger;\n",
+        "src/c.js": "// biome-ignore suppressions/parse: try to hide it\n// biome-ignore lint/suspicious/noDebugger\ndebugger;\n"
+      },
+      "command": "biome lint src",
+      "observation": "Both files report suppressions/parse ('A colon is required after the category') and the debugger diagnostic; the suppression is void and suppressions/parse cannot itself be suppressed."
+    }
+  ],
+  "notes": [
+    "`options.typeAware`/`typeCheck` are rejected only at the root of a nested config file; inside `extends` fragments they apply from the root config and are ignored in nested configs. This supersedes the root-only reading in starter-verification-2026-09-28.md."
+  ]
+}
