@@ -28,7 +28,7 @@
 
 채택한 규칙은 `error`가 기본이다. `warn`은 오탐이 관찰됐고, 옵션으로 오탐과 위반을 구분할 수 없으며, 그래도 위반이 결함일 가능성이 높아 신호로 남길 때만 쓴다. 채택하지 않은 규칙은 출발점이므로 이유를 적지 않고, 검토한 뒤 탈락시킨 후보만 사유를 한 줄 남긴다.
 
-소비자 코드의 disable 주석은 끄는 규칙을 지정하고 사유를 남긴다. 규칙의 severity는 override와 소비자 설정에 따라 달라지므로 모든 disable 주석에 같은 기준을 둔다. 사유 없는 예외는 리뷰에서 정당한지 판단할 수 없다.
+소비자 코드의 disable 주석은 끄는 규칙을 지정하고 사유를 남긴다. 규칙의 severity는 override와 소비자 설정에 따라 달라지므로 모든 disable 주석에 같은 기준을 둔다. 사유 없는 예외는 리뷰에서 정당한지 판단할 수 없다. type-check를 끄는 주석도 같은 기준을 따른다. `@ts-expect-error`는 설명을 남기고, `@ts-ignore`와 `@ts-nocheck`는 쓰지 않는다. 더 이상 아무것도 끄지 않는 disable 주석은 오류로 보고한다.
 
 바꾼 규칙의 위반·정상 입력은 `test/fixtures/`에 저장하고 설치 소비자 검사가 다시 실행한다. 지금 `docs/evidence/`에서 읽는 기존 입력은 #22에서 이 형식으로 모두 옮기고, 이후 소비자 검사는 `test/fixtures/`만 읽는다. 입력으로 표현할 수 없는 증거(중복 결과, 환경 계약의 전제와 규칙 문서)는 ledger의 해당 행에 적는다. type-aware 규칙의 재실행은 tsgolint를 설치하는 #25에서 더한다.
 
@@ -112,11 +112,19 @@ promise와 react-perf는 같은 관심사 안의 플러그인으로 넣고, jsdo
 
 경로, 작성 API, disable 주석의 근거는 [JS plugin probe](evidence/type-aware-js-plugin-probes-2026-10-14.json)에 있다.
 
-| 후보                                                            | 관심사       | 근거                                                                                                                                                                                                                                                                                                                                       | 상태      |
-| --------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
-| disable 주석에 사유 강제 (`sonsu/require-disable-reason`, 가칭) | `javascript` | 1절 disable 주석 원칙. Oxlint는 disable 주석 뒤 `-- 사유`를 받지만 강제하는 내장 규칙이 없다. 규칙을 지정하지 않은 disable(`/* oxlint-disable */`)은 sonsu 규칙의 진단까지 끄므로 `unicorn/no-abusive-eslint-disable`을 `error`로 함께 켜서 막는다. sonsu 규칙은 대상 규칙의 severity를 알 수 없으므로 모든 disable 주석에 사유를 요구한다 | 채택 후보 |
-| formatter ignore 주석 금지                                      | `javascript` | 결함 관찰 필요                                                                                                                                                                                                                                                                                                                             | 보류      |
-| 에이전트가 반복하는 결함 패턴                                   | 해당 관심사  | 결함 관찰 시 추가                                                                                                                                                                                                                                                                                                                          | 관찰 대기 |
+| 후보                                                            | 관심사       | 근거                                                                                                                                                                                                     | 상태      |
+| --------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| disable 주석에 사유 강제 (`sonsu/require-disable-reason`, 가칭) | `javascript` | 1절 disable 주석 원칙. Oxlint는 disable 주석 뒤 `-- 사유`를 받지만 강제하는 내장 규칙이 없고, upstream은 내장 지원 대신 JS plugin을 권한다([oxc#22193](https://github.com/oxc-project/oxc/issues/22193)) | 채택 후보 |
+| formatter ignore 주석 금지                                      | `javascript` | 결함 관찰 필요                                                                                                                                                                                           | 보류      |
+| 에이전트가 반복하는 결함 패턴                                   | 해당 관심사  | 결함 관찰 시 추가                                                                                                                                                                                        | 관찰 대기 |
+
+disable 사유 규칙은 다음과 같이 만든다.
+
+- `context.sourceCode.getDisableDirectives()`로 `oxlint-`·`eslint-` 지시를 읽고, `justification`이 없는 disable 지시를 보고한다. `enable` 지시는 제외한다. 규칙은 대상 규칙의 severity를 알 수 없으므로 모든 disable 지시에 사유를 요구한다.
+- Oxlint는 disable 주석을 JS plugin 진단에도 적용하고, 주석 자신의 위치에 찍힌 진단도 가린다. 그래서 규칙 이름을 넣어 자기 자신을 끄는 주석(`/* oxlint-disable sonsu/require-disable-reason */`)이 진단 없이 통과한다. 이를 막으려고 진단을 주석이 있는 줄 바로 앞(앞 줄 끝, 1번 줄이면 파일 시작)에 폭 0으로 찍고 메시지에 주석 위치를 적는다. ESLint의 `eslint-comments/require-description`도 진단을 주석 앞(column -1)에 찍어 같은 문제를 피한다. 이 위치는 Oxlint가 문서화하지 않은 suppression 범위에 기대므로, 확인한 배치(파일 맨 위·중간의 block, 줄 주석, 1·2번 줄 `disable-line`, `disable-next-line`, `eslint-` 접두사)를 설치 소비자 검사의 회귀 케이스로 둔다. 사유를 붙여 이 규칙을 끄는 주석은 사유 있는 예외로 허용한다.
+- 규칙을 지정하지 않은 disable(`/* oxlint-disable */`)은 `unicorn/no-abusive-eslint-disable`을 `error`로 켜서 막는다.
+- 더 이상 아무것도 끄지 않는 disable 주석은 factory 조각의 `options.reportUnusedDisableDirectives: 'error'`로 보고한다. 이 옵션도 `extends` 조각에서 동작했고, 5절의 두 옵션과 같은 방식으로 값을 정한다.
+- type-check를 끄는 주석은 `typescript/ban-ts-comment`가 맡는다(5절).
 
 같은 효과를 내장 규칙으로 낼 수 있는 것은 sonsu에 넣지 않는다. 예를 들어 `dist`나 `node_modules` 경로 import 금지는 `no-restricted-imports` 패턴(`imports`), top-level await 금지는 `node/no-top-level-await`, 함수 선언 형태는 `func-style`로 처리한다.
 
@@ -135,35 +143,40 @@ type-aware 규칙을 사용한다. 확인한 조건은 다음과 같다. 근거�
 - tsconfig가 TS 7과 맞지 않으면 실패한다. `baseUrl`이나 `moduleResolution: node`가 있으면 `ignoreDeprecations: "6.0"`을 넣어도 `Invalid tsconfig`로 실패한다. `paths` 값이 상대 경로가 아니면 `typescript(tsconfig-error)`가 났고 `./src/...`로 고치자 해소됐다.
 - `strictNullChecks`(`strict`)가 꺼져 있으면, 상속된 type-aware correctness 규칙 `typescript/no-useless-default-assignment`가 모든 TS 파일 첫 줄에 `error`를 낸다.
 - 켜면 이미 상속된 type-aware correctness 15개(`no-floating-promises`, `await-thenable` 등)가 실행되기 시작하므로 같은 PR에서 정상 패턴으로 판단한다.
-- `options.typeCheck`(또는 `--type-check`)는 TypeScript 컴파일러 진단을 lint 결과에 포함한다. Oxlint가 experimental로 표시하고 TS 7 기준이라 프로젝트의 `tsc`와 결과가 다를 수 있다. `typeAware` 없이 켜면 Oxlint가 실행을 거부한다. 해석되지 않는 import는 `TS2307` error가 되므로 workspace 의존 패키지는 lint 전에 빌드돼 있어야 한다. 어떤 tsconfig에도 포함되지 않은 파일은 기본 compiler 옵션으로 검사된다(예: tsconfig의 `types: ["node"]`가 적용되지 않아 `process`가 `TS2591`).
+- `options.typeCheck`(또는 `--type-check`)는 TypeScript 컴파일러 진단을 lint 결과에 포함한다. Oxlint가 experimental로 표시하고 TS 7 기준이라 프로젝트의 `tsc`와 결과가 다를 수 있다. `typeAware` 없이 켜면 Oxlint가 실행을 거부한다. 해석되지 않는 import는 `TS2307` error가 되므로 생성되는 타입 소스는 lint 전에 있어야 한다. workspace 의존 패키지 빌드, `next typegen` 같은 프레임워크 타입 생성, 그 밖의 codegen이 해당한다. 어떤 tsconfig에도 포함되지 않은 파일은 기본 compiler 옵션으로 검사된다(예: tsconfig의 `types: ["node"]`가 적용되지 않아 `process`가 `TS2591`).
 - tsconfig가 없는 JavaScript 프로젝트도 tsgolint의 추론 프로젝트로 type-aware 규칙이 실행된다.
-- 두 옵션은 `extends`로 받은 조각에 두어도 root config에서 적용되고, root config의 `options`가 조각의 값을 덮어쓴다. Oxc 문서의 "root config에서만"은 디렉터리별 nested config를 뜻한다. nested config 최상위에 `options.typeAware`나 `typeCheck`가 있으면 값과 상관없이 설정 파싱이 실패하고, nested config의 `extends` 조각에 둔 값은 무시된다. 이는 [이전 기록](evidence/starter-verification-2026-09-28.md)의 "루트 전용" 서술을 대체한다.
+- 두 옵션은 `extends`로 받은 조각에 두어도 root config에서 적용된다. options는 `extends` 순서대로 키별로 합쳐져 뒤의 조각이 이기고, root config의 `options`가 마지막에 이긴다. 그래서 앞 조각의 `typeCheck: true`가 남은 채 뒤에서 `typeAware: false`만 주면 Oxlint가 실행을 거부한다. `oxlint.config.ts`의 `extends`는 객체만 받는다(문자열 경로는 거부). Oxc 문서의 "root config에서만"은 디렉터리별 nested config를 뜻한다. nested config 최상위에 `options.typeAware`나 `typeCheck`가 있으면 값과 상관없이 설정 파싱이 실패하고, nested config의 `extends` 조각에 둔 값은 무시된다. 이는 [이전 기록](evidence/starter-verification-2026-09-28.md)의 "루트 전용" 서술을 대체한다.
 
 type-check도 기본으로 켠다. lint 한 번으로 타입 오류까지 통과 조건에 넣기 위해서다. 대가로 소비자 CI에서 `tsc`와 같은 오류가 두 번 보고될 수 있고, experimental 기능이라 Oxlint를 올릴 때 진단이 바뀔 수 있다.
 
 구현은 다음과 같다.
 
-- `oxlint-tsgolint`를 oxlint·oxfmt처럼 정확한 버전의 optional peer로 추가하고, 이 저장소의 devDependencies와 설치 소비자 검사의 설치 목록에 넣는다. 설치 소비자 검사는 type-aware 실행을 TypeScript 7.0.x로 확인한다. build와 선언 파일 생성은 devDependency TypeScript 6.0.3을 유지한다.
-- factory는 두 값을 root `options`가 아니라 자기가 만드는 `extends` 조각의 `options`에 둔다. 그래서 factory를 nested config에서 불러도 파싱이 실패하지 않고, 실행 여부는 root config가 정한다. `typeAware`는 소비자 `options.typeAware`가 없으면 `true`이고, `typeCheck`는 소비자가 정하지 않으면 `typeAware` 값을 따른다. 조각의 `typeCheck: true`와 root의 `typeAware: false`가 만나면 Oxlint가 실행을 거부하므로 factory가 두 값을 함께 계산한다. 소비자는 `typeAware: false` 하나로 둘 다 끈다. 끄는 경로와 nested config를 설치 소비자 검사에 넣는다.
+- `oxlint-tsgolint`를 oxlint·oxfmt처럼 정확한 버전의 optional peer로 추가하고, 이 저장소의 devDependencies와 설치 소비자 검사의 설치 목록에 넣는다. 설치 소비자 검사는 전체를 정확한 TypeScript 7.0.x(현재 7.0.2)로 실행하고, 그 버전은 manifest의 alias devDependency(`typescript7`)로 고정한다. build와 선언 파일 생성은 devDependency TypeScript 6.0.3을 유지한다.
+- factory는 실행 옵션을 root `options`가 아니라 자기가 만드는 `extends` 조각의 `options`에 두고, 이 조각을 `extends`의 맨 뒤에 놓는다. 그래서 factory를 nested config에서 불러도 파싱이 실패하지 않고, 실행 여부는 root config가 정한다. 조각의 값은 소비자가 넘긴 `extends` 조각(중첩 포함)을 Oxlint와 같은 순서로 읽고 root `options`를 마지막에 적용해 계산한다. `typeAware`는 어디에도 없으면 `true`이고, `typeCheck`는 어디에도 없으면 최종 `typeAware`를 따른다. 그래서 소비자는 root든 조각이든 `typeAware: false` 하나로 둘 다 끈다. 4절의 `reportUnusedDisableDirectives`도 같은 방식으로 정하고 기본값은 `'error'`다. 이 계산은 Oxlint의 options 병합 순서를 다시 구현하므로, root와 조각에서 끄는 경로와 nested config를 설치 소비자 검사에 넣는다.
 - 조각을 직접 조합하는 소비자는 `options`를 직접 넣는다.
-- tsgolint가 없거나 tsconfig가 지원 조건을 벗어나거나 의존 패키지가 빌드되지 않았으면 lint 전체가 실패하므로 이 변경은 breaking이다.
-- 지원 조건은 TypeScript 7.0 이상, TS 7과 호환되는 tsconfig, `strictNullChecks`, lint 대상 TS 파일이 tsconfig에 포함되거나 ignore될 것, lint 전 workspace 의존 패키지 빌드다.
-- 바뀌는 문서: README의 설치 명령, Dependencies·Updating 절, 151 errors 수치, "type-aware를 켜지 않는다"는 문구를 고치고 지원 조건과 끄는 방법을 적는다. `docs/design.md`의 optional peer 목록, 타입 오류 책임, "typed lint는 향후 별도 설계" 행과 `docs/rule-ledger.md`의 "`options.typeAware`를 켜지 않는다", "소비자가 켤 때만 실행" 서술도 고친다.
+- `typescript/ban-ts-comment`를 `error`로 켜서 `@ts-expect-error`는 설명이 있을 때만 허용하고 `@ts-ignore`·`@ts-nocheck`는 금지한다(1절).
+- tsgolint가 없거나, tsconfig가 지원 조건을 벗어나거나, 생성되는 타입 소스가 없으면 lint 전체가 실패하므로 이 변경은 breaking이다.
+- 지원 조건은 다섯 가지다. TypeScript 7.0 이상, TS 7과 호환되는 tsconfig, `strictNullChecks`, lint 대상 TS 파일이 tsconfig에 포함되거나 ignore될 것, lint 전 생성되는 타입 소스(workspace 빌드, 프레임워크 타입 생성, codegen)가 있을 것.
+- 바뀌는 문서:
+  - README: 설치 명령, Dependencies·Updating 절, "Upgrading Oxlint" 절차(`oxlint-tsgolint` 함께 올림), 151 errors 수치, "type-aware를 켜지 않는다"는 문구, 지원 조건과 끄는 방법, "Checked with" 줄의 TypeScript 버전.
+  - `docs/design.md`: 151/41 수치와 "소비자가 켤 때만 실행" 서술, optional peer 목록, 타입 오류 책임, "typed lint는 향후 별도 설계" 행.
+  - `docs/rule-ledger.md`: "`options.typeAware`를 켜지 않는다", "소비자가 켤 때만 실행".
+  - `docs/verification.md`: type-aware 15개를 표 계산으로만 확인한다는 서술, 소비자 검사의 TypeScript 버전.
 
 ## 6. 작업 순서
 
 이슈 하나는 주제 하나를 맡는다. 큰 이슈는 PR 여러 개로 나눠도 된다.
 
-| 순서 | 이슈                                                                    | 내용                                                                                                                                                                                                                 |
-| ---- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0    | [#22](https://github.com/sonsu-lee/oxc-config/issues/22) 구조 정비      | 이 문서 머지, `base` 분리, 관심사 모듈의 category 제거, 전체 규칙 목록 스냅샷, 증거 입력 형식과 설치 소비자 검사의 로더, `docs/evidence/`의 기존 입력 이전, 1절 원칙을 ledger에 반영. 실효 규칙 변경 0건이 통과 조건 |
-| 1    | [#24](https://github.com/sonsu-lee/oxc-config/issues/24) `imports`      | 후보가 적어 검수 절차와 ledger 형식을 먼저 시험                                                                                                                                                                      |
-| 2    | [#25](https://github.com/sonsu-lee/oxc-config/issues/25) TypeScript     | 5절 구현(breaking), type-aware correctness 15개와 type-check 진단 판단, 이어서 typescript 플러그인 검수(type-aware 후보 포함). TS 파일의 core 규칙 조정은 #27이 맡는다                                               |
-| 3    | [#27](https://github.com/sonsu-lee/oxc-config/issues/27) `javascript`   | eslint → oxc → unicorn → promise. oxc가 eslint와 겹치는 규칙(예: `no-bitwise`와 `oxc/bad-bitwise-operator`)은 eslint 결정 뒤에, promise는 1절 채택 조건부터. core 규칙을 바꿀 때 TS 파일 조정도 함께 판단            |
-| 4    | [#31](https://github.com/sonsu-lee/oxc-config/issues/31) UI             | `react` → `jsxA11y` → `nextjs`. 기존 warn·off 재판단, `react`에서 react-perf는 1절 채택 조건으로 판단                                                                                                                |
-| 5    | [#34](https://github.com/sonsu-lee/oxc-config/issues/34) `vitest`       | 기존 warn·off 재판단                                                                                                                                                                                                 |
-| 6    | [#35](https://github.com/sonsu-lee/oxc-config/issues/35) 새 관심사      | `jsdoc`(켜면 correctness 9개 상속)과 `node`(새 범위 모듈과 factory `node` 옵션)                                                                                                                                      |
-| 7    | [#37](https://github.com/sonsu-lee/oxc-config/issues/37) sonsu 플러그인 | 4절 첫 후보와 `unicorn/no-abusive-eslint-disable`, 2절 sonsu 규칙 기록, design.md의 "custom JS plugin을 추가하지 않았다" 정정. 순서는 다른 이슈와 독립                                                               |
+| 순서 | 이슈                                                                    | 내용                                                                                                                                                                                                                                                               |
+| ---- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0    | [#22](https://github.com/sonsu-lee/oxc-config/issues/22) 구조 정비      | 이 문서 머지, `base` 분리, 관심사 모듈의 category 제거, 전체 규칙 목록 스냅샷, 증거 입력 형식과 설치 소비자 검사의 로더, `docs/evidence/`의 기존 입력 이전(design.md·verification.md의 재사용 서술 정정), 1절 원칙을 ledger에 반영. 실효 규칙 변경 0건이 통과 조건 |
+| 1    | [#24](https://github.com/sonsu-lee/oxc-config/issues/24) `imports`      | 후보가 적어 검수 절차와 ledger 형식을 먼저 시험                                                                                                                                                                                                                    |
+| 2    | [#25](https://github.com/sonsu-lee/oxc-config/issues/25) TypeScript     | 5절 구현(breaking, `typescript/ban-ts-comment` 포함), type-aware correctness 15개와 type-check 진단 판단, 이어서 typescript 플러그인 검수(type-aware 후보 포함). TS 파일의 core 규칙 조정은 #27이 맡는다                                                           |
+| 3    | [#27](https://github.com/sonsu-lee/oxc-config/issues/27) `javascript`   | eslint → oxc → unicorn → promise. oxc가 eslint와 겹치는 규칙(예: `no-bitwise`와 `oxc/bad-bitwise-operator`)은 eslint 결정 뒤에, promise는 1절 채택 조건부터. core 규칙을 바꿀 때 TS 파일 조정도 함께 판단                                                          |
+| 4    | [#31](https://github.com/sonsu-lee/oxc-config/issues/31) UI             | `react` → `jsxA11y` → `nextjs`. 기존 warn·off 재판단, `react`에서 react-perf는 1절 채택 조건으로 판단                                                                                                                                                              |
+| 5    | [#34](https://github.com/sonsu-lee/oxc-config/issues/34) `vitest`       | 기존 warn·off 재판단                                                                                                                                                                                                                                               |
+| 6    | [#35](https://github.com/sonsu-lee/oxc-config/issues/35) 새 관심사      | `jsdoc`(켜면 correctness 9개 상속)과 `node`(새 범위 모듈과 factory `node` 옵션)                                                                                                                                                                                    |
+| 7    | [#37](https://github.com/sonsu-lee/oxc-config/issues/37) sonsu 플러그인 | 4절 disable 사유 규칙(자기 자신을 끄는 주석의 회귀 케이스 포함), `unicorn/no-abusive-eslint-disable`, `reportUnusedDisableDirectives`, 2절 sonsu 규칙 기록, design.md의 "custom JS plugin을 추가하지 않았다" 정정. 순서는 다른 이슈와 독립                         |
 
 검수 PR 하나의 절차:
 
@@ -179,8 +192,8 @@ type-check도 기본으로 켠다. lint 한 번으로 타입 오류까지 통과
 - 모듈은 관심사 단위로 나누고 category는 `base` 한 곳에 둔다.
 - 바꾼 규칙의 재실행 입력은 `test/fixtures/` 한 곳에 두고(기존 `docs/evidence/` 입력은 #22에서 이전), 그 밖의 증거는 ledger에 둔다.
 - 직접 만드는 규칙은 저장소 안의 sonsu JS plugin으로 만들고, `@oxlint/plugins`는 타입 전용 devDependency로 쓴다. 외부 JS plugin은 고려하지 않는다. sonsu 규칙도 실효 규칙 표에 담는다.
-- 소비자 코드의 disable 주석은 규칙을 지정하고 사유를 남긴다.
-- type-aware와 type-check를 기본으로 켜고 breaking으로 릴리스한다. `oxlint-tsgolint`는 optional peer이고, factory는 두 값을 `extends` 조각에 두며 `typeAware: false` 하나로 둘 다 끈다.
+- 소비자 코드의 disable 주석은 규칙을 지정하고 사유를 남긴다. 규칙 이름을 넣어 자기 자신을 끄는 주석도 잡도록 진단을 주석 앞에 찍는다. `@ts-expect-error`는 설명을 남기고 `@ts-ignore`·`@ts-nocheck`는 쓰지 않으며, 필요 없어진 disable 주석은 오류다.
+- type-aware와 type-check를 기본으로 켜고 breaking으로 릴리스한다. `oxlint-tsgolint`는 optional peer다. factory는 소비자의 `extends`와 root `options`에서 값을 계산해 맨 뒤 `extends` 조각에 두고, 소비자는 어디서든 `typeAware: false` 하나로 둘 다 끈다.
 - jsdoc과 node는 새 관심사로 둔다.
 - 타입 정보가 필요한 커스텀 규칙은 upstream 지원을 기다린다.
-- type-aware 지원 조건은 upstream 기준인 TypeScript 7.0 이상과 5절의 tsconfig 조건이다. 설치 소비자 검사는 TypeScript 7.0.x로 확인한다.
+- type-aware 지원 조건은 upstream 기준인 TypeScript 7.0 이상과 5절의 나머지 네 조건(TS 7 호환 tsconfig, `strictNullChecks`, TS 파일의 tsconfig 포함 또는 ignore, 생성되는 타입 소스)이다. 설치 소비자 검사는 전체를 TypeScript 7.0.x로 실행한다.
